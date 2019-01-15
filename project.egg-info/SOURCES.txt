@@ -1,0 +1,14 @@
+setup.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
+psgrabr/__init__.py
+psgrabr/items.py
+psgrabr/middlewares.py
+psgrabr/pipelines.py
+psgrabr/settings.py
+psgrabr/spiders/__init__.py
+psgrabr/spiders/psspider.py
+psgrabr/spiders/quotes_spider.py
