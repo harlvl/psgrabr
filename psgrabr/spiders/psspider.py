@@ -16,7 +16,7 @@ import math
 from datetime import datetime,timedelta
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
-from scrapy_project.items import ScrapyProjectItem
+from psgrabr.items import ScrapyProjectItem
 from scrapy.exceptions import CloseSpider
 from scrapy.selector import Selector
 from scrapy.http import HtmlResponse
@@ -47,9 +47,6 @@ class GrabrSpider(CrawlSpider):
 
 	
 	def parse(self, response):
-		
-		
-		
 		LOGGER.setLevel(logging.WARNING)
 		urllib3_log = logging.getLogger("urllib3")
 		urllib3_log.setLevel(logging.CRITICAL)
@@ -59,8 +56,18 @@ class GrabrSpider(CrawlSpider):
 		toCityOption=0
 		newAccountFlag = 0
 		newAnnotationFlag=0
-		username='info.grabr@gmail.com'
-		password='NZ7101749627'
+		username='harleen_vl@hotmail.com'
+		password='w0mirnms'
+		# username='info.grabr@gmail.com'
+		# password='NZ7101749627'
+
+		############################
+		#### preset cities
+		city_origin = "Miami"
+		city_destination = "Buenos Aires"
+		city_destination2 = "Lima"
+
+		#### TODO: set a different annotation depending on the destination city
 		annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.
 							 Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
 							 ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -110,7 +117,6 @@ class GrabrSpider(CrawlSpider):
 				if len(annotation)>0:
 					break
 		
-
 		
 	
 		
@@ -172,7 +178,7 @@ class GrabrSpider(CrawlSpider):
 	
 		itera=0
 		
-		
+		#here it begins to actually do stuff, i think
 
 		while True:
 			basepath ='https://grabr.io/es'	
@@ -368,6 +374,10 @@ class GrabrSpider(CrawlSpider):
 			numOfRepetions = 0
 			beforeLowerPrice = -1
 			currentUrl =self.driver.current_url
+
+			#################################################
+			## here it begins to scroll down to get new items
+			#################################################
 			print "empezando el scrolling..."
 			while True:
 				if count==iterations or numOfRepetions==10:
@@ -381,8 +391,13 @@ class GrabrSpider(CrawlSpider):
 			 		body = self.driver.page_source
 			 		
 					while True: 
+						'''
+						times is the list of items that are shown when you scroll down
+						each item shows the name of person who requests the item, time ago, name of the item, etc
+						there is a screenshot of this, check later
+						'''
 			 			times = Selector(text=body).xpath("//div[@class='gc12 MD_gc8 LG_gc9']/div[not(@class)]/div")
-						numberOfTimes = len(times)
+						numberOfTimes = len(times) #number of items
 						if numberOfTimes>0:
 							break
 					 		
@@ -406,6 +421,7 @@ class GrabrSpider(CrawlSpider):
 			print diff
 			print limitElements
 			sleep(2)
+			#elements is also the list of items that you see after you scroll down
 			elements = Selector(text=body).xpath("//a[@class='LG_public-inquiry-card--detailed mt10 MD_mt20 public-inquiry-card fx-c fz14 bgc-w bdw1 bdys-s bdc-g12 trd300ms trp-bgc SM_fz-m SM_bdr5 SM_bds-s MD_bgc-g3-hf']")
 			links = Selector(text=body).xpath("//a[@class='LG_public-inquiry-card--detailed mt10 MD_mt20 public-inquiry-card fx-c fz14 bgc-w bdw1 bdys-s bdc-g12 trd300ms trp-bgc SM_fz-m SM_bdr5 SM_bds-s MD_bgc-g3-hf']/@href").extract()
 			print len(elements)
@@ -414,6 +430,7 @@ class GrabrSpider(CrawlSpider):
 				sleep(2)
 				continue
 			
+			#here it begins to check each element(item)
 			for i in range(len(elements)):
 				offerLink = ""
 				precioOferta=None
@@ -453,11 +470,15 @@ class GrabrSpider(CrawlSpider):
 				my_item['nombreUsuarioComprador'] = nombreUsuarioComprador[0]
 				my_item['nombreItem'] = nombreItem[0]
 				my_item['timeAgo']= timeAgoList[i]
-				
 				nombreItem =  nombreItem[0].lower() #pasamos a minuscula el nombre del producto, aunque no recuerdo con que intencion era esto
 				tuOferta= elem.xpath(".//span[@class='fw-sb lh-h SM_fz-xxxl']/text()").extract_first()
 				
 				print "El nombre del item es: "+ nombreItem.encode('utf-8')
+				try:
+					with open("tus_ofertas.txt", "w") as f_tus_ofertas: 
+						f_tus_ofertas.write(nombreItem.encode('utf-8'))
+				except Exception as e:
+					print "Error al crear archivo tus_ofertas.txt"
 				print tuOferta
 				#se obtiene una lista en donde debe ser una lista de un elemento con la oferta que se ha hecho, esta oferta está sin recargos
 				link = basepath + links[i] #Obtenemos el link para ver el detalle de la oferta y sacar información adicional
@@ -468,7 +489,10 @@ class GrabrSpider(CrawlSpider):
 				#Sacaremos el contenido del detalle de la oferta siempre
 				
 				k=0
-				while(True):#vamos a obtener el contenido html del detalle de la oferta para manipular su data sin necesidad de abrir el link	
+				###########################
+				#obtener el contenido html del detalle de la oferta para manipular su data sin necesidad de abrir el link
+				###########################
+				while(True):
 					try:
 						while not self.internet_on():
 							continue
@@ -497,10 +521,24 @@ class GrabrSpider(CrawlSpider):
 				#################################################################################33
 				
 				#obtendremos informacion general de la oferta
+				#obtener los nombres de los ofertantes
 				names = Selector(text=html).xpath("//section[@class='d-n MD_d-b']/div[@class='w100p bdys-s bdw1 bgc-w SM_bdxs-s SM_bdr5 px20 pt20 bdc-g12 mt20 bdw1 bdc-g12 bdys-s SM_bdxs-s']/div[@class='fx-r ai-c jc-sb SM_bdtr5 pb20']//a[@class='fw-sb ellipsis mr5']/text()").extract()
 				print "Names:"
 				print names
+				#los precios de los ofertantes
 				prices = Selector(text=html).xpath("//section[@class='d-n MD_d-b']//div[@class='fx-r jc-sb py20 fz14 SM_jc-fs']/span[not(@class)]/text()").extract()
+
+				no_offers = Selector(text=html).xpath("//div[@class='p20 mt20 w100p bgc-w bdw1 bdc-g12 bds-s bdr5 ta-c c-g44']//span//span").extract()
+				print "=============================================="
+				print "=============================================="
+				print "=============================================="
+				print "Test selector"
+				print len(no_offers)
+				print no_offers
+				print "=============================================="
+				print "=============================================="
+				print "=============================================="
+				# sys.exit()
 				print "Prices:"
 				print prices
 				priceBaseItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract_first()
@@ -720,6 +758,11 @@ class GrabrSpider(CrawlSpider):
 					csv.write(row)
 					my_item['offerPrice']=-1
 					my_item['message'] = message
+					csv.close()
+					print "============================================="
+					print "Escribio un item sin ofertas"
+					print "============================================="
+					sys.exit()
 					yield my_item
 					print "====================FINAL===================="
 					continue
@@ -821,7 +864,7 @@ class GrabrSpider(CrawlSpider):
 				while not self.internet_on():
 					continue
 				self.driver.execute_script('window.open("' + offerLink + '", "_blank");') 
-				sleep(2.5)
+				sleep(2)
 				self.driver.switch_to_window(self.driver.window_handles[1])
 			
 				try:
@@ -940,7 +983,7 @@ class GrabrSpider(CrawlSpider):
 							monthText = (listDayMonth[2]).lower()
 										
 						except Exception as e:
-							print "Se leyeron mas alguno de los viajes anteriores"
+							print "Se leyeron mal algunos de los viajes anteriores"
 							print "Excepcion:" + str(e)
 							self.driver.close()
 							while not self.internet_on():
@@ -1201,7 +1244,7 @@ class GrabrSpider(CrawlSpider):
 						print "====================FINAL===================="
 				except NoSuchElementException :
 					result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False)
-					if result== -1:
+					if result == -1:
 						print "no salio bien"
 						self.driver.close()
 						while not self.internet_on():
@@ -1359,12 +1402,12 @@ class GrabrSpider(CrawlSpider):
 			except Exception as e:
 				print "No se encontro el boton para ir al primer paso"
 				print "Mensaje de excepcion: " + str(e)
-				self.driver.close()
-				while not self.internet_on():
-					continue
-				sleep(0.5)
-				print "close 10"
-				self.driver.switch_to_window(self.driver.window_handles[0])
+				# self.driver.close()
+				# while not self.internet_on():
+				# 	continue
+				# sleep(0.5)
+				# print "close 10"
+				# self.driver.switch_to_window(self.driver.window_handles[0])
 				print "Nos olvidamos de esta oferta y seguimos adelante"
 				return -1
 					
@@ -1381,12 +1424,12 @@ class GrabrSpider(CrawlSpider):
 				print "No encontramos el boton para agregar viajes"
 				print "Mensaje de excepcion: " + str(e)
 				print "pasa por la excepcion 2"
-				self.driver.close()
-				while not self.internet_on():
-					continue
-				sleep(0.5)
-				print "close 11"
-				self.driver.switch_to_window(self.driver.window_handles[0])
+				# self.driver.close()
+				# while not self.internet_on():
+				# 	continue
+				# sleep(0.5)
+				# print "close 11"
+				# self.driver.switch_to_window(self.driver.window_handles[0])
 				print "nos olvidamos de esta oferta y seguimos adelante"
 				return -1
 					
@@ -1407,12 +1450,12 @@ class GrabrSpider(CrawlSpider):
 					sleep(1)
 					print "pasa por la excepcion 3"
 			if k==5: 
-				self.driver.close()
-				while not self.internet_on():
-					continue
-				sleep(0.5)
-				print "close 12"
-				self.driver.switch_to_window(self.driver.window_handles[0])
+				# self.driver.close()
+				# while not self.internet_on():
+				# 	continue
+				# sleep(0.5)
+				# print "close 12"
+				# self.driver.switch_to_window(self.driver.window_handles[0])
 				print "nos olvidamos de esta oferta y seguimos adelante"
 				return -1
 					
@@ -1449,12 +1492,12 @@ class GrabrSpider(CrawlSpider):
 				except Exception as e:
 					print "Se leyeron mas alguno de los viajes anteriores"
 					print "Excepcion:" + str(e)
-					self.driver.close()
-					while not self.internet_on():
-						continue
-					sleep(0.5)
-					print "close 13"
-					self.driver.switch_to_window(self.driver.window_handles[0])
+					# self.driver.close()
+					# while not self.internet_on():
+					# 	continue
+					# sleep(0.5)
+					# print "close 13"
+					# self.driver.switch_to_window(self.driver.window_handles[0])
 					print "nos olvidamos de esta oferta y seguimos adelante"
 					return -1
 				
@@ -1514,12 +1557,12 @@ class GrabrSpider(CrawlSpider):
 						sleep(0.5)
 						print "pasa por la excepcion 4"
 				if k==5: 
-					self.driver.close()
-					while not self.internet_on():
-						continue
-					sleep(0.5)
-					print "close 14"
-					self.driver.switch_to_window(self.driver.window_handles[0])
+					# self.driver.close()
+					# while not self.internet_on():
+					# 	continue
+					# sleep(0.5)
+					# print "close 14"
+					# self.driver.switch_to_window(self.driver.window_handles[0])
 					print "nos olvidamos de esta oferta y seguimos adelante"
 					return -1
 								
@@ -1607,12 +1650,12 @@ class GrabrSpider(CrawlSpider):
 		except Exception as e:
 			print "No se ubico el input para el precio"
 			print "Mensaje de excepcion: " + str(e)
-			self.driver.close()
-			while not self.internet_on():
-				continue
-			sleep(0.5)
-			print "close 15"
-			self.driver.switch_to_window(self.driver.window_handles[0])
+			# self.driver.close()
+			# while not self.internet_on():
+			# 	continue
+			# sleep(0.5)
+			# print "close 15"
+			# self.driver.switch_to_window(self.driver.window_handles[0])
 			print "Nos olvidamos de esta oferta y seguimos adelante"
 			return -1
 		
@@ -1745,12 +1788,12 @@ class GrabrSpider(CrawlSpider):
 		except Exception as e:
 			print "No se ubico el textarea"
 			print "Mensaje de excepcion: " + str(e)
-			self.driver.close()
-			while not self.internet_on():
-				continue
-			sleep(0.5)
-			print "close 16"
-			self.driver.switch_to_window(self.driver.window_handles[0])
+			# self.driver.close()
+			# while not self.internet_on():
+			# 	continue
+			# sleep(0.5)
+			# print "close 16"
+			# self.driver.switch_to_window(self.driver.window_handles[0])
 			print "Nos olvidamos de esta oferta y seguimos adelante"
 			return -1
 
@@ -1793,12 +1836,12 @@ class GrabrSpider(CrawlSpider):
 		except Exception as e:
 			print "No se ubico el boton para enviar oferta"
 			print "Mensaje de excepcion: " + str(e)
-			self.driver.close()
-			while not self.internet_on():
-				continue
-			sleep(0.5)
-			print "close 17"
-			self.driver.switch_to_window(self.driver.window_handles[0])
+			# self.driver.close()
+			# while not self.internet_on():
+			# 	continue
+			# sleep(0.5)
+			# print "close 17"
+			# self.driver.switch_to_window(self.driver.window_handles[0])
 			print "Nos olvidamos de esta oferta y seguimos adelante"
 			return -1
 			

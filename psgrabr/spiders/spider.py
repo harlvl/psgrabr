@@ -16,7 +16,7 @@ import math
 from datetime import datetime,timedelta
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
-from scrapy_project.items import ScrapyProjectItem
+from psgrabr.items import ScrapyProjectItem
 from scrapy.exceptions import CloseSpider
 from scrapy.selector import Selector
 from scrapy.http import HtmlResponse
@@ -36,7 +36,7 @@ from time import sleep
 
 
 class GrabrSpider(CrawlSpider):
-	name = "grabr"
+	name = "grabr_spider"
 	item_count = 0
 	allowed_domains = ['grabr.io']
 	start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -84,7 +84,7 @@ class GrabrSpider(CrawlSpider):
 
 
 		fromCityName = "Miami"
-		toCityName = "Lima"
+		toCityName = "Buenos Aires"
         
 		while True:
                         iterations = 0
@@ -143,17 +143,18 @@ class GrabrSpider(CrawlSpider):
 			noEditSquadOffer = 0
 			noEditByNoAuthorization = 0
 			noEditStanleyItem = 0
+			noEditFunkoItem = 0
 			noEditUpdateForm = 0
 
 			failedNotExistAnymoreOffers = 0
 			
-			# csv = open("itemsSinOfertas.csv", "w")
+			csv = open("itemsSinOfertas.csv", "w")
 			encabezado = "nombreUsuarioComprador, nombreItem, precioBaseItem,urlOferta\n"
-			# csv.write(encabezado) 
+			csv.write(encabezado) 
 
-			# csvFailed = open("itemsFallados.csv","w")
+			csvFailed = open("itemsFallados.csv","w")
 			encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta"
-			# csvFailed.write(encabezadoFailed)
+			csvFailed.write(encabezadoFailed)
 
 
 			#dias = iterations*7
@@ -358,7 +359,7 @@ class GrabrSpider(CrawlSpider):
 			 		pass
 						
 			print count
-			print numberOfTimes
+			#print numberOfTimes
 			print diff
 			print limitElements
 			sleep(2)
@@ -486,6 +487,9 @@ class GrabrSpider(CrawlSpider):
 				else:
 					zeroOffersFlag=True	
 					zeroOffers = zeroOffers+1
+                                        if zeroOffers > 0:
+                                                print "Hay una oferta sin ofertantes"
+                                                sys.exit()
 					message = "No hay ofertas realizadas"
 				#######################	
 
@@ -513,6 +517,7 @@ class GrabrSpider(CrawlSpider):
 				if tuOferta==0 and not zeroOffersFlag: 
 					#no se encuentra la oferta así que no se ha mandado una oferta para este elemento, debemos crear una oferta
 					print "No tienes la etiqueta tu oferta, asi que se debe crear una oferta"
+                    ####### si es producto stanley se le asigna un precio predefinido
 					if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0 and not thereIsSquadOffer:
 						print "Se encontro un producto Stanley"
 						quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first() #
@@ -673,7 +678,7 @@ class GrabrSpider(CrawlSpider):
 					tag4 = tag4.encode('utf-8')
 			
 					row = tag1+ "," +  tag2 + "," + tag3 + "," + tag4+"\n"
-					# csv.write(row)
+					csv.write(row)
 					my_item['offerPrice']=-1
 					my_item['message'] = message
 					yield my_item
@@ -753,7 +758,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row = tag1+ "," +  tag2 + "," + link+"\n"
-						# csvFailed.write(row)
+						csvFailed.write(row)
 					elif updateException:
 						"print Excepcion de edicion por falla"
 						my_item['offerPrice'] = tuOferta
@@ -762,7 +767,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row = tag1+ "," +  tag2 + "," + link+"\n"
-						# csvFailed.write(row)
+						csvFailed.write(row)
 
 					if youMustEdit or failException or updateException:
 						yield my_item
@@ -814,7 +819,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						# csvFailed.write(row2)
+						csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -854,7 +859,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						# csvFailed.write(row2)
+						csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -911,7 +916,7 @@ class GrabrSpider(CrawlSpider):
 							tag1 = tag1.encode('utf-8')
 							tag2 = tag2.encode('utf-8')
 							row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-							# csvFailed.write(row2)
+							csvFailed.write(row2)
 							my_item['message'] = "Envio de oferta fallida"
 							yield my_item
 							print "====================FINAL===================="
@@ -942,7 +947,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  offerLink+"\n"
-						# csvFailed.write(row2)
+						csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -993,7 +998,7 @@ class GrabrSpider(CrawlSpider):
 							tag1 = tag1.encode('utf-8')
 							tag2 = tag2.encode('utf-8')
 							row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-							# csvFailed.write(row2)
+							csvFailed.write(row2)
 							my_item['message'] = "Envio de oferta fallida"
 							yield my_item
 							print "====================FINAL===================="
@@ -1029,7 +1034,7 @@ class GrabrSpider(CrawlSpider):
 							tag1 = tag1.encode('utf-8')
 							tag2 = tag2.encode('utf-8')
 							row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-							# csvFailed.write(row2)
+							csvFailed.write(row2)
 							failedOffers = failedOffers +1
 							my_item['message'] = "Envio de oferta fallida"
 							yield my_item
@@ -1143,7 +1148,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						# csvFailed.write(row2)
+						csvFailed.write(row2)
 						
 						failedOffers = failedOffers +1
 						my_item['message'] = "Envio de oferta fallida"
@@ -1173,14 +1178,14 @@ class GrabrSpider(CrawlSpider):
 						nombreUsuarioComprador = nombreUsuarioComprador.encode('utf-8')
 						nombreItem = nombreItem.encode('utf-8')
 						row2 = nombreUsuarioComprador+ "," +  nombreItem + "," +  link+"\n"
-						# csvFailed.write(row2)
+						csvFailed.write(row2)
 						failedOffers = failedOffers +1
 						tag1 = my_item['nombreUsuarioComprador']
 						tag2 = my_item['nombreItem']
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						# csvFailed.write(row2)
+						csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -1201,8 +1206,8 @@ class GrabrSpider(CrawlSpider):
 				sleep(1.2)
 
 			#el script duerme 10 minutos
-			# csv.close()
-			# csvFailed.close()
+			csv.close()
+			csvFailed.close()
 			print "Total: " +str(i+1)+" de "+str(len(elements))
 			print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
 			print "Ofertas editadas para mejorar la subasta: " + str(editedOffers) #-->va 
