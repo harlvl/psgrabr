@@ -59,64 +59,15 @@ class GrabrSpider(CrawlSpider):
 		toCityOption=0
 		newAccountFlag = 0
 		newAnnotationFlag=0
-		username='info.grabr@gmail.com'
-		password='NZ7101749627'
-		annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.
+		username='harleen_vl@hotmail.com'
+		password='w0mirnms'
+		annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
 							 Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
 							 ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
 							 Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
 							 Saludos :)"""
-		
-		while True:
 			
-			try:
-				newAccountFlag = raw_input('Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
-				newAccountFlag = int(newAccountFlag)
-				if newAccountFlag >=0 and newAccountFlag <= 1:
-					break
-				print "Ingrese 0 o 1"
-			except Exception as e:
-				print "Ingrese 0 o 1"
 		
-		if newAccountFlag ==1:
-		
-			while True:
-				username = raw_input('Ingrese su correo: ')
-				if self.is_valid_email(username):
-					break
-			
-			password = raw_input('Ingrese su contraseña: ')
-			
-			
-			
-		while True:
-			
-			try:
-				newAnnotationFlag = raw_input('Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
-				newAnnotationFlag = int(newAnnotationFlag)
-				if newAnnotationFlag >=0 and newAnnotationFlag <= 1:
-					break
-				print "Ingrese 0 o 1"
-			except Exception as e:
-				print "Ingrese 0 o 1"
-		
-		if newAnnotationFlag ==1:
-		
-			while True:
-				#print "Ingrese su nueva anotacion: "
-				
-				annotation = raw_input('Ingrese su nueva anotacion: ').decode(sys.stdin.encoding)
-				#annotation = "\n".join(iter(raw_input,""))
-				if len(annotation)>0:
-					break
-		
-
-		
-	
-		
-		# print annotation		
-		# print "inrredsdsdr"			
-		# #print annotation
 		# sleep(1000)
 		while True:
 			travelDate= self.enterDate('Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
@@ -132,10 +83,12 @@ class GrabrSpider(CrawlSpider):
 				print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
 
 
-		fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
-		toCityName = raw_input('Ingresa la ciudad destino del envio: ')
+		fromCityName = "Miami"
+		toCityName = "Lima"
+        
 		while True:
-			
+                        iterations = 0
+			break
 			try:
 				#iterations = raw_input('Ingresa el numero de dias a explorar hacia atras: ')
 				iterations = raw_input('Ingresa el numero de scrolls: ')
@@ -146,8 +99,9 @@ class GrabrSpider(CrawlSpider):
 			except Exception as e:
 				print "Ingrese una cantidad de scrolls validos"
 
+                        isTravelSquad = 0
 		while True:
-			
+			break
 			try:
 				isTravelSquad = raw_input('Desea considerar la oferta de travel squad? (Yes: 1 / No: 0) : ')
 				isTravelSquad = int(isTravelSquad)
@@ -158,6 +112,8 @@ class GrabrSpider(CrawlSpider):
 				print "Ingrese 0 o 1"
 
 		while True:
+                        updatingAccepted = 1
+                        break
 			
 			try:
 				updatingAccepted = raw_input('Desea que intente actualizar las ofertas que ya han sido mandadas? (Yes: 1 / No: 0) : ')
@@ -191,13 +147,13 @@ class GrabrSpider(CrawlSpider):
 
 			failedNotExistAnymoreOffers = 0
 			
-			csv = open("itemsSinOfertas.csv", "w")
+			# csv = open("itemsSinOfertas.csv", "w")
 			encabezado = "nombreUsuarioComprador, nombreItem, precioBaseItem,urlOferta\n"
-			csv.write(encabezado) 
+			# csv.write(encabezado) 
 
-			csvFailed = open("itemsFallados.csv","w")
+			# csvFailed = open("itemsFallados.csv","w")
 			encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta"
-			csvFailed.write(encabezadoFailed)
+			# csvFailed.write(encabezadoFailed)
 
 
 			#dias = iterations*7
@@ -717,7 +673,7 @@ class GrabrSpider(CrawlSpider):
 					tag4 = tag4.encode('utf-8')
 			
 					row = tag1+ "," +  tag2 + "," + tag3 + "," + tag4+"\n"
-					csv.write(row)
+					# csv.write(row)
 					my_item['offerPrice']=-1
 					my_item['message'] = message
 					yield my_item
@@ -797,7 +753,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row = tag1+ "," +  tag2 + "," + link+"\n"
-						csvFailed.write(row)
+						# csvFailed.write(row)
 					elif updateException:
 						"print Excepcion de edicion por falla"
 						my_item['offerPrice'] = tuOferta
@@ -806,7 +762,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row = tag1+ "," +  tag2 + "," + link+"\n"
-						csvFailed.write(row)
+						# csvFailed.write(row)
 
 					if youMustEdit or failException or updateException:
 						yield my_item
@@ -858,7 +814,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						csvFailed.write(row2)
+						# csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -898,7 +854,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						csvFailed.write(row2)
+						# csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -955,7 +911,7 @@ class GrabrSpider(CrawlSpider):
 							tag1 = tag1.encode('utf-8')
 							tag2 = tag2.encode('utf-8')
 							row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-							csvFailed.write(row2)
+							# csvFailed.write(row2)
 							my_item['message'] = "Envio de oferta fallida"
 							yield my_item
 							print "====================FINAL===================="
@@ -986,7 +942,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  offerLink+"\n"
-						csvFailed.write(row2)
+						# csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -1037,7 +993,7 @@ class GrabrSpider(CrawlSpider):
 							tag1 = tag1.encode('utf-8')
 							tag2 = tag2.encode('utf-8')
 							row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-							csvFailed.write(row2)
+							# csvFailed.write(row2)
 							my_item['message'] = "Envio de oferta fallida"
 							yield my_item
 							print "====================FINAL===================="
@@ -1073,7 +1029,7 @@ class GrabrSpider(CrawlSpider):
 							tag1 = tag1.encode('utf-8')
 							tag2 = tag2.encode('utf-8')
 							row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-							csvFailed.write(row2)
+							# csvFailed.write(row2)
 							failedOffers = failedOffers +1
 							my_item['message'] = "Envio de oferta fallida"
 							yield my_item
@@ -1187,7 +1143,7 @@ class GrabrSpider(CrawlSpider):
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						csvFailed.write(row2)
+						# csvFailed.write(row2)
 						
 						failedOffers = failedOffers +1
 						my_item['message'] = "Envio de oferta fallida"
@@ -1217,14 +1173,14 @@ class GrabrSpider(CrawlSpider):
 						nombreUsuarioComprador = nombreUsuarioComprador.encode('utf-8')
 						nombreItem = nombreItem.encode('utf-8')
 						row2 = nombreUsuarioComprador+ "," +  nombreItem + "," +  link+"\n"
-						csvFailed.write(row2)
+						# csvFailed.write(row2)
 						failedOffers = failedOffers +1
 						tag1 = my_item['nombreUsuarioComprador']
 						tag2 = my_item['nombreItem']
 						tag1 = tag1.encode('utf-8')
 						tag2 = tag2.encode('utf-8')
 						row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-						csvFailed.write(row2)
+						# csvFailed.write(row2)
 						my_item['message'] = "Envio de oferta fallida"
 						yield my_item
 						print "====================FINAL===================="
@@ -1245,8 +1201,8 @@ class GrabrSpider(CrawlSpider):
 				sleep(1.2)
 
 			#el script duerme 10 minutos
-			csv.close()
-			csvFailed.close()
+			# csv.close()
+			# csvFailed.close()
 			print "Total: " +str(i+1)+" de "+str(len(elements))
 			print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
 			print "Ofertas editadas para mejorar la subasta: " + str(editedOffers) #-->va 
@@ -1335,6 +1291,7 @@ class GrabrSpider(CrawlSpider):
 			return 0
 	def getDateNumber(self,day,month,year):
 		return year*10000 + month*100 + day
+
 
 	def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True):
 		#finaldate  ya es una fecha verificada
