@@ -1989,12 +1989,22 @@ class GrabrSpider(CrawlSpider):
         return precioOferta if precioOferta>=5 else 5
     
     def isStanley(self, nombreItem):
-        ### gotta use regex or some shit to find out 
-        ### if nombreItem is a string just use regex, otherwise find a library that handles this kind of stuff
+        #TODO
+        if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
+            return True
+        return False
         pass
     
     def isFunko(self,nombreItem):
+        #TODO
+        if nombreItem.find("funko") >= 0 or nombreItem.find("Funko") >= 0:
+            return True
+        return False
         pass
     
-    def isLol(self, nombreItem):
+    def isLol(self, itemName):
+        ### if itemName is a string just use regex, otherwise find a library that handles this kind of stuff
+        ## i mean we could manually check all posibilities but that would be retarded
+        #TODO
+        return False
         pass
