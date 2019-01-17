@@ -25,3 +25,23 @@ JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/comp
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: NetworkError when attempting to fetch resource..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
+
+[Parent 17060, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Parent 17060, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Parent 17060, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 3252, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 3252, Chrome_ChildTh[Child 13948, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 13948, Chrome_ChildThread] WARNING: pipe error: 109: file 1547748023403	Marionette	INFO	Stopped listening on port 61919
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
