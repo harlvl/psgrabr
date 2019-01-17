@@ -68,11 +68,13 @@ class GrabrSpider(CrawlSpider):
         city_destination2 = "Lima"
 
         #### TODO: set a different annotation depending on the destination city
-        annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.
-                             Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
-                             ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
-                             Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
-                             Saludos :)"""
+        annotation = "Hola mi nombre is Luis y quisiera llevar tu producto"
+        annotation = annotation.decode(sys.stdin.encoding)
+        # annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.
+        #                      Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
+        #                      ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
+        #                      Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
+        #                      Saludos :)"""
 
         while True:
             break
@@ -117,13 +119,6 @@ class GrabrSpider(CrawlSpider):
                 if len(annotation)>0:
                     break
 
-
-
-
-        # print annotation
-        # print "inrredsdsdr"
-        # #print annotation
-        # sleep(1000)
         while True:
             travelDate= self.enterDate('Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
             if travelDate!=0 and travelDate!=-1:
@@ -199,6 +194,7 @@ class GrabrSpider(CrawlSpider):
             noEditByNoAuthorization = 0
             noEditStanleyItem = 0
             noEditUpdateForm = 0
+            funkoItemsSuccess = 0
 
             failedNotExistAnymoreOffers = 0
 
@@ -207,7 +203,7 @@ class GrabrSpider(CrawlSpider):
             csv.write(encabezado)
 
             csvFailed = open("itemsFallados.csv","w")
-            encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta"
+            encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta\n"
             csvFailed.write(encabezadoFailed)
 
 
@@ -548,8 +544,26 @@ class GrabrSpider(CrawlSpider):
                 print "Prices:"
                 print prices
                 priceBaseItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract_first()
+                print "info de priceBaseItem"
                 print type(priceBaseItem)
                 print priceBaseItem
+                precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
+                print "info de precio_base:"
+                print type(precio_base)
+                print precio_base
+
+                precio_tax = 0.0
+                try:
+                    salesTaxItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract()[1]
+                    print "info de salesTaxItem"
+                    print type(salesTaxItem)
+                    print salesTaxItem
+                    precio_tax = float(re.search(r'\d+', (salesTaxItem.replace('.','')).replace(',','.') ).group())
+                    print "info de precio_tax:"
+                    print type(precio_tax)
+                    print precio_tax
+                except:
+                    print "No hay monto de sales tax para este producto, se dejara como 0"
 
                 numberOfElements= len(names)
                 print "Numero de ofertas para el item: "+ str (numberOfElements)
@@ -575,6 +589,9 @@ class GrabrSpider(CrawlSpider):
                     zeroOffersFlag=True
                     zeroOffers = zeroOffers+1
                     message = "No hay ofertas realizadas"
+                    ################ aqui tenemos que hallar el precio base + sales tax
+                    ### ya se hallaron antes de entrar aqui, ahora toca asignar el valor a precio min
+                    precioMin = (precio_base + precio_tax)
                 #######################
 
 
@@ -600,36 +617,15 @@ class GrabrSpider(CrawlSpider):
 
                 ######### falta incluir los casos en que sea funkopop o lol
                 ######### combinaciones como lol LOL l.o.l L.O.L., etc TODO usar regex para esto
-                ##### test para el caso de que no haya ofertas todavia
-                if tuOferta == 0 and zeroOffersFlag:
-                    print "No offers were made for this item, one will be created now"
-                    if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0 and not thereIsSquadOffer:
-                        quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
-                        quantity = int(quantity) if quantity else 1
-                        precioOferta=quantity*25 #valor predefinido por ser stanley
-                        message ="Es un producto de marca Stanley"
-                    elif self.isFunko(nombreItem) and not thereIsSquadOffer:
-                        quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
-                        quantity = int(quantity) if quantity else 1
-                        precioOferta=quantity*15 #valor predefinido por ser funko pop
-                        message ="Es un producto de marca Funko Pop"
-                    elif self.isLol(nombreItem) and not thereIsSquadOffer:
-                        quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
-                        quantity = int(quantity) if quantity else 1
-                        precioOferta=quantity*20 #valor predefinido por ser LOL
-                        message ="Es un producto de marca L.O.L."
-                    else:
-                        #flujo de un producto normal
-                        precioOferta = self.getOfferPrice(precioMin)
-                        message ="Es la primera oferta"
-                    offerButton = Selector(text=html).xpath("//a[@class='btn btn--bb h50 w100p mt20 bdr5 MD_ord4']/@href").extract_first()
-                    if offerButton :
-                            offerLink = basepath + offerButton
-                    else:
-                            message = "No se pudo obtener el link para poder ofertar"
-                if tuOferta==0 and not zeroOffersFlag:
+                ###### ya puede crear nuevas ofertas cuando no habia ninguna
+
+                # if tuOferta==0 and not zeroOffersFlag:
+                if tuOferta==0:
                     #no se encuentra la oferta así que no se ha mandado una oferta para este elemento, debemos crear una oferta
-                    print "No tienes la etiqueta tu oferta, asi que se debe crear una oferta"
+                    if zeroOffersFlag:
+                        print "No habian ofertas, se creara la primera oferta"
+                    else:
+                        print "No tienes la etiqueta tu oferta, asi que se debe crear una oferta"
                     if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0 and not thereIsSquadOffer:
                         print "Se encontro un producto Stanley"
                         quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first() #
@@ -648,8 +644,16 @@ class GrabrSpider(CrawlSpider):
                         message ="Habia ofertas de travel squad y se coloco el precio especifico para estos casos"
                     else:
                         print "Seguira el flujo normal"
-                        precioOferta = self.getOfferPrice(precioMin)
-                        message ="Es una nueva oferta"
+                        if zeroOffersFlag:
+                            precioOferta = (precio_base + precio_tax) * 0.20
+                            print "Es la primera oferta con precioOferta de {}".format(precioOferta)
+                            message ="Es la primera oferta"
+                        else:
+                            precioOferta = self.getOfferPrice(precioMin)
+                            print "Es una nueva oferta con precioOferta de {}".format(precioOferta)
+                            message ="Es una nueva oferta"
+                    
+                    #offerButton es el boton para hacer una oferta en el link del producto
                     offerButton = Selector(text=html).xpath("//a[@class='btn btn--bb h50 w100p mt20 bdr5 MD_ord4']/@href").extract_first()
                     #se obtiene el enlace para mandar una nueva oferta
                     print offerButton
@@ -659,7 +663,8 @@ class GrabrSpider(CrawlSpider):
                         print "No se pudo obtener el link para poder ofertar"
                         message = "No se pudo obtener el link para poder ofertar"
                         fail
-                elif updatingAccepted and not zeroOffersFlag:
+                # elif updatingAccepted and not zeroOffersFlag:
+                elif updatingAccepted:
                     print "se encontro que ya se hizo una oferta asi que puede que este elemento va a nacesitar actualizacion"
 
                     if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0 and not thereIsSquadOffer:
@@ -780,7 +785,7 @@ class GrabrSpider(CrawlSpider):
                     my_item['message'] = message
                     # yield my_item
                     # print "====================FINAL===================="
-                    continue
+                    # continue  # I DIDNT SEE THIS FUCKING CONTINUE AND I THOUGHT THE PROGRAM WAS FUCKED UP WTF THE FUCK
                 else:
 
                     if youMustEdit:
@@ -870,12 +875,17 @@ class GrabrSpider(CrawlSpider):
                         yield my_item
                         print "====================FINAL===================="
                         continue #Fin de flujo
-
-                print "VAMOS A CREAR UNA NUEVA OFERTA"
+                if zeroOffersFlag:
+                    print "VAMOS A CREAR LA PRIMERA OFERTA"
+                else:
+                    print "VAMOS A CREAR UNA NUEVA OFERTA"
                 print "El precio de oferta a colocar es: "+ str(precioOferta)
                 my_item['offerPrice']= precioOferta
                 offerLink = offerLink.encode('utf-8')
-                print "Vamos a generar una nueva oferta en: " + offerLink
+                if zeroOffersFlag:
+                    print "Vamos a generar la primera oferta en: " + offerLink
+                else:
+                    print "Vamos a generar una nueva oferta en: " + offerLink
                 while not self.internet_on():
                     continue
                 self.driver.execute_script('window.open("' + offerLink + '", "_blank");')
@@ -1987,16 +1997,22 @@ class GrabrSpider(CrawlSpider):
         else:
             precioOferta = precioMin - 1
         return precioOferta if precioOferta>=5 else 5
+
+    def getMinPrice(self, both_of_them):
+        #both_of_them only has 2 elements
+        precioMin = str(both_of_them[0])
+        sales_tax = str(both_of_them[1])
+        base_price = float(re.search(r'\d+', (precioMin.replace('.','')).replace(',','.') ).group())
+        sales_tax = float(re.search(r'\d+', (sales_tax.replace('.','')).replace(',','.') ).group())
+        return (base_price + sales_tax)
     
     def isStanley(self, nombreItem):
-        #TODO
         if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
             return True
         return False
         pass
     
     def isFunko(self,nombreItem):
-        #TODO
         if nombreItem.find("funko") >= 0 or nombreItem.find("Funko") >= 0:
             return True
         return False
