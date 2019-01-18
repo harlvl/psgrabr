@@ -565,11 +565,6 @@ class GrabrSpider(CrawlSpider):
                 if not tuOferta:
                     tuOferta=0
 
-                ######### falta incluir los casos en que sea funkopop o lol
-                ######### combinaciones como lol LOL l.o.l L.O.L., etc TODO usar regex para esto
-                ###### ya puede crear nuevas ofertas cuando no habia ninguna
-
-                # if tuOferta==0 and not zeroOffersFlag:
                 if tuOferta==0:
                     #no se encuentra la oferta así que no se ha mandado una oferta para este elemento, debemos crear una oferta
                     if zeroOffersFlag:

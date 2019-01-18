@@ -31,8 +31,16 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 from time import sleep
 
 '''
-This spider is the same as grabr_spider.py except that it works without the need of a GUI
-By nature it is faster, although some values must be input during runtime by the user
+This spider will be used to make offers from Miami to Buenos Aires
+This spider works without neither a GUI nor the need of inputting values during runtime
+
+Predefined values:
+- Account to be used (email, password)
+- Annotation to attach for the offers to be made
+- Origin and destination cities (Miami, Buenos Aires)
+- Travel and deliver dates
+- Number of scrolls
+- Flag for updating our own offers
 '''
 
 class GrabrSpider(CrawlSpider):
@@ -63,99 +71,32 @@ class GrabrSpider(CrawlSpider):
         newAnnotationFlag=0
         username='harleen_vl@hotmail.com'
         password='w0mirnms'
-        # username='info.grabr@gmail.com'
-        # password='NZ7101749627'
 
-        #### TODO: set a different annotation depending on the destination city
         annotation = "Hola mi nombre is Luis y quisiera llevar tu producto"
         annotation = annotation.decode(sys.stdin.encoding)
-        # annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.
-        #                      Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
-        #                      ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
-        #                      Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
-        #                      Saludos :)"""
 
-        while True:
-            break
-            try:
-                newAccountFlag = raw_input('Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
-                newAccountFlag = int(newAccountFlag)
-                if newAccountFlag >=0 and newAccountFlag <= 1:
-                    break
-                print "Ingrese 0 o 1"
-            except Exception as e:
-                print "Ingrese 0 o 1"
+        origin_city = "miami"
+        destination_city = "buenos aires"
 
-        if newAccountFlag ==1:
-            while True:
-                username = raw_input('Ingrese su correo: ')
-                if self.is_valid_email(username):
-                    break
+        raw_travel_date = "03/03/2019"
+        raw_final_date = "10/03/2019"
 
-            password = raw_input('Ingrese su contraseña: ')
+        travelDate = self.makeDate(raw_travel_date)
+        print "Travel date successfully assigned by makeDate"
+        finalDate = self.makeDate(raw_final_date, travelDate)
+        print "Final date successfully assigned by makeDate"
 
-        while True:
-            break
-            try:
-                newAnnotationFlag = raw_input('Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
-                newAnnotationFlag = int(newAnnotationFlag)
-                if newAnnotationFlag >=0 and newAnnotationFlag <= 1:
-                    break
-                print "Ingrese 0 o 1"
-            except Exception as e:
-                print "Ingrese 0 o 1"
+        fromCityName = origin_city
+        toCityName = destination_city
 
-        if newAnnotationFlag ==1:
-            while True:
-                annotation = raw_input('Ingrese su nueva anotacion: ').decode(sys.stdin.encoding)
-                if len(annotation)>0:
-                    break
+        iterations = 1 #between 0 and 5000
 
-        while True:
-            travelDate= self.enterDate('Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
-            if travelDate!=0 and travelDate!=-1:
-                break
+        isTravelSquad = 0 # travel squad no longer exists
 
-        while True:
-            finalDate = self.enterDate('Ingresa la fecha de entrega con el siguiente formato (dd/mm/yyyy): ',travelDate)
-            if finalDate!=0 and finalDate != -1:
-                break
-            if (finalDate == -1):
-                print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
-
-
-        # fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
-        # toCityName = raw_input('Ingresa la ciudad destino del envio: ')
-        fromCityName = "Miami"
-        toCityName = "Buenos Aires"
-        iterations = 1
-        while True:
-            break
-            try:
-                iterations = raw_input('Ingresa el numero de scrolls: ')
-                iterations = int(iterations)
-                if iterations >0 and iterations <= 5000:
-                    break
-                print "Ingrese una cantidad de scrolls validos"
-            except Exception as e:
-                print "Ingrese una cantidad de scrolls validos"
-
-        isTravelSquad = 0 # travel squad ya no existe
-
-        updatingAccepted = 0
-        while True:
-            break
-            try:
-                updatingAccepted = raw_input('Desea que intente actualizar las ofertas que ya han sido mandadas? (Yes: 1 / No: 0) : ')
-                updatingAccepted = int(updatingAccepted)
-                if updatingAccepted >=0 and updatingAccepted <= 1:
-                    break
-                print "Ingrese 0 o 1"
-            except Exception as e:
-                print "Ingrese 0 o 1"
+        updatingAccepted = 1 #whether the program should try to update offers already made or not
 
         itera=0
-        #here it begins to actually do stuff, i think
+        
         test_run = True
         while True:
             basepath ='https://grabr.io/es'
@@ -215,17 +156,13 @@ class GrabrSpider(CrawlSpider):
             if itera==0:
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
-                print "Creating web driver with options..."
                 self.driver = webdriver.Firefox(firefox_options=options)
-                print "Created."
                 self.driver.get(response.url)
                 sleep(2)
                 inputEmailElement = self.driver.find_element_by_xpath("//input[@type='email']")
                 inputEmailElement.send_keys(username)
-                #inputEmailElement.send_keys('drigo.beat@gmail.com')
                 inputPasswordElement = self.driver.find_element_by_xpath("//input[@type='password']")
                 inputPasswordElement.send_keys(password)
-                #inputPasswordElement.send_keys('oneafter93')
                 submitButton = self.driver.find_element_by_xpath("//button[@type='submit']")
                 sleep(1)
                 submitButton.click()
@@ -261,13 +198,11 @@ class GrabrSpider(CrawlSpider):
                 while True :
                     sleep(1)
                     fromCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]/span')
-
                     tam = (len(fromCitiesList))/2
                     if tam > 0:
                         print "Lista de ciudades origen"
                         print "------------------------------"
                         break
-
                     inputCityFrom.clear()
                     inputCityFrom.send_keys(fromCityName)
 
@@ -277,17 +212,7 @@ class GrabrSpider(CrawlSpider):
                         break
                     print str(i+1)+ ") " + city.text
 
-                while True:
-                    try:
-                        fromCityOption = raw_input('Selecciona una opcion: ')
-                        fromCityOption = int(fromCityOption)
-                        if fromCityOption >0 and fromCityOption <= tam:
-                            break
-                        if fromCityOption==-1:
-                            sys.exit()
-                        print "Ingrese una opcion correcta"
-                    except Exception as e:
-                        print "Ingrese una opcion correcta"
+                fromCityOption = 1
 
                 sleep(3)
                 firstCityFrom =  fromCitiesList[fromCityOption-1]
@@ -314,17 +239,7 @@ class GrabrSpider(CrawlSpider):
                         break
                     print str(i+1)+") "+city.text
 
-                while True:
-                    try:
-                        toCityOption = raw_input('Selecciona una opcion: ')
-                        toCityOption = int(toCityOption)
-                        if toCityOption >0 and toCityOption <= tam:
-                            break
-                        if fromCityOption==-1:
-                            sys.exit()
-                        print "Ingrese una opcion correcta"
-                    except Exception as e:
-                        print "Ingrese una opcion correcta"
+                toCityOption = 1
 
                 firstCityTo =  toCitiesList[toCityOption-1]
                 firstCityTo.click()
@@ -359,7 +274,6 @@ class GrabrSpider(CrawlSpider):
             while True:
                 if count==iterations or numOfRepetions==10:
                     break
-
                 print "Scrolling down..."
                 try:
                     self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -454,11 +368,6 @@ class GrabrSpider(CrawlSpider):
                 tuOferta= elem.xpath(".//span[@class='fw-sb lh-h SM_fz-xxxl']/text()").extract_first()
 
                 print "El nombre del item es: "+ nombreItem.encode('utf-8')
-                try:
-                    with open("tus_ofertas.txt", "w") as f_tus_ofertas:
-                        f_tus_ofertas.write(nombreItem.encode('utf-8'))
-                except Exception as e:
-                    print "Error al crear archivo tus_ofertas.txt"
                 print tuOferta
                 #se obtiene una lista en donde debe ser una lista de un elemento con la oferta que se ha hecho, esta oferta está sin recargos
                 link = basepath + links[i] #Obtenemos el link para ver el detalle de la oferta y sacar información adicional
@@ -476,14 +385,11 @@ class GrabrSpider(CrawlSpider):
                         while not self.internet_on():
                             continue
                         response = opener.open(link,timeout=100)
-
-                        print response
-                        print "abrio el link"
+                        print "Abrio el link"
                         print link
                         html = response.read()
                         response.close()
-
-                        print "extrajo lectura"
+                        print "Extrajo lectura"
                         break
                     except Exception as e:
                         print str(e)
@@ -499,36 +405,20 @@ class GrabrSpider(CrawlSpider):
                     continue
                 #################################################################################
                 #obtendremos informacion general de la oferta
-                #obtener los nombres de los ofertantes
                 names = Selector(text=html).xpath("//section[@class='d-n MD_d-b']/div[@class='w100p bdys-s bdw1 bgc-w SM_bdxs-s SM_bdr5 px20 pt20 bdc-g12 mt20 bdw1 bdc-g12 bdys-s SM_bdxs-s']/div[@class='fx-r ai-c jc-sb SM_bdtr5 pb20']//a[@class='fw-sb ellipsis mr5']/text()").extract()
                 print "Names:"
                 print names
-                #los precios de los ofertantes
                 prices = Selector(text=html).xpath("//section[@class='d-n MD_d-b']//div[@class='fx-r jc-sb py20 fz14 SM_jc-fs']/span[not(@class)]/text()").extract()
-
                 no_offers = Selector(text=html).xpath("//div[@class='p20 mt20 w100p bgc-w bdw1 bdc-g12 bds-s bdr5 ta-c c-g44']//span//span").extract()
                 
                 print "Prices:"
                 print prices
                 priceBaseItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract_first()
-                print "info de priceBaseItem"
-                print type(priceBaseItem)
-                print priceBaseItem
                 precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
-                print "info de precio_base:"
-                print type(precio_base)
-                print precio_base
-
                 precio_tax = 0.0
                 try:
                     salesTaxItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract()[1]
-                    print "info de salesTaxItem"
-                    print type(salesTaxItem)
-                    print salesTaxItem
                     precio_tax = float(re.search(r'\d+', (salesTaxItem.replace('.','')).replace(',','.') ).group())
-                    print "info de precio_tax:"
-                    print type(precio_tax)
-                    print precio_tax
                 except:
                     print "No hay monto de sales tax para este producto, se dejara como 0"
 
@@ -561,6 +451,7 @@ class GrabrSpider(CrawlSpider):
                 #evaluaremos si hay ofertas de travel squad siempre y cuando hayan ofertas
                 thereIsSquadOffer= False
                 if isTravelSquad and not zeroOffersFlag: #Solo si he autorizado revisar si hay ofertas de squad
+                    # TODO check whether variables used within this if are used somewhere else
                     names =  [ sublist[elem]['name'] for elem in sublist ]
                     for i , name in enumerate(names):
                         name = name.lower()
@@ -585,17 +476,11 @@ class GrabrSpider(CrawlSpider):
                     else:
                         print "No tienes la etiqueta tu oferta, asi que se debe crear una oferta"
                     if self.isStanley(nombreItem):
-                    # if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
                         #caso es un producto stanley
                         print "Se encontro un producto Stanley"
                         isStanley = True
                         quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
-                        if quantity:
-                            quantity = int(quantity)
-                        else:
-                            print "No se encontro la cantidad"
-                            quantity=1
-
+                        quantity = int(quantity) if quantity else 1
                         precioOferta = quantity * 25 #coloco el valor predefinido por ser stanley
                         message ="Es un producto de marca Stanley"
                     elif self.isFunko(nombreItem):
@@ -603,12 +488,7 @@ class GrabrSpider(CrawlSpider):
                         print "Se encontro un producto Funko Pop"
                         isFunko = True
                         quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
-                        if quantity:
-                            quantity = int(quantity)
-                        else:
-                            print "No se encontro la cantidad"
-                            quantity=1
-
+                        quantity = int(quantity) if quantity else 1
                         precioOferta = quantity * 15 #valor predefinido por ser funko pop
                         message ="Es un producto de marca Funko Pop"
                     elif self.isLol(nombreItem):
@@ -616,29 +496,23 @@ class GrabrSpider(CrawlSpider):
                         print "Se encontro un producto LOL"
                         isLol = True
                         quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
-                        if quantity:
-                            quantity = int(quantity)
-                        else:
-                            print "No se encontro la cantidad"
-                            quantity=1
-
+                        quantity = int(quantity) if quantity else 1
                         precioOferta = quantity * 20 #valor predefinido por ser LOL
                         message ="Es un producto de marca LOL"
                     else:
                         print "Seguira el flujo normal"
                         if zeroOffersFlag:
                             precioOferta = (precio_base + precio_tax) * 0.20
+                            precioOferta = math.ceil(precioOferta)
                             if precioOferta < 10:
                                 precioOferta = 10
-                            precioOferta = math.ceil(precioOferta)
                             print "Es la primera oferta con precioOferta de {}".format(precioOferta)
                             message ="Es la primera oferta"
                         else:
                             precioOferta = self.getOfferPrice(precioMin)
                             print "Es una nueva oferta con precioOferta de {}".format(precioOferta)
                             message ="Es una nueva oferta"
-                    
-                    #offerButton es el boton para hacer una oferta en el link del producto
+
                     offerButton = Selector(text=html).xpath("//a[@class='btn btn--bb h50 w100p mt20 bdr5 MD_ord4']/@href").extract_first()
                     #se obtiene el enlace para mandar una nueva oferta
                     print offerButton
@@ -648,11 +522,9 @@ class GrabrSpider(CrawlSpider):
                         print "No se pudo obtener el link para poder ofertar"
                         message = "No se pudo obtener el link para poder ofertar"
                         fail
-                # elif updatingAccepted and not zeroOffersFlag:
                 elif updatingAccepted:
-                    print "se encontro que ya se hizo una oferta asi que puede que este elemento va a nacesitar actualizacion"
+                    print "Se encontro que ya se hizo una oferta asi que puede que este elemento va a nacesitar actualizacion"
                     if self.isStanley(nombreItem):
-                    # if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
                         print "Potencial actualizacion pero el producto es Stanley"
                         noEditStanleyItem = noEditStanleyItem +1
                         message = "Oferta no editada por haber ya enviado una oferta y ser Stanley"
@@ -682,13 +554,11 @@ class GrabrSpider(CrawlSpider):
 
                             self.driver.execute_script('window.open("' + link + '", "_blank");')
                             sleep(2.5)
-                            self.driver.switch_to_window ( self.driver.window_handles[1] )
-
+                            self.driver.switch_to_window(self.driver.window_handles[1])
                             sleep(2)
                             print "Obteniendo el link de editar"
                             WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, "//a[@class='btn btn--g pos-r fxg1 h50 bdr5 mb20 SM_mr10 SM_mb0']")))
                             editButtons =self.driver.find_elements_by_xpath("//a[@class='btn btn--g pos-r fxg1 h50 bdr5 mb20 SM_mr10 SM_mb0']")
-                            print len(editButtons)
                             editLinkExtracted = True
                             if len(editButtons) > 0:
                                 editButton = editButtons[0]
@@ -703,7 +573,6 @@ class GrabrSpider(CrawlSpider):
                             if len(editButtons) == 0 or not editLinkExtracted:
                                 print "No se encontro el link para editar"
                                 print "Mensaje de excepcion: " + str(e)
-
                                 print "Nos olvidamos de esta oferta y seguimos adelante"
                                 noEditFailedOffers = noEditFailedOffers + 1
                                 updateException = True
@@ -717,7 +586,6 @@ class GrabrSpider(CrawlSpider):
                             if not updateException:
                                 oldOfferValue = tuOferta
                                 #abrira el formulario de editar para obtener su valor de la antigua oferta
-                                print "oldOfferValue"
                                 print oldOfferValue
                                 if oldOfferValue > precioMin:
                                     if precioMin>=210:
@@ -765,13 +633,9 @@ class GrabrSpider(CrawlSpider):
                     csv.write(row)
                     my_item['offerPrice']=-1
                     my_item['message'] = message
-                    # yield my_item
-                    # print "====================FINAL===================="
-                    # continue  # I DIDNT SEE THIS FUCKING CONTINUE AND I THOUGHT THE PROGRAM WAS FUCKED UP WTF THE FUCK
                 else:
                     if youMustEdit:
                         print "se va a actualizar"
-
                         while not self.internet_on():
                             continue
                         self.driver.execute_script('window.open("' + editLink + '", "_blank");')
@@ -798,8 +662,7 @@ class GrabrSpider(CrawlSpider):
                             print "Nos olvidamos de esta oferta y seguimos adelante"
                             updateException=True
                             message= "Actualizacion fallada porque no se puedo abrir el formulario de editar"
-                            noEditUpdateForm = noEditUpdateForm +1
-
+                            noEditUpdateForm = noEditUpdateForm + 1
                         if not failException:   #si no se generaron excepciones continuamos
                             while not self.internet_on():
                                 continue
@@ -831,7 +694,6 @@ class GrabrSpider(CrawlSpider):
                             self.driver.switch_to_window(self.driver.window_handles[0]) #ward solved
                         my_item['offerPrice']= oldOfferValue
                         my_item['message'] = message
-
                     elif failException :
                         print "Excepcion por falla"
                         failedOffers = failedOffers +1
@@ -851,7 +713,6 @@ class GrabrSpider(CrawlSpider):
                         tag2 = tag2.encode('utf-8')
                         row = tag1+ "," +  tag2 + "," + link+"\n"
                         csvFailed.write(row)
-
                     if youMustEdit or failException or updateException:
                         yield my_item
                         print "====================FINAL===================="
@@ -875,7 +736,6 @@ class GrabrSpider(CrawlSpider):
 
                 try:
                     siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
-                    #......................................
                     sleep(1.5)
                     print "encontro el boton de siguiente"
                     print siguienteElement
@@ -891,15 +751,15 @@ class GrabrSpider(CrawlSpider):
                             k=k+1
                             if k==5: break
                             sleep(1)
-                            print "pasa por la excepcion 5"
+                            print "Pasa por la excepcion 5"
                     if k==5:
                         self.driver.close()
                         while not self.internet_on():
                             continue
                         sleep(0.5)
-                        print "close 4"
+                        print "Close 4"
                         self.driver.switch_to_window(self.driver.window_handles[0])
-                        print "nos olvidamos de esta oferta y seguimos adelante"
+                        print "Nos olvidamos de esta oferta y seguimos adelante"
                         failedOffers = failedOffers + 1
                         tag1 = my_item['nombreUsuarioComprador']
                         tag2 = my_item['nombreItem']
@@ -913,31 +773,27 @@ class GrabrSpider(CrawlSpider):
                         continue #Fin de flujo
                     addTravelButton.click()
                     sleep(2)
-
                     k=0
                     while True:
                         try:
                             beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
                             print "Cantidad de elementos de beforeTravels: " + str(len(beforeTravels))
-                            #if len(beforeTravels)==0:
-                            #   k=k+1
-                            #   continue
                             break
                         except Exception as e:
                             k=k+1
                             if k==5: break
                             sleep(1)
-                            print "pasa por la excepcion 6"
+                            print "Pasa por la excepcion 6"
 
                     if k==5:
                         self.driver.close()
                         while not self.internet_on():
                             continue
                         sleep(0.5)
-                        print "close 5"
+                        print "Close 5"
                         self.driver.switch_to_window(self.driver.window_handles[0])
                         sleep(1.5)
-                        print "nos olvidamos de esta oferta y seguimos adelante"
+                        print "Nos olvidamos de esta oferta y seguimos adelante"
                         failedOffers = failedOffers +1
                         tag1 = my_item['nombreUsuarioComprador']
                         tag2 = my_item['nombreItem']
@@ -951,8 +807,7 @@ class GrabrSpider(CrawlSpider):
                         continue #Fin de flujo
 
                     ##########################
-                    ###########################
-
+                    ##########################
                     today = datetime.now()#fecha actual
                     deltaDays = timedelta(days=1)
                     tomorrow = today + deltaDays
@@ -962,28 +817,24 @@ class GrabrSpider(CrawlSpider):
                     alreadyDate=False
                     fail=False
                     for j,travel in enumerate(beforeTravels):
-                        print j
                         travelText = travel.text
                         travelText =  travelText.encode('utf-8')
-                        print travelText
                         posList= [pos for pos, char in enumerate(travelText) if char == ',']
                         if len(posList)<=0:
                             fail=True
                             break
 
-                        print posList
                         posKey= posList[-1]
                         travelText= travelText[posKey+1:len(travelText)]
                         try:
                             print"Travel text"+ travelText
-                            #listDayMonth = travelText.split(" de ")
                             listDayMonth = travelText.split(" ")
                             print listDayMonth
                             dayText = int(listDayMonth[1])
                             monthText = (listDayMonth[2]).lower()
                         except Exception as e:
                             print "Se leyeron mal algunos de los viajes anteriores"
-                            print "Excepcion:" + str(e)
+                            print "Excepcion: " + str(e)
                             self.driver.close()
                             while not self.internet_on():
                                 continue
@@ -1003,13 +854,7 @@ class GrabrSpider(CrawlSpider):
                             print "====================FINAL===================="
                             continue #Fin de flujo
 
-                        #monthText = self.monthStringToInt(monthText)
                         monthText = self.monthStringAbrPoninToInt(monthText)
-                        print "============================"
-                        print tomorrowYear
-                        print monthText
-                        print dayText
-                        print "============================"
                         travelDateCurr = datetime(tomorrowYear,monthText,dayText)
                         deltaDays = timedelta(days=1)
                         travelDateCurr = travelDateCurr+deltaDays
@@ -1066,7 +911,7 @@ class GrabrSpider(CrawlSpider):
                             while not self.internet_on():
                                 continue
                             sleep(0.5)
-                            print "close 7"
+                            print "Close 7"
                             self.driver.switch_to_window(self.driver.window_handles[0])
                             print "Nos olvidamos de esta oferta y seguimos adelante"
                             failedOffers = failedOffers +1
@@ -1082,28 +927,25 @@ class GrabrSpider(CrawlSpider):
                             continue #Fin de flujo
 
                         print "Salio de poner la ciudad from"
-
                         sleep(1.8)
                         k=0
                         while True:
                             print "Entro para abrir el input de la fecha"
                             try:
                                 dateInput = self.driver.find_element_by_xpath("//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")
-
                                 dateInput.click()
                                 break
                             except Exception as e:
                                 k=k+1
                                 if k==5: break
                                 sleep(1)
-
                                 print "Pasa por la excepcion 8"
                         if k==5:
                             self.driver.close()
                             while not self.internet_on():
                                 continue
                             sleep(0.5)
-                            print "close 8"
+                            print "Close 8"
                             self.driver.switch_to_window(self.driver.window_handles[0])
                             print "Nos olvidamos de esta oferta y seguimos adelante"
                             tag1 = my_item['nombreUsuarioComprador']
@@ -1116,52 +958,38 @@ class GrabrSpider(CrawlSpider):
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
                             print "====================FINAL===================="
-                            continue #Fin de flujoe flujo
+                            continue #Fin de flujo
 
                         print "Salio para abrir el input de la fecha"
                         sleep(1.8)
-
                         firstTimeFlag= False
                         while True:
                             print "Entro para buscar en el calendario"
                             sleep(1)
                             while not self.internet_on():
                                 continue
-
                             html = self.driver.page_source
                             html= html.encode('utf-8')
                             titleMonthYear = Selector(text=html).xpath("//span[@class='tt-c']/text()").extract()
                             titleMonthYear = titleMonthYear[0]
-                            #titleMonthYear = self.driver.find_element_by_xpath("//span[@class='tt-c']").text()
-                            print titleMonthYear
-                            #titleMonthYear = titleMonthYear[0]
                             listTitleMonthYear = titleMonthYear.split(" De ")
                             if len(listTitleMonthYear)!=2:
                                 listTitleMonthYear = titleMonthYear.split(" de ")
 
-                            print listTitleMonthYear
                             monthTitle = (listTitleMonthYear[0]).lower()
                             yearTitleNumber = int(listTitleMonthYear[1])
                             monthTitleNumber = self.monthStringToInt(monthTitle)
-
                             if(monthTitleNumber == monthNumber and yearTitleNumber == yearNumber):
-                                #print "Nos quedamos en la pantalla para buscar la fecha"
                                 calendarDays = self.driver.find_elements_by_xpath('//div[@class="d-tbcl h35 w35 bds-s bdw1 bdc-g12"]')
                                 index=0
 
                                 for calendarDay in calendarDays:
-                                    #print "Index: "+str(index)
-                                    #print "Entro en el for para buscar la fecha"
                                     currentDay = calendarDay.text
-                                    #print "Valor:" + currentDay
-                                    #print "vamos a escribir el numero obtenido, puede ser una lista"
-                                    #print "paso la parte complicada"
                                     currentDay = int(currentDay)
                                     if currentDay == dayNumber:
-                                        print "encontro la fecha"
+                                        print "Encontro la fecha"
                                         break
                                     index = index+1
-                                    #print "Index: "+str(index)
                                 cday = calendarDays[index]
                                 cday.click()
                                 print "Termino el ciclo for"
@@ -1193,7 +1021,6 @@ class GrabrSpider(CrawlSpider):
                             print "No se pudo dar click en el boton siguiente asi que lo tratamos de reparar"
                             siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
 
-
                     sleep(1.8)
                     result=self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True )
                     if result== -1:
@@ -1201,7 +1028,7 @@ class GrabrSpider(CrawlSpider):
                         while not self.internet_on():
                             continue
                         sleep(0.5)
-                        print "close 19"
+                        print "Close 19"
                         self.driver.switch_to_window(self.driver.window_handles[0])
                         print "NO SALIO BIEN"
                         offerLink = offerLink.encode('utf-8')
@@ -1238,14 +1065,13 @@ class GrabrSpider(CrawlSpider):
                 except NoSuchElementException :
                     result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False)
                     if result == -1:
-                        print "no salio bien"
+                        print "NO SALIO BIEN"
                         self.driver.close()
                         while not self.internet_on():
                             continue
                         sleep(0.5)
                         print "close 20"
                         self.driver.switch_to_window(self.driver.window_handles[0])
-
                         offerLink = offerLink.encode('utf-8')
                         #guardamos el link en el excel de ofertas fallidas
                         nombreUsuarioComprador = my_item['nombreUsuarioComprador']
@@ -1266,7 +1092,7 @@ class GrabrSpider(CrawlSpider):
                         print "====================FINAL===================="
                         continue #Fin de flujo
                     elif result == 1:
-                        print "salio bien"
+                        print "SALIO BIEN"
                         completedOffers =  completedOffers + 1
                         if isStanley:
                             stanleyOffers += 1
@@ -1283,7 +1109,6 @@ class GrabrSpider(CrawlSpider):
                         yield my_item
                         print "====================FINAL===================="
 
-                #sleep(1.2)
                 self.driver.close()
                 while not self.internet_on():
                     continue
@@ -1292,7 +1117,6 @@ class GrabrSpider(CrawlSpider):
                 self.driver.switch_to_window(self.driver.window_handles[0])
                 sleep(1.2)
 
-            #el script duerme 10 minutos
             csv.close()
             csvFailed.close()
             csvStanleys.close()
@@ -1318,36 +1142,54 @@ class GrabrSpider(CrawlSpider):
             print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
             print "**********************************************"
             # print "================REPOSO===================="
-            # print "Aproveche el reposo para copiar los archivos csv generados en otra carpeta, ya que cuando se acabe el reposo se sobre escribiran"
-            # print "================REPOSO===================="
-            # sleep(600)
-            # print "Vamos a empezar un nuevo proceso en..."
-            # print "3"
-            # sleep(1)
-            # print "2"
-            # sleep(1)
-            # print "1"
-            ################# parte para testing only
+
             if test_run:
                 print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
                 print "Se ha ejecutado solo un scroll por ser modo de prueba"
                 print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
                 break
 
-            while True:
-                try:
-                    updatingAccepted = raw_input('Desea que intente actualizar las ofertas que ya han sido mandadas? (Yes: 1 / No: 0) : ')
-                    updatingAccepted = int(updatingAccepted)
-                    if updatingAccepted >=0 and updatingAccepted <= 1:
-                        break
-                    print "Ingrese 0 o 1"
-                except Exception as e:
-                    print "Ingrese 0 o 1"
             while not self.internet_on():
                 continue
             self.driver.get(currentUrl)
             sleep(6)
         #raise CloseSpider
+
+    def makeDate(self, finalDate, dateMin=None):
+        r = re.compile('.{2}/.{2}/.{4}')
+        if len(finalDate) == 10:
+            if r.match(finalDate):
+                if dateMin != None:
+                    end_date = datetime.strptime(dateMin, '%d/%m/%Y') + timedelta(days=1)
+                    if not (datetime.strptime(finalDate, '%d/%m/%Y') >= end_date):
+                        return -1
+
+                listDate = finalDate.split("/")
+                dayNumber=int(listDate[0])
+                monthNumber=int(listDate[1])
+                yearNumber =int(listDate[2])
+                try:
+                    datetime(yearNumber, monthNumber, dayNumber)
+                except Exception as e:
+                    print "Ingresa una fecha existente"
+                    return 0
+
+                today = datetime.now() + timedelta(days=1)
+                dayToday =  today.day
+                monthToday =  today.month
+                yearToday =  today.year
+
+                if(self.getDateNumber(dayNumber, monthNumber,yearNumber) >= self.getDateNumber(dayToday, monthToday,yearToday)):
+                    return finalDate
+                else:
+                    print "Ingresa una fecha valida"
+                    return 0
+            else:
+                print "Ingresa una fecha con el formato indicado"
+                return 0
+        else:
+            print "Ingresa una fecha con el formato indicado"
+            return 0
 
     def enterDate(self, customMessage, dateMin=None):
         finalDate = raw_input(customMessage)
@@ -1415,12 +1257,6 @@ class GrabrSpider(CrawlSpider):
             except Exception as e:
                 print "No se encontro el boton para ir al primer paso"
                 print "Mensaje de excepcion: " + str(e)
-                # self.driver.close()
-                # while not self.internet_on():
-                #   continue
-                # sleep(0.5)
-                # print "close 10"
-                # self.driver.switch_to_window(self.driver.window_handles[0])
                 print "Nos olvidamos de esta oferta y seguimos adelante"
                 return -1
 
@@ -1437,12 +1273,6 @@ class GrabrSpider(CrawlSpider):
                 print "No encontramos el boton para agregar viajes"
                 print "Mensaje de excepcion: " + str(e)
                 print "pasa por la excepcion 2"
-                # self.driver.close()
-                # while not self.internet_on():
-                #   continue
-                # sleep(0.5)
-                # print "close 11"
-                # self.driver.switch_to_window(self.driver.window_handles[0])
                 print "nos olvidamos de esta oferta y seguimos adelante"
                 return -1
 
@@ -1463,12 +1293,6 @@ class GrabrSpider(CrawlSpider):
                     sleep(1)
                     print "pasa por la excepcion 3"
             if k==5:
-                # self.driver.close()
-                # while not self.internet_on():
-                #   continue
-                # sleep(0.5)
-                # print "close 12"
-                # self.driver.switch_to_window(self.driver.window_handles[0])
                 print "nos olvidamos de esta oferta y seguimos adelante"
                 return -1
 
@@ -1495,7 +1319,6 @@ class GrabrSpider(CrawlSpider):
 
                 try:
                     print"Travel text"+ travelText
-                    #listDayMonth = travelText.split(" de ")
                     listDayMonth = travelText.split(" ")
                     print listDayMonth
                     dayText = int(listDayMonth[1])
@@ -1503,12 +1326,6 @@ class GrabrSpider(CrawlSpider):
                 except Exception as e:
                     print "Se leyeron mas alguno de los viajes anteriores"
                     print "Excepcion:" + str(e)
-                    # self.driver.close()
-                    # while not self.internet_on():
-                    #   continue
-                    # sleep(0.5)
-                    # print "close 13"
-                    # self.driver.switch_to_window(self.driver.window_handles[0])
                     print "Nos olvidamos de esta oferta y seguimos adelante"
                     return -1
 
@@ -1564,12 +1381,6 @@ class GrabrSpider(CrawlSpider):
                         sleep(0.5)
                         print "pasa por la excepcion 4"
                 if k==5:
-                    # self.driver.close()
-                    # while not self.internet_on():
-                    #   continue
-                    # sleep(0.5)
-                    # print "close 14"
-                    # self.driver.switch_to_window(self.driver.window_handles[0])
                     print "nos olvidamos de esta oferta y seguimos adelante"
                     return -1
 
@@ -1651,12 +1462,6 @@ class GrabrSpider(CrawlSpider):
         except Exception as e:
             print "No se ubico el input para el precio"
             print "Mensaje de excepcion: " + str(e)
-            # self.driver.close()
-            # while not self.internet_on():
-            #   continue
-            # sleep(0.5)
-            # print "close 15"
-            # self.driver.switch_to_window(self.driver.window_handles[0])
             print "Nos olvidamos de esta oferta y seguimos adelante"
             return -1
 
@@ -1778,12 +1583,6 @@ class GrabrSpider(CrawlSpider):
         except Exception as e:
             print "No se ubico el textarea"
             print "Mensaje de excepcion: " + str(e)
-            # self.driver.close()
-            # while not self.internet_on():
-            #   continue
-            # sleep(0.5)
-            # print "close 16"
-            # self.driver.switch_to_window(self.driver.window_handles[0])
             print "Nos olvidamos de esta oferta y seguimos adelante"
             return -1
 
@@ -1823,12 +1622,6 @@ class GrabrSpider(CrawlSpider):
         except Exception as e:
             print "No se ubico el boton para enviar oferta"
             print "Mensaje de excepcion: " + str(e)
-            # self.driver.close()
-            # while not self.internet_on():
-            #   continue
-            # sleep(0.5)
-            # print "close 17"
-            # self.driver.switch_to_window(self.driver.window_handles[0])
             print "Nos olvidamos de esta oferta y seguimos adelante"
             return -1
 
@@ -1962,7 +1755,6 @@ class GrabrSpider(CrawlSpider):
     def isLol(self, nombreItem):
         ## if itemName is a string just use regex, otherwise find a library that handles this kind of stuff
         ## i mean we could manually check all the posibilities but that would be retarded
-        #TODO
         if nombreItem.find("LOL") >= 0 or nombreItem.find("Lol") >= 0 or nombreItem.find("L.O.L") >= 0 or nombreItem.find("l.o.l") >= 0 or nombreItem.find("L.o.l") >= 0:
             return True #turns out i am retarded
         return False
