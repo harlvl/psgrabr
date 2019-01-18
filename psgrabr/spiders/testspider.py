@@ -1,20 +1,37 @@
 import scrapy
+from scrapy.exceptions import CloseSpider
+from scrapy.selector import Selector
+from scrapy.http import HtmlResponse
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
+
+from datetime import datetime,timedelta
+
+from psgrabr.items import ScrapyProjectItem
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
-class TestSpider(scrapy.Spider):
-    name = "test"
-
-    def start_requests(self):
-        urls = [
-            'http://quotes.toscrape.com/page/1/',
-            'http://quotes.toscrape.com/page/2/',
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+class TestSpider(CrawlSpider):
+    name = "testspider"
+    item_count = 0
+    allowed_domains = ['grabr.io']
+    # start_urls = ['https://grabr.io/es/login']
+    start_urls = ['https://twitter.com/scanf_printf_']
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        filename = 'quotes-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
+        # geckodriver = 'C:\\Users\\hlvl\\\Documents\\\geckodriver\\geckodriver.exe'
+        basepath ='https://grabr.io/es'
+
+        options = webdriver.FirefoxOptions()
+        options.add_argument('-headless')
+
+        # self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
+        self.driver = webdriver.Firefox(firefox_options=options)
+        self.driver.get(response.url)
+        self.driver.save_screenshot('C:\\Users\\hlvl\\Downloads\\nohead.png')
+        self.driver.quit()
