@@ -76,7 +76,7 @@ class GrabrSpider(CrawlSpider):
         #                      Saludos :)"""
 
         while True:
-            break
+            # break
             try:
                 newAccountFlag = raw_input('Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
                 newAccountFlag = int(newAccountFlag)
@@ -95,7 +95,7 @@ class GrabrSpider(CrawlSpider):
             password = raw_input('Ingrese su contraseña: ')
 
         while True:
-            break
+            # break
             try:
                 newAnnotationFlag = raw_input('Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
                 newAnnotationFlag = int(newAnnotationFlag)
@@ -124,13 +124,13 @@ class GrabrSpider(CrawlSpider):
                 print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
 
 
-        # fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
-        # toCityName = raw_input('Ingresa la ciudad destino del envio: ')
-        fromCityName = "Miami"
-        toCityName = "Buenos Aires"
+        fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
+        toCityName = raw_input('Ingresa la ciudad destino del envio: ')
+        # fromCityName = "Miami"
+        # toCityName = "Buenos Aires"
         iterations = 1
         while True:
-            break
+            # break
             try:
                 iterations = raw_input('Ingresa el numero de scrolls: ')
                 iterations = int(iterations)
@@ -144,7 +144,7 @@ class GrabrSpider(CrawlSpider):
 
         updatingAccepted = 0
         while True:
-            break
+            # break
             try:
                 updatingAccepted = raw_input('Desea que intente actualizar las ofertas que ya han sido mandadas? (Yes: 1 / No: 0) : ')
                 updatingAccepted = int(updatingAccepted)
@@ -156,7 +156,7 @@ class GrabrSpider(CrawlSpider):
 
         itera=0
         #here it begins to actually do stuff, i think
-        test_run = True
+        test_run = False
         while True:
             basepath ='https://grabr.io/es'
             completedOffers=0
@@ -1323,16 +1323,17 @@ class GrabrSpider(CrawlSpider):
             print "Ofertas actualizables pero sin actualizar por no contar con autorizacion: " + str(noEditByNoAuthorization) #-->nueva
             print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
             print "**********************************************"
-            # print "================REPOSO===================="
-            # print "Aproveche el reposo para copiar los archivos csv generados en otra carpeta, ya que cuando se acabe el reposo se sobre escribiran"
-            # print "================REPOSO===================="
+            print "================REPOSO===================="
+            print "Aproveche el reposo para copiar los archivos csv generados en otra carpeta, ya que cuando se acabe el reposo se sobre escribiran"
+            print "================REPOSO===================="
             # sleep(600)
-            # print "Vamos a empezar un nuevo proceso en..."
-            # print "3"
-            # sleep(1)
-            # print "2"
-            # sleep(1)
-            # print "1"
+            sleep(20)
+            print "Vamos a empezar un nuevo proceso en..."
+            print "3"
+            sleep(1)
+            print "2"
+            sleep(1)
+            print "1"
             ################# parte para testing only
             if test_run:
                 print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"

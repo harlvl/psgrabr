@@ -1919,6 +1919,7 @@ class GrabrSpider(CrawlSpider):
             precioOferta = precioMin - 2
         else:
             precioOferta = precioMin - 1
+        precioOferta = math.ceil(precioOferta)
         return precioOferta if precioOferta>=5 else 5
     
     def isStanley(self, nombreItem):

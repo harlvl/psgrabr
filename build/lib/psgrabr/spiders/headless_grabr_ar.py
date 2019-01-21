@@ -57,6 +57,7 @@ class GrabrSpider(CrawlSpider):
         LOGGER.setLevel(logging.WARNING)
         urllib3_log = logging.getLogger("urllib3")
         urllib3_log.setLevel(logging.CRITICAL)
+        geckodriver = '.\\geckodriver\\geckodriver.exe' #attempt to include it within the project
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
         print "Firefox options created."
@@ -65,10 +66,13 @@ class GrabrSpider(CrawlSpider):
         print "-headless argument added to options"
         print "------------------------------------"
 
+        test_run = True
+
         fromCityOption=0
         toCityOption=0
         newAccountFlag = 0
         newAnnotationFlag=0
+
         username='harleen_vl@hotmail.com'
         password='w0mirnms'
 
@@ -96,8 +100,6 @@ class GrabrSpider(CrawlSpider):
         updatingAccepted = 1 #whether the program should try to update offers already made or not
 
         itera=0
-        
-        test_run = True
         while True:
             basepath ='https://grabr.io/es'
             completedOffers=0
@@ -156,7 +158,14 @@ class GrabrSpider(CrawlSpider):
             if itera==0:
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
-                self.driver = webdriver.Firefox(firefox_options=options)
+                try:
+                    self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
+                    print "Added geckodriver as argument"
+                except Exception as e:
+                    self.driver = webdriver.Firefox(firefox_options=options)
+                    print e
+                    print "Couldn't add geckodriver as argument"
+                    print "Headless webdriver created normally"
                 self.driver.get(response.url)
                 sleep(2)
                 inputEmailElement = self.driver.find_element_by_xpath("//input[@type='email']")
