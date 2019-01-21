@@ -1,9 +1,9 @@
-1547821384545	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hlvl\\AppData\\Local\\Temp\\rust_mozprofile.C8FGWIBBGTL7"
+1547843975035	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hlvl\\AppData\\Local\\Temp\\rust_mozprofile.TcNhgJHD1DTB"
 *** You are running in headless mode.
-1547821385269	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
-1547821385270	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
-1547821388311	Marionette	INFO	Listening on port 64397
-1547821388377	Marionette	WARN	TLS certificate errors will be ignored for this session
+1547843975733	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
+1547843975733	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
+1547843978997	Marionette	INFO	Listening on port 50591
+1547843979356	Marionette	WARN	TLS certificate errors will be ignored for this session
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Failed to create WebGL context: WebGL creation failed: 
 * Can't use WebGL in headless mode (https://bugzil.la/1375585).
@@ -16,13 +16,16 @@ JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: 
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Failed to create WebGL context: WebGL creation failed: 
 * Can't use WebGL in headless mode (https://bugzil.la/1375585).
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 console.error: BroadcastService: 
   receivedBroadcastMessage: handler for
   remote-settings/monitor_changes
   threw error:
   Message: Error: Polling for changes failed: NetworkError when attempting to fetch resource..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
+
+hen attempting to fetch resource..
   Stack:
     remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
 

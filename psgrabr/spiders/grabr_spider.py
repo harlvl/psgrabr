@@ -489,7 +489,13 @@ class GrabrSpider(CrawlSpider):
                 print "info de priceBaseItem"
                 print type(priceBaseItem)
                 print priceBaseItem
-                precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
+                try:
+                    precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
+                    print "Precio base leido sin errores"
+                except:
+                    print "No se pudo leer el precio base, continuamos con el siguiente item"
+                    print "====================FINAL===================="
+                    continue
                 print "info de precio_base:"
                 print type(precio_base)
                 print precio_base

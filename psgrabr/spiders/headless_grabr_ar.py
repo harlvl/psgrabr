@@ -44,7 +44,7 @@ Predefined values:
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "hlnewgr"
+    name = "hlnewgr_ar"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -57,6 +57,7 @@ class GrabrSpider(CrawlSpider):
         LOGGER.setLevel(logging.WARNING)
         urllib3_log = logging.getLogger("urllib3")
         urllib3_log.setLevel(logging.CRITICAL)
+        geckodriver = '.\\geckodriver\\geckodriver.exe' #attempt to include it within the project
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
         print "Firefox options created."
@@ -65,10 +66,13 @@ class GrabrSpider(CrawlSpider):
         print "-headless argument added to options"
         print "------------------------------------"
 
+        test_run = True
+
         fromCityOption=0
         toCityOption=0
         newAccountFlag = 0
         newAnnotationFlag=0
+
         username='harleen_vl@hotmail.com'
         password='w0mirnms'
 
@@ -89,15 +93,13 @@ class GrabrSpider(CrawlSpider):
         fromCityName = origin_city
         toCityName = destination_city
 
-        iterations = 1 #between 0 and 5000
+        iterations = 1 #between 0 and 5000 (scrolls)
 
         isTravelSquad = 0 # travel squad no longer exists
 
         updatingAccepted = 1 #whether the program should try to update offers already made or not
 
         itera=0
-        
-        test_run = True
         while True:
             basepath ='https://grabr.io/es'
             completedOffers=0
@@ -156,7 +158,14 @@ class GrabrSpider(CrawlSpider):
             if itera==0:
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
-                self.driver = webdriver.Firefox(firefox_options=options)
+                try:
+                    self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
+                    print "Added geckodriver as argument"
+                except Exception as e:
+                    self.driver = webdriver.Firefox(firefox_options=options)
+                    print e
+                    print "Couldn't add geckodriver as argument"
+                    print "Headless webdriver created normally"
                 self.driver.get(response.url)
                 sleep(2)
                 inputEmailElement = self.driver.find_element_by_xpath("//input[@type='email']")
@@ -414,7 +423,13 @@ class GrabrSpider(CrawlSpider):
                 print "Prices:"
                 print prices
                 priceBaseItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract_first()
-                precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
+                try:
+                    precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
+                    print "Precio base leido sin errores"
+                except:
+                    print "No se pudo leer el precio base, continuamos con el siguiente item"
+                    print "====================FINAL===================="
+                    continue
                 precio_tax = 0.0
                 try:
                     salesTaxItem =  Selector(text=html).xpath("//div[@class='c-g44']/span/span/span/text()").extract()[1]
