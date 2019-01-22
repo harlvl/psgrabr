@@ -65,8 +65,11 @@ class GrabrSpider(CrawlSpider):
         geckodriverRoot = '.\\geckodriver.exe' #attempt to include it within the project
         scraping_hub_bin_path = '/scrapinghub/bin'  #im not sure whether this is a good idea or just plain retarded but i sure hope it works kek
         scraping_hub_bin_path2 = '\\scrapinghub\\bin\\geckodriver.exe'
-        scraping_hub_bin_path3 = '/scrapinghub/webdriver/gecko/v0.23.0/geckodriver-v0.23.0-linux64/geckodriver'
-        scraping_hub_bin_path4 = '\\scrapinghub\\webdriver\\gecko\\v0.23.0\\geckodriver-v0.23.0-linux64\\geckodriver'
+        scraping_hub_bin_path3 = '/scrapinghub/webdriver/gecko/v0.23.0/geckodriver-v0.23.0-linux64/geckodriver/geckodriver.exe'
+        scraping_hub_bin_path4 = '\\scrapinghub\\webdriver\\gecko\\v0.23.0\\geckodriver-v0.23.0-linux64\\geckodriver\\geckodriver.exe'
+
+        sys.path.insert(0, ".\\geckodriver")
+
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
         print "Firefox options created."
@@ -187,8 +190,8 @@ class GrabrSpider(CrawlSpider):
                     # self.driver = webdriver.Firefox(executable_path=geckodriverRoot, firefox_options=options)
                     # print "Added geckodriver as argument from the root folder"
                     print "Adding geckodriver from the path of download:"
-                    print scraping_hub_bin_path2
-                    self.driver = webdriver.Firefox(executable_path=scraping_hub_bin_path2, firefox_options=options)
+                    print scraping_hub_bin_path4
+                    self.driver = webdriver.Firefox(executable_path=scraping_hub_bin_path4, firefox_options=options)
                     print "Added geckodriver from the path of download"
                 except Exception as e:
                     print e
