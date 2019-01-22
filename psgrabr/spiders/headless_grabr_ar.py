@@ -30,6 +30,8 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 
 from time import sleep
 
+from webdriverdownloader import GeckoDriverDownloader #trying out this bad boy
+
 '''
 This spider will be used to make offers from Miami to Buenos Aires
 This spider works without neither a GUI nor the need of inputting values during runtime
@@ -61,6 +63,10 @@ class GrabrSpider(CrawlSpider):
         urllib3_log.setLevel(logging.CRITICAL)
         geckodriver = '.\\geckodriver\\geckodriver.exe' #attempt to include it within the project
         geckodriverRoot = '.\\geckodriver.exe' #attempt to include it within the project
+        scraping_hub_bin_path = '/scrapinghub/bin'  #im not sure whether this is a good idea or just plain retarded but i sure hope it works kek
+        scraping_hub_bin_path2 = '\\scrapinghub\\bin\\geckodriver.exe'
+        scraping_hub_bin_path3 = '/scrapinghub/webdriver/gecko/v0.23.0/geckodriver-v0.23.0-linux64/geckodriver'
+        scraping_hub_bin_path4 = '\\scrapinghub\\webdriver\\gecko\\v0.23.0\\geckodriver-v0.23.0-linux64\\geckodriver'
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
         print "Firefox options created."
@@ -68,8 +74,23 @@ class GrabrSpider(CrawlSpider):
         options.add_argument('-headless')
         print "-headless argument added to options"
         print "------------------------------------"
+        try:
+            print "Creating instance of GeckoDriverDownloader"
+            gdd = GeckoDriverDownloader()
+            print "Created instance of GeckoDriverDownloader"
+        except Exception as e:
+            print "Couldn't create instance of GeckoDriverDownloader class"
+            sys.exit()
 
-        test_run = True
+        try:
+            print "Downloading and installing geckodriver"
+            (new_path, _useless_garbage) = gdd.download_and_install()
+            print "Downloaded and installed geckodriver"
+            print new_path
+        except Exception as e:
+            print "Couldn't download and install geckodriver"
+            sys.exit()
+        TEST_RUN_FLAG = True
 
         fromCityOption=0
         toCityOption=0
@@ -85,8 +106,8 @@ class GrabrSpider(CrawlSpider):
         origin_city = "miami"
         destination_city = "buenos aires"
 
-        raw_travel_date = "06/03/2019"
-        raw_final_date = "10/03/2019"
+        raw_travel_date = "12/03/2019"
+        raw_final_date = "18/03/2019"
 
         travelDate = self.makeDate(raw_travel_date)
         print "Travel date successfully assigned by makeDate"
@@ -163,12 +184,17 @@ class GrabrSpider(CrawlSpider):
                 toCityName = toCityName.lower()
                 try:
                     # self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
-                    self.driver = webdriver.Firefox(executable_path=geckodriverRoot, firefox_options=options)
-                    print "Added geckodriver as argument from the root folder"
+                    # self.driver = webdriver.Firefox(executable_path=geckodriverRoot, firefox_options=options)
+                    # print "Added geckodriver as argument from the root folder"
+                    print "Adding geckodriver from the path of download:"
+                    print scraping_hub_bin_path2
+                    self.driver = webdriver.Firefox(executable_path=scraping_hub_bin_path2, firefox_options=options)
+                    print "Added geckodriver from the path of download"
                 except Exception as e:
                     print e
-                    print "Couldn't add geckodriver as argument"
-                    sys.exit()
+                    # print "Couldn't add geckodriver as argument"
+                    print "Couldn't add geckodriver from the path of download"
+                    # sys.exit()
                     print "Creating headless driver normally"
                     self.driver = webdriver.Firefox(firefox_options=options)
                     print "Headless webdriver created normally"
@@ -1164,7 +1190,7 @@ class GrabrSpider(CrawlSpider):
             print "**********************************************"
             # print "================REPOSO===================="
 
-            if test_run:
+            if TEST_RUN_FLAG:
                 print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
                 print "Se ha ejecutado solo un scroll por ser modo de prueba"
                 print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
