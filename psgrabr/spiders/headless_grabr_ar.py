@@ -31,11 +31,13 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 from time import sleep
 
 from webdriverdownloader import GeckoDriverDownloader #trying out this bad boy
+import os
 
 '''
 This spider will be used to make offers from Miami to Buenos Aires
 This spider works without neither a GUI nor the need of inputting values during runtime
-
+- > This gives a huge fucking problem, we can't copy shit from the clipboard if there is no GUI
+- > Meaning we are fucked, gotta go back to UI AND fuck geckodriver for not letting me do this shit
 Predefined values:
 - Account to be used (email, password)
 - Annotation to attach for the offers to be made
@@ -43,8 +45,6 @@ Predefined values:
 - Travel and deliver dates
 - Number of scrolls
 - Flag for updating our own offers
-
-TODO add geckodriver to either requirements.txt or the other .yml file, now how tf do we do that god knows
 '''
 
 class GrabrSpider(CrawlSpider):
@@ -61,38 +61,40 @@ class GrabrSpider(CrawlSpider):
         LOGGER.setLevel(logging.WARNING)
         urllib3_log = logging.getLogger("urllib3")
         urllib3_log.setLevel(logging.CRITICAL)
-        geckodriver = '.\\geckodriver\\geckodriver.exe' #attempt to include it within the project
-        geckodriverRoot = '.\\geckodriver.exe' #attempt to include it within the project
-        scraping_hub_bin_path = '/scrapinghub/bin'  #im not sure whether this is a good idea or just plain retarded but i sure hope it works kek
-        scraping_hub_bin_path2 = '\\scrapinghub\\bin\\geckodriver.exe'
-        scraping_hub_bin_path3 = '/scrapinghub/webdriver/gecko/v0.23.0/geckodriver-v0.23.0-linux64/geckodriver/geckodriver.exe'
-        scraping_hub_bin_path4 = '\\scrapinghub\\webdriver\\gecko\\v0.23.0\\geckodriver-v0.23.0-linux64\\geckodriver\\geckodriver.exe'
+        geckodriver = '.\\psgrabr\\geckodriver\\geckodriver.exe' #attempt to include it within the project
+        # geckodriver_path = '.\\geckodriver\\geckodriver.exe' #attempt to include it within the project
+        # geckodriverRoot = '.\\geckodriver.exe' #attempt to include it within the project
+        # scraping_hub_bin_path = '/scrapinghub/bin'  #im not sure whether this is a good idea or just plain retarded but i sure hope it works kek
+        # scraping_hub_bin_path2 = '\\scrapinghub\\bin\\geckodriver.exe'
+        # scraping_hub_bin_path3 = '/scrapinghub/webdriver/gecko/v0.23.0/geckodriver-v0.23.0-linux64/geckodriver/geckodriver.exe'
+        # scraping_hub_bin_path4 = '\\scrapinghub\\webdriver\\gecko\\v0.23.0\\geckodriver-v0.23.0-linux64\\geckodriver\\geckodriver.exe'
 
-        sys.path.insert(0, ".\\geckodriver")
+        sys.path.insert(0, ".\\psgrabr\\geckodriver")
 
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
+        options2 = webdriver.FirefoxOptions()
         print "Firefox options created."
         print "Adding argument headless..."
         options.add_argument('-headless')
         print "-headless argument added to options"
         print "------------------------------------"
-        try:
-            print "Creating instance of GeckoDriverDownloader"
-            gdd = GeckoDriverDownloader()
-            print "Created instance of GeckoDriverDownloader"
-        except Exception as e:
-            print "Couldn't create instance of GeckoDriverDownloader class"
-            sys.exit()
+        # try:
+        #     print "Creating instance of GeckoDriverDownloader"
+        #     gdd = GeckoDriverDownloader()
+        #     print "Created instance of GeckoDriverDownloader"
+        # except Exception as e:
+        #     print "Couldn't create instance of GeckoDriverDownloader class"
+        #     sys.exit()
 
-        try:
-            print "Downloading and installing geckodriver"
-            (new_path, _useless_garbage) = gdd.download_and_install()
-            print "Downloaded and installed geckodriver"
-            print new_path
-        except Exception as e:
-            print "Couldn't download and install geckodriver"
-            sys.exit()
+        # try:
+        #     print "Downloading and installing geckodriver"
+        #     (new_path, _useless_garbage) = gdd.download_and_install()
+        #     print "Downloaded and installed geckodriver"
+        #     print new_path
+        # except Exception as e:
+        #     print "Couldn't download and install geckodriver"
+        #     sys.exit()
         TEST_RUN_FLAG = True
 
         fromCityOption=0
@@ -103,14 +105,14 @@ class GrabrSpider(CrawlSpider):
         username='harleen_vl@hotmail.com'
         password='w0mirnms'
 
-        annotation = "Hola soy Luis y quisiera llevar tu producto"
+        annotation = "Hola quisiera llevar tu producto a Buenos Aires"
         annotation = annotation.decode(sys.stdin.encoding)
 
         origin_city = "miami"
         destination_city = "buenos aires"
 
         raw_travel_date = "12/03/2019"
-        raw_final_date = "18/03/2019"
+        raw_final_date = "13/03/2019"
 
         travelDate = self.makeDate(raw_travel_date)
         print "Travel date successfully assigned by makeDate"
@@ -152,25 +154,25 @@ class GrabrSpider(CrawlSpider):
 
             failedNotExistAnymoreOffers = 0
 
-            csv = open("itemsSinOfertas.csv", "w")
-            encabezado = "nombreUsuarioComprador, nombreItem, precioBaseItem,urlOferta\n"
-            csv.write(encabezado)
+            # csv = open("itemsSinOfertas.csv", "w")
+            # encabezado = "nombreUsuarioComprador, nombreItem, precioBaseItem,urlOferta\n"
+            # csv.write(encabezado)
 
-            csvFailed = open("itemsFallados.csv","w")
-            encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta\n"
-            csvFailed.write(encabezadoFailed)
+            # csvFailed = open("itemsFallados.csv","w")
+            # encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta\n"
+            # csvFailed.write(encabezadoFailed)
 
-            csvStanleys = open("items_stanley.csv", "w")
-            encabezadoStanley = "urlOferta\n"
-            csvStanleys.write(encabezadoStanley)
+            # csvStanleys = open("items_stanley.csv", "w")
+            # encabezadoStanley = "urlOferta\n"
+            # csvStanleys.write(encabezadoStanley)
 
-            csvFunkos = open("items_funko_pop.csv", "w")
-            encabezadoFunko = "urlOferta\n"
-            csvFunkos.write(encabezadoFunko)
+            # csvFunkos = open("items_funko_pop.csv", "w")
+            # encabezadoFunko = "urlOferta\n"
+            # csvFunkos.write(encabezadoFunko)
 
-            csvLols = open("items_lol.csv", "w")
-            encabezadoLol = "urlOferta\n"
-            csvLols.write(encabezadoLol)
+            # csvLols = open("items_lol.csv", "w")
+            # encabezadoLol = "urlOferta\n"
+            # csvLols.write(encabezadoLol)
 
             dias= iterations
             today = datetime.now()
@@ -186,10 +188,14 @@ class GrabrSpider(CrawlSpider):
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
                 try:
-                    self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
-                    print "geckodriver added as argument from " + geckodriver
+                    print "Attempting to add geckodriver from within the project"
+                    print "WITH GUI"
+                    # self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
+                    self.driver = webdriver.Firefox(executable_path=geckodriver)
+                    # self.driver = webdriver.Firefox(executable_path='./geckodriver')
+                    # print "geckodriver added as argument from " + geckodriver
                     # self.driver = webdriver.Firefox(executable_path=geckodriverRoot, firefox_options=options)
-                    # print "Added geckodriver as argument from the root folder"
+                    print "Added geckodriver as argument from the root folder"
                     # print "Adding geckodriver from the path of download:"
                     # print scraping_hub_bin_path4
                     # self.driver = webdriver.Firefox(executable_path=scraping_hub_bin_path4, firefox_options=options)
@@ -200,7 +206,7 @@ class GrabrSpider(CrawlSpider):
                     # print "Couldn't add geckodriver from the path of download"
                     # sys.exit()
                     print "Creating headless driver normally"
-                    self.driver = webdriver.Firefox(firefox_options=options)
+                    self.driver = webdriver.Firefox()
                     print "Headless webdriver created normally"
                 self.driver.get(response.url)
                 sleep(2)
@@ -365,6 +371,9 @@ class GrabrSpider(CrawlSpider):
 
             #here it begins to check each element(item)
             for i in range(len(elements)):
+                if i == 5:
+                    print "5 TEST ELEMENTS COMPLETED"
+                    break
                 offerLink = ""
                 precioOferta=None
                 hayStanley=False
@@ -681,7 +690,7 @@ class GrabrSpider(CrawlSpider):
                     tag4 = tag4.encode('utf-8')
 
                     row = tag1+ "," +  tag2 + "," + tag3 + "," + tag4+"\n"
-                    csv.write(row)
+                    # csv.write(row)
                     my_item['offerPrice']=-1
                     my_item['message'] = message
                 else:
@@ -754,7 +763,7 @@ class GrabrSpider(CrawlSpider):
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row = tag1+ "," +  tag2 + "," + link+"\n"
-                        csvFailed.write(row)
+                        # csvFailed.write(row)
                     elif updateException:
                         "print Excepcion de edicion por falla"
                         my_item['offerPrice'] = tuOferta
@@ -763,7 +772,7 @@ class GrabrSpider(CrawlSpider):
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row = tag1+ "," +  tag2 + "," + link+"\n"
-                        csvFailed.write(row)
+                        # csvFailed.write(row)
                     if youMustEdit or failException or updateException:
                         yield my_item
                         print "====================FINAL===================="
@@ -817,7 +826,7 @@ class GrabrSpider(CrawlSpider):
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                        csvFailed.write(row2)
+                        # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
                         print "====================FINAL===================="
@@ -851,7 +860,7 @@ class GrabrSpider(CrawlSpider):
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                        csvFailed.write(row2)
+                        # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
                         print "====================FINAL===================="
@@ -899,7 +908,7 @@ class GrabrSpider(CrawlSpider):
                             tag1 = tag1.encode('utf-8')
                             tag2 = tag2.encode('utf-8')
                             row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                            csvFailed.write(row2)
+                            # csvFailed.write(row2)
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
                             print "====================FINAL===================="
@@ -923,7 +932,7 @@ class GrabrSpider(CrawlSpider):
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row2 = tag1+ "," +  tag2 + "," +  offerLink+"\n"
-                        csvFailed.write(row2)
+                        # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
                         print "====================FINAL===================="
@@ -971,7 +980,7 @@ class GrabrSpider(CrawlSpider):
                             tag1 = tag1.encode('utf-8')
                             tag2 = tag2.encode('utf-8')
                             row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                            csvFailed.write(row2)
+                            # csvFailed.write(row2)
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
                             print "====================FINAL===================="
@@ -1004,7 +1013,7 @@ class GrabrSpider(CrawlSpider):
                             tag1 = tag1.encode('utf-8')
                             tag2 = tag2.encode('utf-8')
                             row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                            csvFailed.write(row2)
+                            # csvFailed.write(row2)
                             failedOffers = failedOffers +1
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
@@ -1089,7 +1098,7 @@ class GrabrSpider(CrawlSpider):
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                        csvFailed.write(row2)
+                        # csvFailed.write(row2)
 
                         failedOffers = failedOffers +1
                         my_item['message'] = "Envio de oferta fallida"
@@ -1102,15 +1111,15 @@ class GrabrSpider(CrawlSpider):
                         if isStanley:
                             stanleyOffers += 1
                             row = link.encode('utf-8') + "\n"
-                            csvStanleys.write(row)
+                            # csvStanleys.write(row)
                         elif isFunko:
                             funkoOffers += 1
                             row = link.encode('utf-8') + "\n"
-                            csvFunkos.write(row)
+                            # csvFunkos.write(row)
                         elif isLol:
                             lolOffers += 1
                             row = link.encode('utf-8') + "\n"
-                            csvLols.write(row)
+                            # csvLols.write(row)
                         yield my_item
                         print "====================FINAL===================="
                 except NoSuchElementException :
@@ -1130,14 +1139,14 @@ class GrabrSpider(CrawlSpider):
                         nombreUsuarioComprador = nombreUsuarioComprador.encode('utf-8')
                         nombreItem = nombreItem.encode('utf-8')
                         row2 = nombreUsuarioComprador+ "," +  nombreItem + "," +  link+"\n"
-                        csvFailed.write(row2)
+                        # csvFailed.write(row2)
                         failedOffers = failedOffers +1
                         tag1 = my_item['nombreUsuarioComprador']
                         tag2 = my_item['nombreItem']
                         tag1 = tag1.encode('utf-8')
                         tag2 = tag2.encode('utf-8')
                         row2 = tag1+ "," +  tag2 + "," +  link+"\n"
-                        csvFailed.write(row2)
+                        # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
                         print "====================FINAL===================="
@@ -1148,15 +1157,15 @@ class GrabrSpider(CrawlSpider):
                         if isStanley:
                             stanleyOffers += 1
                             row = link.encode('utf-8') + "\n"
-                            csvStanleys.write(row)
+                            # csvStanleys.write(row)
                         elif isFunko:
                             funkoOffers += 1
                             row = link.encode('utf-8') + "\n"
-                            csvFunkos.write(row)
+                            # csvFunkos.write(row)
                         elif isLol:
                             lolOffers += 1
                             row = link.encode('utf-8') + "\n"
-                            csvLols.write(row)
+                            # csvLols.write(row)
                         yield my_item
                         print "====================FINAL===================="
 
@@ -1168,11 +1177,11 @@ class GrabrSpider(CrawlSpider):
                 self.driver.switch_to_window(self.driver.window_handles[0])
                 sleep(1.2)
 
-            csv.close()
-            csvFailed.close()
-            csvStanleys.close()
-            csvFunkos.close()
-            csvLols.close()
+            # csv.close()
+            # csvFailed.close()
+            # csvStanleys.close()
+            # csvFunkos.close()
+            # csvLols.close()
             print "Total: " +str(i+1)+" de "+str(len(elements))
             print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
             print "Ofertas Stanley:" + str(stanleyOffers)
@@ -1247,7 +1256,6 @@ class GrabrSpider(CrawlSpider):
         r = re.compile('.{2}/.{2}/.{4}')
         if len(finalDate) == 10:
             if r.match(finalDate):
-
                 if dateMin != None:
                     end_date = datetime.strptime(dateMin, '%d/%m/%Y') + timedelta(days=1)
                     if not (datetime.strptime(finalDate, '%d/%m/%Y') >= end_date):
