@@ -1,9 +1,9 @@
-1547843975035	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hlvl\\AppData\\Local\\Temp\\rust_mozprofile.TcNhgJHD1DTB"
+1548164242980	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hlvl\\AppData\\Local\\Temp\\rust_mozprofile.QKcJMNL5wlyu"
 *** You are running in headless mode.
-1547843975733	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
-1547843975733	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
-1547843978997	Marionette	INFO	Listening on port 50591
-1547843979356	Marionette	WARN	TLS certificate errors will be ignored for this session
+1548164246426	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
+1548164246426	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
+1548164253236	Marionette	INFO	Listening on port 59916
+1548164253555	Marionette	WARN	TLS certificate errors will be ignored for this session
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Failed to create WebGL context: WebGL creation failed: 
 * Can't use WebGL in headless mode (https://bugzil.la/1375585).
@@ -16,6 +16,38 @@ JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: 
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
 JavaScript warning: https://grabr.io/chunks/64180339dfabd79e.js, line 1: Error: WebGL warning: <SetDimensions>: Failed to create WebGL context: WebGL creation failed: 
 * Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript error: [Parent 118jar:f28, Gecko_IOThread] Wile:///C:ARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_cha/Program%20Files/Mozilla%20Firnnel_win.cc, line 346
+efox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+r: Polling for changes failed: NetworkError when attempting to fetch resource..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
+
+fox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: resource://gre/modules/WebProgressChild.jsm, line 58: TypeError: this.mm.content is null
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: NetworkError when attempting to fetch resource..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
+
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeEr[Parent 3136, Gecko_IOThread] WARNING: pipero error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channelr:_ this._dompc._pc is undefined
+win.cc, line 346
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni[P.arenjta 3136, Gec!ko/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefi_nIeOThread] WARNING: pipe error: 1d09: file z:/bui
+ld/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+or: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
+JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: Typ[eParent 15744, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/builEdrror: this._dompc._pc is undefined/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 console.error: BroadcastService: 
   receivedBroadcastMessage: handler for
@@ -25,34 +57,8 @@ console.error: BroadcastService:
   Stack:
     remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
 
-hen attempting to fetch resource..
-  Stack:
-    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
-
-JavaScript error: resource://gre/modules/WebProgressChild.jsm, line 58: TypeError: this.mm.content is null
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line[ 189P5a: TypeErrorr: this._domepc._pc is undefined
-nt 2284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-[Parent 2284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346J
-avaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection[Parent 2284, Gecko_IOThread] WARNI.jNs, line 1895: TypeError: this._dompc._pc is undefined
-G: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
-[ParenJta 2284, Gecko_IOThread] WARNING: pipvae Scerror: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
-ript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-[Parent 2284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: resource://gre/modules/WebProgressChild.jsm, line 58: TypeError: this.mm.content is null
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/[Parent 2284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/bPuild/src/ipc/chromium/src/chreome/cerConnection.js, line 1895ommon/:i TypeError: this._dompc_channel_win.cc, line 346
+/omni.ja!/components/[Parent 2284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/bPuild/src/ipc/chromium/src/chreome/cerConnection.js, line 1895ommon/:i TypeError: this._dompc_channel_win.cc, line 346
 pc._pc is undefined
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined

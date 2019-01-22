@@ -124,10 +124,10 @@ class GrabrSpider(CrawlSpider):
                 print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
 
 
-        # fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
-        # toCityName = raw_input('Ingresa la ciudad destino del envio: ')
-        fromCityName = "Miami"
-        toCityName = "Buenos Aires"
+        fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
+        toCityName = raw_input('Ingresa la ciudad destino del envio: ')
+        # fromCityName = "Miami"
+        # toCityName = "Buenos Aires"
         iterations = 1
         while True:
             # break

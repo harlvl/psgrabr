@@ -41,6 +41,8 @@ Predefined values:
 - Travel and deliver dates
 - Number of scrolls
 - Flag for updating our own offers
+
+TODO add geckodriver to either requirements.txt or the other .yml file, now how tf do we do that god knows
 '''
 
 class GrabrSpider(CrawlSpider):
@@ -58,6 +60,7 @@ class GrabrSpider(CrawlSpider):
         urllib3_log = logging.getLogger("urllib3")
         urllib3_log.setLevel(logging.CRITICAL)
         geckodriver = '.\\geckodriver\\geckodriver.exe' #attempt to include it within the project
+        geckodriverRoot = '.\\geckodriver.exe' #attempt to include it within the project
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
         print "Firefox options created."
@@ -76,13 +79,13 @@ class GrabrSpider(CrawlSpider):
         username='harleen_vl@hotmail.com'
         password='w0mirnms'
 
-        annotation = "Hola mi nombre is Luis y quisiera llevar tu producto"
+        annotation = "Hola soy Luis y quisiera llevar tu producto"
         annotation = annotation.decode(sys.stdin.encoding)
 
         origin_city = "miami"
         destination_city = "buenos aires"
 
-        raw_travel_date = "03/03/2019"
+        raw_travel_date = "06/03/2019"
         raw_final_date = "10/03/2019"
 
         travelDate = self.makeDate(raw_travel_date)
@@ -159,8 +162,9 @@ class GrabrSpider(CrawlSpider):
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
                 try:
-                    self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
-                    print "Added geckodriver as argument"
+                    # self.driver = webdriver.Firefox(executable_path=geckodriver, firefox_options=options)
+                    self.driver = webdriver.Firefox(executable_path=geckodriverRoot, firefox_options=options)
+                    print "Added geckodriver as argument from the root folder"
                 except Exception as e:
                     self.driver = webdriver.Firefox(firefox_options=options)
                     print e
