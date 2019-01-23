@@ -69,7 +69,7 @@ class GrabrSpider(CrawlSpider):
         # scraping_hub_bin_path3 = '/scrapinghub/webdriver/gecko/v0.23.0/geckodriver-v0.23.0-linux64/geckodriver/geckodriver.exe'
         # scraping_hub_bin_path4 = '\\scrapinghub\\webdriver\\gecko\\v0.23.0\\geckodriver-v0.23.0-linux64\\geckodriver\\geckodriver.exe'
 
-        sys.path.insert(0, ".\\psgrabr\\geckodriver")
+        # sys.path.insert(0, ".\\psgrabr\\geckodriver")
 
         print "Creating firefox options..."
         options = webdriver.FirefoxOptions()
@@ -111,8 +111,8 @@ class GrabrSpider(CrawlSpider):
         origin_city = "miami"
         destination_city = "buenos aires"
 
-        raw_travel_date = "12/03/2019"
-        raw_final_date = "13/03/2019"
+        raw_travel_date = "25/03/2019"
+        raw_final_date = "26/03/2019"
 
         travelDate = self.makeDate(raw_travel_date)
         print "Travel date successfully assigned by makeDate"
@@ -371,9 +371,9 @@ class GrabrSpider(CrawlSpider):
 
             #here it begins to check each element(item)
             for i in range(len(elements)):
-                if i == 5:
-                    print "5 TEST ELEMENTS COMPLETED"
-                    break
+                # if i == 5:
+                #     print "5 TEST ELEMENTS COMPLETED"
+                #     break
                 offerLink = ""
                 precioOferta=None
                 hayStanley=False

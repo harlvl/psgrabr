@@ -20,31 +20,21 @@ JavaScript error: jar:file:///C:/Program%20Files/[Parent 10308, Gecko_IOThread] 
 46
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/compone[nPtarent 10308, Gecko_IOThread] WARs/NIPNGeerConnection.js, line 1895: TypeError: thi: pis._dompc._pc ips e erroundefined
 r: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
- error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
-[Child 111841548187452912	Marionette	INFO	Stopped listening on port 52142
-
-###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
-
+[Parent 10308, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 2700, Chrome_ChildThread] WARNING: pipe error: 232: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 513
+[Child 2700, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 2700, Chrome_ChildThread] WARNING: pipe error: 109[Parent 10308, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Parent 10308, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 2016, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 2016, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 7008, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 7008, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/i[Parent 10308, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 11716, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 11716, Chrome_C1548191577599	Marionette	INFO	Stopped listening on port 52266
 
 ###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
 
-monitor_changes
-  threw error:
-  Message: Error: Polling for changes failed: NetworkError when attempting to fetch resource..
-  Stack:
-    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:750:13
-
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: resource://gre/modules/WebProgressChild.jsm, line 58: TypeError: this.mm.content is null
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/[Parent 14552, Gecko_IOThread] WARNING: pipe error: 109: file zc:/build/build/srco/mippocn/ecnhtromium/src/chrome/commso/nPeerConnecti/iopnc._jcsh,annel_win.cc, line 346 
-line 1895: TypeError: this._dompc._pc is undefined
-
-###!!! [Child][MessageChannel] Error: (msgtype=0x1F0016,name=PCameras::Msg_AllDone) Channel error: cannot send/recv
-
-ror: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
-JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeEr[Parent 3136, Gecko_IOThread] WARNING: pipero error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channelr:_ this._dompc._pc is undefined
+ent 3136, Gecko_IOThread] WARNING: pipero error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channelr:_ this._dompc._pc is undefined
 win.cc, line 346
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni.ja!/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefined
 JavaScript error: jar:file:///C:/Program%20Files/Mozilla%20Firefox/omni[P.arenjta 3136, Gec!ko/components/PeerConnection.js, line 1895: TypeError: this._dompc._pc is undefi_nIeOThread] WARNING: pipe error: 1d09: file z:/bui
