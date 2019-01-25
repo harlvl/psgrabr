@@ -60,10 +60,10 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = False
-        TEST_RUN_FLAG = False
+        TEST_RUN_FLAG = True
 
         username='harleen_vl@hotmail.com'
-        password='wrongpassword' #set a working password for tests
+        password='w0mirnms' #set a working password for tests
         annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -468,10 +468,10 @@ class GrabrSpider(CrawlSpider):
                 print "Ofertas no editadas por fallar la obtencion de su link: " + str(noEditFailedOffers) #-->va
                 print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
                 print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
-                print "Ofertas no editada por estar en el tope de la oferta minima (5$) :" + str(noEditLowerPrice) #-->va
-                print "Ofertas no editada por ser producto marca Stanley:" + str(noEditStanleyItem) #-->nueva
-                print "Ofertas no editada por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
-                print "Ofertas no editada por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
+                print "Ofertas no editadas por estar en el tope de la oferta minima (10$) :" + str(noEditLowerPrice) #-->va
+                print "Ofertas no editadas por ser producto marca Stanley:" + str(noEditStanleyItem) #-->nueva
+                print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
+                print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
                 print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
                 print "Ofertas potencialmente actualizables pero sin actualizar por no contar con autorizacion (ofertas descartadas): " + str(noEditByNoAuthorization) #-->nueva
                 print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
@@ -1391,10 +1391,10 @@ class GrabrSpider(CrawlSpider):
             print "Ofertas no editadas por fallar la obtencion de su link: " + str(noEditFailedOffers) #-->va
             print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
             print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
-            print "Ofertas no editada por estar en el tope de la oferta minima (5$) :" + str(noEditLowerPrice) #-->va
-            print "Ofertas no editada por ser producto marca Stanley :" + str(noEditStanleyItem) #-->nueva
-            print "Ofertas no editada por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
-            print "Ofertas no editada por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
+            print "Ofertas no editadas por estar en el tope de la oferta minima (10$) :" + str(noEditLowerPrice) #-->va
+            print "Ofertas no editadas por ser producto marca Stanley :" + str(noEditStanleyItem) #-->nueva
+            print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
+            print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
             print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
             print "Ofertas actualizables pero sin actualizar por no contar con autorizacion: " + str(noEditByNoAuthorization) #-->nueva
             print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
@@ -1953,7 +1953,8 @@ class GrabrSpider(CrawlSpider):
         checkboxElement = self.driver.find_element_by_xpath("//div[@class='as-fs fxs0 w20 h20 fx-r ai-c jc-c bdw1 bds-s bdr5 bdc-g44']")
         checkboxElement.click()
         sleep(1)
-        print "Vamos a ubicar el boton de mandar oferta"
+        logging.info("Searching send offer button...")
+        # print "Vamos a ubicar el boton de mandar oferta"
         try:
             WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb h50 mt20 px50 w100p bdr5 MD_mt40']")))
             offerButton = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb h50 mt20 px50 w100p bdr5 MD_mt40']")

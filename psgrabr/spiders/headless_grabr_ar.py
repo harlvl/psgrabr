@@ -48,7 +48,7 @@ Predefined values:
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "hlnewgr_ar"
+    name = "hlngrabr_ar"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
