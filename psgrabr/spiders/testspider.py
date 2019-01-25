@@ -21,7 +21,7 @@ class TestSpider(CrawlSpider):
     item_count = 0
     allowed_domains = ['grabr.io']
     # start_urls = ['https://grabr.io/es/login']
-    start_urls = ['https://twitter.com/scanf_printf_']
+    start_urls = ['https://twitter.com/']
 
     def parse(self, response):
         # geckodriver = 'C:\\Users\\hlvl\\\Documents\\\geckodriver\\geckodriver.exe'

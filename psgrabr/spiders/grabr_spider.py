@@ -51,7 +51,7 @@ class GrabrSpider(CrawlSpider):
         newAccountFlag = 0
         newAnnotationFlag=0
         username='harleen_vl@hotmail.com'
-        password='w0mirnms'
+        password='wrongpassword'
 
         #### TODO: set a different annotation depending on the destination city
         annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.

@@ -61,7 +61,7 @@ class GrabrSpider(CrawlSpider):
         newAccountFlag = 0
         newAnnotationFlag=0
         username='harleen_vl@hotmail.com'
-        password='50mmrnj76m1s'
+        password='wrongpassword'
         # username='info.grabr@gmail.com'
         # password='NZ7101749627'
 
@@ -155,7 +155,7 @@ class GrabrSpider(CrawlSpider):
 
         itera=0
         #here it begins to actually do stuff, i think
-        test_run = False
+        TEST_RUN_FLAG = False
         while True:
             basepath ='https://grabr.io/es'
             completedOffers=0
@@ -228,7 +228,7 @@ class GrabrSpider(CrawlSpider):
                 submitButton = self.driver.find_element_by_xpath("//button[@type='submit']")
                 sleep(1)
                 submitButton.click()
-                sleep(1)
+                sleep(2)
                 try:
                     WebDriverWait(self.driver, 15).until(EC.text_to_be_present_in_element((By.XPATH, "//div[@id='app-root']"), "2"))
                 except Exception as e:
@@ -417,6 +417,10 @@ class GrabrSpider(CrawlSpider):
 
             #here it begins to check each element(item)
             for i in range(len(elements)):
+                if TEST_RUN_FLAG:
+                    if i > 4:
+                        logging.info("Only 5 elements were parsed for being test mode")
+                        break
                 offerLink = ""
                 precioOferta=None
                 hayStanley=False
@@ -1381,10 +1385,11 @@ class GrabrSpider(CrawlSpider):
             # sleep(1)
             # print "1"
             ################# parte para testing only
-            if test_run:
-                print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-                print "Se ha ejecutado solo un scroll por ser modo de prueba"
-                print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            if TEST_RUN_FLAG:
+                # print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+                logging.info("Se ha ejecutado solo un scroll por ser modo de prueba")
+                # print "Se ha ejecutado solo un scroll por ser modo de prueba"
+                # print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
                 break
 
             while True:
@@ -1540,21 +1545,21 @@ class GrabrSpider(CrawlSpider):
             alreadyDate=False
             for j,travel in enumerate(beforeTravels):
                 travelText = travel.text
-                print "El texto de viaje dice: " + travelText.encode('utf-8')
+                # print "El texto de viaje dice: " + travelText.encode('utf-8')
 
                 posList= [pos for pos, char in enumerate(travelText) if char == ',']
                 if len(posList)<=0:
                     return -1
-                print "posList"
-                print posList
+                # print "posList"
+                # print posList
                 posKey= posList[-1]
                 travelText= travelText[posKey+1:len(travelText)]
 
                 try:
-                    print"Travel text"+ travelText
+                    # print"Travel text"+ travelText
                     #listDayMonth = travelText.split(" de ")
                     listDayMonth = travelText.split(" ")
-                    print listDayMonth
+                    # print listDayMonth
                     dayText = int(listDayMonth[1])
                     monthText = (listDayMonth[2]).lower()
                 except Exception as e:
@@ -1572,11 +1577,11 @@ class GrabrSpider(CrawlSpider):
 
                 monthText = self.monthStringAbrPoninToInt(monthText)
 
-                print "============================"
-                print tomorrowYear
-                print monthText
-                print dayText
-                print "============================"
+                # print "============================"
+                # print tomorrowYear
+                # print monthText
+                # print dayText
+                # print "============================"
                 travelDateCurr = datetime(tomorrowYear,monthText,dayText)
                 deltaDays = timedelta(days=1)
                 travelDateCurr = travelDateCurr+deltaDays
@@ -1662,13 +1667,13 @@ class GrabrSpider(CrawlSpider):
                         index=0
 
                         for calendarDay in calendarDays:
-                            print "Index: "+str(index)
+                            # print "Index: "+str(index)
 
                             #pararint "Entro en el for para buscar la fecha"
                             currentDay = calendarDay.text
-                            print "Valor:" +currentDay
-                            print "vamos a escribir el numero obtenido, puede ser una lista"
-                            print "paso la parte complicada"
+                            # print "Valor:" +currentDay
+                            # print "vamos a escribir el numero obtenido, puede ser una lista"
+                            # print "paso la parte complicada"
                             currentDay = int(currentDay)
                             if currentDay == dayNumber:
                                 #print "encontro la fecha"
@@ -1704,7 +1709,7 @@ class GrabrSpider(CrawlSpider):
         try:
             WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
             inputOfferElement =self.driver.find_element_by_xpath("//input[@type='number']")
-            sleep(0.2)
+            sleep(1)
             inputOfferElement.clear()
 
         except Exception as e:
@@ -1768,24 +1773,24 @@ class GrabrSpider(CrawlSpider):
                 logging.info("Skip this item and continue with the next")
                 return -1
 
-            print titleMonthYear
+            # print titleMonthYear
             titleMonthYear = titleMonthYear[0]
             #titleMonthYear = self.driver.find_element_by_xpath("//span[@class='tt-c']").text()
-            print titleMonthYear
+            # print titleMonthYear
             #titleMonthYear = titleMonthYear[0]
             listTitleMonthYear = titleMonthYear.split(" De ")
             if len(listTitleMonthYear)!=2:
                 listTitleMonthYear = titleMonthYear.split(" de ")
 
-            print "Titulo del calendario"
-            print listTitleMonthYear
+            # print "Titulo del calendario"
+            # print listTitleMonthYear
             monthTitle = (listTitleMonthYear[0]).lower()
             yearTitleNumber = int(listTitleMonthYear[1])
             monthTitleNumber = self.monthStringToInt(monthTitle)
-            print "Mes # del calendario :" + str(monthTitleNumber)
-            print "Mes objetivo :" + str(monthNumber)
-            print "Anho del calendario :" + str(yearTitleNumber)
-            print "Anho objetivo :" + str(yearNumber)
+            # print "Mes # del calendario :" + str(monthTitleNumber)
+            # print "Mes objetivo :" + str(monthNumber)
+            # print "Anho del calendario :" + str(yearTitleNumber)
+            # print "Anho objetivo :" + str(yearNumber)
 
             if (monthTitleNumber == monthNumber and yearTitleNumber == yearNumber):
                 print "Nos quedamos en la pantalla para buscar la fecha"
@@ -1797,9 +1802,9 @@ class GrabrSpider(CrawlSpider):
                 for calendarDay in calendarDays:
                     #sleep(1)
                     #print "Index: "+str(index)
-                    print "Entro en el for para buscar la fecha"
+                    # print "Entro en el for para buscar la fecha"
                     currentDay = calendarDay.text
-                    print "Valor:" + currentDay
+                    # print "Valor:" + currentDay
                     currentDay = int(currentDay)
                     if currentDay == dayNumber:
                         print "encontro la fecha"
@@ -1807,7 +1812,7 @@ class GrabrSpider(CrawlSpider):
                     index = index+1
                 cday = calendarDays[index]
                 cday.click()
-                print "termino el ciclo for"
+                # print "termino el ciclo for"
                 break
             elif(yearNumber*100+monthNumber ) < (yearTitleNumber*100+monthTitleNumber):
                 arrows = self.driver.find_elements_by_xpath("//button[@class='button pos-r d-ib va-t fxs0 fx-r ai-c jc-c p10 bds-s bdw1 bdr-c lh1 c-g44 bdc-g12 cur-p trd300ms MD_c-bb-hf MD_bdc-bb-hf']/div[@class='button__content']")
@@ -1862,7 +1867,7 @@ class GrabrSpider(CrawlSpider):
                 break
             except Exception as e:
                 count= count +1
-                print str(e)
+                logging.error(e)
                 if count == 20 :
                     print "Closed by pyperclip error"
                     return -1
