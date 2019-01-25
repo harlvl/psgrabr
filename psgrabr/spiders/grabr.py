@@ -35,7 +35,7 @@ This spider will need input as it is a local version
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "grabr_spider"
+    name = "grabr"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -66,13 +66,15 @@ class GrabrSpider(CrawlSpider):
         # password='NZ7101749627'
 
         #### TODO: set a different annotation depending on the destination city
-        annotation = "Hola quisiera llevar tu producto"
-        annotation = annotation.decode(sys.stdin.encoding)
-        # annotation = """Hola. Mi nombre es Jose y viajare a Buenos Aires, podria llevarte tu producto.
-        #                      Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
-        #                      ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
-        #                      Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
-        #                      Saludos :)"""
+        # annotation = "Hola quisiera llevar tu producto"
+        annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
+        Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
+        ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
+        Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
+        Saludos :)"""
+        annotation = annotation.decode(sys.stdin.encoding)    
+
+        USE_CLIPBOARD_FLAG = False
 
         while True:
             # break
@@ -1294,7 +1296,7 @@ class GrabrSpider(CrawlSpider):
                 except NoSuchElementException :
                     result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False)
                     if result == -1:
-                        print "no salio bien"
+                        print "NO SALIO BIEN"
                         self.driver.close()
                         while not self.internet_on():
                             continue
@@ -1322,7 +1324,7 @@ class GrabrSpider(CrawlSpider):
                         print "====================FINAL===================="
                         continue #Fin de flujo
                     elif result == 1:
-                        print "salio bien"
+                        print "SALIO BIEN"
                         completedOffers =  completedOffers + 1
                         if isStanley:
                             stanleyOffers += 1
@@ -1861,6 +1863,8 @@ class GrabrSpider(CrawlSpider):
         inputText.click()
         count=0
         while True:
+            if not USE_CLIPBOARD_FLAG:
+                break
             try:
                 print "Intentamos copiar al portapeles la anotacion..."
                 copied=pyperclip.copy(annotation)
@@ -1873,7 +1877,17 @@ class GrabrSpider(CrawlSpider):
                     return -1
 
         inputText.click()
-        inputText.send_keys(Keys.CONTROL + "v")
+        if USE_CLIPBOARD_FLAG:
+            inputText.send_keys(Keys.CONTROL + "v")
+        else:
+            try:
+                logging.info("Trying to send the annotation without using the clipboard")
+                inputText.send_keys(annotation)
+                logging.info("Annotation sent")
+            except Exception as e:
+                logging.error(e)
+                logging.error("Couldn't send annotation")
+                return -1
         sleep(1)
 
         checkboxElement = self.driver.find_element_by_xpath("//div[@class='as-fs fxs0 w20 h20 fx-r ai-c jc-c bdw1 bds-s bdr5 bdc-g44']")
@@ -1889,8 +1903,9 @@ class GrabrSpider(CrawlSpider):
             offerButton.send_keys(Keys.ENTER)
             sleep(1)
         except Exception as e:
-            print "No se ubico el boton para enviar oferta"
-            print "Mensaje de excepcion: " + str(e)
+            # print "No se ubico el boton para enviar oferta"
+            logging.error(e)
+            logging.error("Couldn't find button for sending the offer")
             # self.driver.close()
             # while not self.internet_on():
             #   continue

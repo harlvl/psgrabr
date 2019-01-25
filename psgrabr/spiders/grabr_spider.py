@@ -31,7 +31,7 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 from time import sleep
 
 class GrabrSpider(CrawlSpider):
-    name = "grabr"
+    name = "old_grabr"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
