@@ -56,28 +56,47 @@ class GrabrSpider(CrawlSpider):
         # print "-headless argument added to options"
         # print "------------------------------------"
 
-        fromCityOption=0
-        toCityOption=0
-        newAccountFlag = 0
-        newAnnotationFlag=0
-        username='harleen_vl@hotmail.com'
-        password='wrongpassword'
-        # username='info.grabr@gmail.com'
-        # password='NZ7101749627'
+        """
+        CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
+        """
+        USE_CLIPBOARD_FLAG = False
+        TEST_RUN_FLAG = False
 
-        #### TODO: set a different annotation depending on the destination city
-        # annotation = "Hola quisiera llevar tu producto"
+        username='harleen_vl@hotmail.com'
+        password='wrongpassword' #set a working password for tests
         annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
         Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
         Saludos :)"""
-        annotation = annotation.decode(sys.stdin.encoding)    
+        annotation = annotation.decode(sys.stdin.encoding)
+        fromCityName = "Miami"
+        toCityName = "Buenos Aires"
+        raw_travel_date = "25/03/2019"
+        raw_final_date = "26/03/2019"
+        travelDate = self.makeDate(raw_travel_date)
+        finalDate = self.makeDate(raw_final_date, travelDate)
+        iterations = 1
+        updatingAccepted = 1
 
-        USE_CLIPBOARD_FLAG = False
+        """
+        End constants and flags
+        """
+
+        fromCityOption = 0
+        toCityOption = 0
+        newAccountFlag = 0
+        newAnnotationFlag = 0
+
+        if TEST_RUN_FLAG:
+            fromCityOption = 1
+            toCityOption = 1
+            newAccountFlag = 0
+            newAnnotationFlag = 0
 
         while True:
-            # break
+            if TEST_RUN_FLAG:
+                break
             try:
                 newAccountFlag = raw_input('Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
                 newAccountFlag = int(newAccountFlag)
@@ -96,7 +115,8 @@ class GrabrSpider(CrawlSpider):
             password = raw_input('Ingrese su contraseña: ')
 
         while True:
-            # break
+            if TEST_RUN_FLAG:
+                break
             try:
                 newAnnotationFlag = raw_input('Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
                 newAnnotationFlag = int(newAnnotationFlag)
@@ -113,25 +133,28 @@ class GrabrSpider(CrawlSpider):
                     break
 
         while True:
+            if TEST_RUN_FLAG:
+                break
             travelDate= self.enterDate('Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
             if travelDate!=0 and travelDate!=-1:
                 break
 
         while True:
+            if TEST_RUN_FLAG:
+                break
             finalDate = self.enterDate('Ingresa la fecha de entrega con el siguiente formato (dd/mm/yyyy): ',travelDate)
             if finalDate!=0 and finalDate != -1:
                 break
             if (finalDate == -1):
                 print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
 
-
-        fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
-        toCityName = raw_input('Ingresa la ciudad destino del envio: ')
-        # fromCityName = "Miami"
-        # toCityName = "Buenos Aires"
+        if not TEST_RUN_FLAG:
+            fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
+            toCityName = raw_input('Ingresa la ciudad destino del envio: ')
         iterations = 1
         while True:
-            # break
+            if TEST_RUN_FLAG:
+                break
             try:
                 iterations = raw_input('Ingresa el numero de scrolls: ')
                 iterations = int(iterations)
@@ -141,11 +164,9 @@ class GrabrSpider(CrawlSpider):
             except Exception as e:
                 print "Ingrese una cantidad de scrolls validos"
 
-        isTravelSquad = 0 # travel squad ya no existe
-
-        updatingAccepted = 0
         while True:
-            # break
+            if TEST_RUN_FLAG:
+                break
             try:
                 updatingAccepted = raw_input('Desea que intente actualizar las ofertas que ya han sido mandadas? (Yes: 1 / No: 0) : ')
                 updatingAccepted = int(updatingAccepted)
@@ -157,7 +178,6 @@ class GrabrSpider(CrawlSpider):
 
         itera=0
         #here it begins to actually do stuff, i think
-        TEST_RUN_FLAG = False
         while True:
             basepath ='https://grabr.io/es'
             completedOffers=0
@@ -173,7 +193,6 @@ class GrabrSpider(CrawlSpider):
             noEditLowerPrice=0
             editedByRecalibration=0
             zeroOffers = 0
-            noEditSquadOffer = 0
             noEditByNoAuthorization = 0
             noEditStanleyItem = 0
             noEditFunkoItem = 0
@@ -223,10 +242,8 @@ class GrabrSpider(CrawlSpider):
                 sleep(2)
                 inputEmailElement = self.driver.find_element_by_xpath("//input[@type='email']")
                 inputEmailElement.send_keys(username)
-                #inputEmailElement.send_keys('drigo.beat@gmail.com')
                 inputPasswordElement = self.driver.find_element_by_xpath("//input[@type='password']")
                 inputPasswordElement.send_keys(password)
-                #inputPasswordElement.send_keys('oneafter93')
                 submitButton = self.driver.find_element_by_xpath("//button[@type='submit']")
                 sleep(1)
                 submitButton.click()
@@ -264,11 +281,11 @@ class GrabrSpider(CrawlSpider):
                 while True :
                     sleep(1)
                     fromCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]/span')
-
                     tam = (len(fromCitiesList))/2
                     if tam > 0:
-                        print "Lista de ciudades origen"
-                        print "------------------------------"
+                        if not TEST_RUN_FLAG:
+                            print "Lista de ciudades origen"
+                            print "------------------------------"
                         break
 
                     inputCityFrom.clear()
@@ -276,11 +293,15 @@ class GrabrSpider(CrawlSpider):
 
                 for i,city in enumerate(fromCitiesList):
                     if i == tam:
-                        "------------------------------"
+                        if not TEST_RUN_FLAG:
+                            print "------------------------------"
                         break
-                    print str(i+1)+ ") " + city.text
+                    if not TEST_RUN_FLAG:
+                        print str(i+1)+ ") " + city.text
 
                 while True:
+                    if TEST_RUN_FLAG:
+                        break
                     try:
                         fromCityOption = raw_input('Selecciona una opcion: ')
                         fromCityOption = int(fromCityOption)
@@ -305,19 +326,24 @@ class GrabrSpider(CrawlSpider):
                     toCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]')
                     tam = (len(toCitiesList))/2
                     if tam>0:
-                        print "Lista de ciudades destino"
-                        print "------------------------------"
+                        if not TEST_RUN_FLAG:
+                            print "Lista de ciudades destino"
+                            print "------------------------------"
                         break
                     inputCityTo.clear()
                     inputCityTo.send_keys(toCityName)
 
                 for i,city in enumerate(toCitiesList):
                     if i == tam:
-                        print "------------------------------"
+                        if not TEST_RUN_FLAG:
+                            print "------------------------------"
                         break
-                    print str(i+1)+") "+city.text
+                    if not TEST_RUN_FLAG:
+                        print str(i+1)+") "+city.text
 
                 while True:
+                    if TEST_RUN_FLAG:
+                        break
                     try:
                         toCityOption = raw_input('Selecciona una opcion: ')
                         toCityOption = int(toCityOption)
@@ -407,7 +433,7 @@ class GrabrSpider(CrawlSpider):
             # print diff
             # print limitElements
             sleep(2)
-            #elements is also the list of items that you see after you scroll down
+            #elements is the list of items that you see after you scroll down
             elements = Selector(text=body).xpath("//a[@class='LG_public-inquiry-card--detailed mt10 MD_mt20 public-inquiry-card fx-c fz14 bgc-w bdw1 bdys-s bdc-g12 trd300ms trp-bgc SM_fz-m SM_bdr5 SM_bds-s MD_bgc-g3-hf']")
             links = Selector(text=body).xpath("//a[@class='LG_public-inquiry-card--detailed mt10 MD_mt20 public-inquiry-card fx-c fz14 bgc-w bdw1 bdys-s bdc-g12 trd300ms trp-bgc SM_fz-m SM_bdr5 SM_bds-s MD_bgc-g3-hf']/@href").extract()
             # print len(elements)
@@ -443,7 +469,6 @@ class GrabrSpider(CrawlSpider):
                 print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
                 print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
                 print "Ofertas no editada por estar en el tope de la oferta minima (5$) :" + str(noEditLowerPrice) #-->va
-                print "Ofertas no editada por haber hecho oferta bajo el criterio squad :" + str(noEditSquadOffer) #-->nueva
                 print "Ofertas no editada por ser producto marca Stanley:" + str(noEditStanleyItem) #-->nueva
                 print "Ofertas no editada por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
                 print "Ofertas no editada por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
@@ -452,7 +477,7 @@ class GrabrSpider(CrawlSpider):
                 print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
                 print "**********************************************"
                 ###################################################################################################
-                # Flags importantes isTravelSquad, updatingAccepted
+                # Flags importantes, updatingAccepted
                 opener = urllib2.build_opener()
                 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 
@@ -1367,7 +1392,6 @@ class GrabrSpider(CrawlSpider):
             print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
             print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
             print "Ofertas no editada por estar en el tope de la oferta minima (5$) :" + str(noEditLowerPrice) #-->va
-            print "Ofertas no editada por haber hecho oferta bajo el criterio squad :" + str(noEditSquadOffer) #-->nueva
             print "Ofertas no editada por ser producto marca Stanley :" + str(noEditStanleyItem) #-->nueva
             print "Ofertas no editada por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
             print "Ofertas no editada por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
@@ -1409,6 +1433,42 @@ class GrabrSpider(CrawlSpider):
             self.driver.get(currentUrl)
             sleep(6)
         #raise CloseSpider
+    
+    def makeDate(self, finalDate, dateMin=None):
+        r = re.compile('.{2}/.{2}/.{4}')
+        if len(finalDate) == 10:
+            if r.match(finalDate):
+                if dateMin != None:
+                    end_date = datetime.strptime(dateMin, '%d/%m/%Y') + timedelta(days=1)
+                    if not (datetime.strptime(finalDate, '%d/%m/%Y') >= end_date):
+                        return -1
+
+                listDate = finalDate.split("/")
+                dayNumber=int(listDate[0])
+                monthNumber=int(listDate[1])
+                yearNumber =int(listDate[2])
+                try:
+                    datetime(yearNumber, monthNumber, dayNumber)
+                except Exception as e:
+                    logging.error("Invalid date input")
+                    return 0
+
+                today = datetime.now() + timedelta(days=1)
+                dayToday =  today.day
+                monthToday =  today.month
+                yearToday =  today.year
+
+                if(self.getDateNumber(dayNumber, monthNumber,yearNumber) >= self.getDateNumber(dayToday, monthToday,yearToday)):
+                    return finalDate
+                else:
+                    logging.warning("Invalid date input")
+                    return 0
+            else:
+                logging.warning("Invalid format input")
+                return 0
+        else:
+            logging.warning("Invalid format input")
+            return 0
 
     def enterDate(self, customMessage, dateMin=None):
         finalDate = raw_input(customMessage)
