@@ -12,6 +12,4 @@ psgrabr/settings.py
 psgrabr/spiders/__init__.py
 psgrabr/spiders/grabr.py
 psgrabr/spiders/grabr_spider.py
-psgrabr/spiders/headless_grabr.py
 psgrabr/spiders/headless_grabr_ar.py
-psgrabr/spiders/testspider.py

@@ -48,22 +48,16 @@ class GrabrSpider(CrawlSpider):
         LOGGER.setLevel(logging.WARNING)
         urllib3_log = logging.getLogger("urllib3")
         urllib3_log.setLevel(logging.CRITICAL)
-        # print "Creating firefox options..."
-        # options = webdriver.FirefoxOptions()
-        # print "Firefox options created."
-        # print "Adding argument headless..."
-        # options.add_argument('-headless')
-        # print "-headless argument added to options"
-        # print "------------------------------------"
 
         """
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = False
-        TEST_RUN_FLAG = False
+        TEST_RUN_FLAG = True
+        HEADLESS_FLAG = True
 
         username='harleen_vl@hotmail.com'
-        password='wrongpassword' #set a working password for tests
+        password='w0mirnms' #set a working password for tests
         annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -72,16 +66,23 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode(sys.stdin.encoding)
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "25/03/2019"
-        raw_final_date = "26/03/2019"
+        raw_travel_date = "16/02/2019"
+        raw_final_date = "18/02/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
-        iterations = 1
+        iterations = 5
         updatingAccepted = 1
 
         """
         End constants and flags
         """
+        if HEADLESS_FLAG:
+            logging.info("Creating firefox options...")
+            options = webdriver.FirefoxOptions()
+            logging.info("Firefox options created.")
+            logging.info("Adding argument headless...")
+            options.add_argument('-headless')
+            logging.info("-headless argument added to options")
 
         fromCityOption = 0
         toCityOption = 0
@@ -235,11 +236,27 @@ class GrabrSpider(CrawlSpider):
             if itera==0:
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
-                logging.info("Creating web driver...")
-                self.driver = webdriver.Firefox()
-                logging.info("Created.")
+                if HEADLESS_FLAG:
+                    try:
+                        logging.info("Creating headless web driver...")
+                        self.driver = webdriver.Firefox(firefox_options=options)
+                        logging.info("Created headless web driver.")
+                    except Exception as e:
+                        logging.error(e)
+                        logging.warning("Could not create headless web driver")
+                        sys.exit()
+                else:
+                    try:
+                        logging.info("Creating web driver...")
+                        self.driver = webdriver.Firefox()
+                        logging.info("Created.")
+                    except Exception as e:
+                        logging.error(e)
+                        logging.warning("Could not create web driver")
+                        sys.exit()
                 self.driver.get(response.url)
                 sleep(2)
+                logging.info("Logging in...")
                 inputEmailElement = self.driver.find_element_by_xpath("//input[@type='email']")
                 inputEmailElement.send_keys(username)
                 inputPasswordElement = self.driver.find_element_by_xpath("//input[@type='password']")
@@ -1278,7 +1295,7 @@ class GrabrSpider(CrawlSpider):
 
 
                     sleep(1.8)
-                    result=self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True )
+                    result=self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG)
                     if result== -1:
                         self.driver.close()
                         while not self.internet_on():
@@ -1319,7 +1336,7 @@ class GrabrSpider(CrawlSpider):
                         yield my_item
                         print "====================FINAL===================="
                 except NoSuchElementException :
-                    result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False)
+                    result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False, USE_CLIPBOARD_FLAG)
                     if result == -1:
                         print "NO SALIO BIEN"
                         self.driver.close()
@@ -1513,7 +1530,7 @@ class GrabrSpider(CrawlSpider):
     def getDateNumber(self,day,month,year):
         return year*10000 + month*100 + day
 
-    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True):
+    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, USE_CLIPBOARD_FLAG=True):
         #finaldate  ya es una fecha verificada
         fail=False
         if not hayFechaViaje:
@@ -1672,7 +1689,7 @@ class GrabrSpider(CrawlSpider):
                 inputFromElement.send_keys(fromCityName)
                 WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")))
                 fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
-                print "Logitud de la lista: "+ str(len(fromCitiesList))
+                print "Longitud de la lista: "+ str(len(fromCitiesList))
 
                 firstCityFrom =  fromCitiesList[fromCityOption-1] #ward solved
                 firstCityFrom.click()
@@ -1712,13 +1729,13 @@ class GrabrSpider(CrawlSpider):
                     titleMonthYear = Selector(text=html).xpath("//span[@class='tt-c']/text()").extract()
                     titleMonthYear = titleMonthYear[0]
                     #titleMonthYear = self.driver.find_element_by_xpath("//span[@class='tt-c']").text()
-                    print titleMonthYear
+                    # print titleMonthYear
                     #titleMonthYear = titleMonthYear[0]
                     listTitleMonthYear = titleMonthYear.split(" De ")
                     if len(listTitleMonthYear)!=2:
                         listTitleMonthYear = titleMonthYear.split(" de ")
 
-                    print listTitleMonthYear
+                    # print listTitleMonthYear
                     monthTitle = (listTitleMonthYear[0]).lower()
                     yearTitleNumber = int(listTitleMonthYear[1])
                     monthTitleNumber = self.monthStringToInt(monthTitle)
@@ -1858,7 +1875,7 @@ class GrabrSpider(CrawlSpider):
                 print "Nos quedamos en la pantalla para buscar la fecha"
                 sleep(0.8)
                 calendarDays = self.driver.find_elements_by_xpath('//div[@class="d-tbcl h35 w35 bds-s bdw1 bdc-g12"]')
-                print calendarDays
+                # print calendarDays
                 index=0
 
                 for calendarDay in calendarDays:
