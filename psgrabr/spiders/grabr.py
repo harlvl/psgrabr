@@ -67,8 +67,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "13/02/2019"
-        raw_final_date = "15/02/2019"
+        raw_travel_date = "20/02/2019"
+        raw_final_date = "22/02/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 5
@@ -536,7 +536,7 @@ class GrabrSpider(CrawlSpider):
                         # print response
                         logging.info("Link opened")
                         # print "abrio el link"
-                        logging.info(link)
+                        # logging.info(link)
                         # print link
                         html = response.read()
                         response.close()
@@ -579,7 +579,7 @@ class GrabrSpider(CrawlSpider):
                 # print priceBaseItem
                 try:
                     precio_base = float(re.search(r'\d+', (priceBaseItem.replace('.','')).replace(',','.') ).group())
-                    logging.info("Base price succesfully read")
+                    logging.info("Base price succesfully read: " + str(precio_base))
                     # print "Precio base leido sin errores"
                 except:
                     logging.error("Couldn't read base price, continuing with the next item")
@@ -870,7 +870,7 @@ class GrabrSpider(CrawlSpider):
                             sleep(0.5)
                             while not self.internet_on():
                                 continue
-                            logging.debug("Close 2")
+                            logging.warning("Close 2")
                             # print "close 2"
                             self.driver.switch_to_window(self.driver.window_handles[0])
                             #closing ends
@@ -962,7 +962,7 @@ class GrabrSpider(CrawlSpider):
                     siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
                     #......................................
                     sleep(1.5)
-                    logging.debug("Found Next button")
+                    logging.info("Found Next button")
                     # print "encontro el boton de siguiente"
                     # print siguienteElement
                     sleep(2)
@@ -1538,11 +1538,11 @@ class GrabrSpider(CrawlSpider):
             sleep(5)
             try:
                 logging.info("Empezamos con el riesgo...")
+                logging.info("Esperando a que aparezca el boton para ir al primer paso...")
                 WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")))
                 logging.info("Por aca siempre hay riesgo de que falle la oferta porque no se encuentra el boton del primer paso")
                 firstStep =self.driver.find_element_by_xpath("//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")
                 # print firstStep
-
                 firstStep.click()
                 sleep(3)
 
@@ -1574,7 +1574,7 @@ class GrabrSpider(CrawlSpider):
             except Exception as e:
                 logging.error(e)
                 logging.warning("No encontramos el boton para agregar viajes")
-                logging.debug("pasa por la excepcion 2")
+                logging.warning("pasa por la excepcion 2")
                 # self.driver.close()
                 # while not self.internet_on():
                 #   continue
@@ -1788,15 +1788,23 @@ class GrabrSpider(CrawlSpider):
         yearNumber =int(listDate[2])
         logging.info("Estamos en el segundo paso...")
         inputOfferElement=None
+        sleep(2)
         try:
-            WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
+            # initial waiting time is 15
+            # for testing purposes we're gonna set it to 20 or so
+            logging.info("Esperando a que el input para el precio este presente...")
+            WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
+            logging.info("El input esta presente o salio de la espera luego de 15 segundos")
+            logging.info("Empezando test para obtener el textbox para el precio...")
             inputOfferElement =self.driver.find_element_by_xpath("//input[@type='number']")
-            sleep(4.0)
+            logging.info("Se pudo obtener el textbox para el precio")
+            sleep(3.0)
+            logging.info("Limpiando el textbox del precio")
             inputOfferElement.clear()
-
+            logging.info("Textbox cleared")
         except Exception as e:
-            logging.error(e)
-            logging.warning("No se ubico el input para el precio")
+            logging.error(str(e))
+            logging.warning("No se pudo ubicar el input para el precio")
             # self.driver.close()
             # while not self.internet_on():
             #   continue
@@ -1919,18 +1927,18 @@ class GrabrSpider(CrawlSpider):
         if fail==True:
             return -1
 
-        print "Aqui empieza la demora"
+        logging.info("Aqui empieza la demora")
         inputText = None
         try:
-            print "Obtenemos control sobre el area de comentarios"
+            logging.info("Obtenemos control sobre el area de comentarios")
             WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")))
             inputText = firstStep =self.driver.find_element_by_xpath("//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")
             sleep(1)
             inputText.clear()
-            print "Limpiamos el area de comentarios"
+            logging.info("Limpiamos el area de comentarios")
         except Exception as e:
-            print "No se ubico el textarea"
-            print "Mensaje de excepcion: " + str(e)
+            logging.error(e)
+            logging.warning("No se ubico el textarea")
             # self.driver.close()
             # while not self.internet_on():
             #   continue
@@ -1950,14 +1958,14 @@ class GrabrSpider(CrawlSpider):
             if not USE_CLIPBOARD_FLAG:
                 break
             try:
-                print "Intentamos copiar al portapeles la anotacion..."
+                logging.info("Intentamos copiar al portapeles la anotacion...")
                 copied=pyperclip.copy(annotation)
                 break
             except Exception as e:
                 count= count +1
                 logging.error(e)
                 if count == 20 :
-                    print "Closed by pyperclip error"
+                    logging.warning("Closed by pyperclip error")
                     return -1
 
         inputText.click()
