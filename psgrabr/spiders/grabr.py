@@ -465,8 +465,8 @@ class GrabrSpider(CrawlSpider):
             #here it begins to check each element(item)
             for i in range(len(elements)):
                 if TEST_RUN_FLAG:
-                    if i > 10:
-                        logging.info("Only 10 elements were parsed for being test mode")
+                    if i > 5:
+                        logging.info("Only 5 elements were parsed for being test mode")
                         break
                 offerLink = ""
                 precioOferta=None
@@ -474,27 +474,9 @@ class GrabrSpider(CrawlSpider):
                 isStanley = False
                 isFunko = False
                 isLol = False
-                youMustEdit=False
-                print "====================INICIO===================="
-                print "**********************************************"
-                print "Total: " +str(i+1)+" de "+str(len(elements))
-                print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
-                print "Ofertas Stanley:" + str(stanleyOffers)
-                print "Ofertas Funko Pop:" + str(funkoOffers)
-                print "Ofertas L.O.L.:" + str(lolOffers)
-                print "Ofertas editadas para mejorar la subasta: " + str(editedOffers) #-->va
-                print "Ofertas no creadas por fallar la carga de datos en la web:" + str(failedOffers) #-->va
-                print "Ofertas no editadas por fallar la obtencion de su link: " + str(noEditFailedOffers) #-->va
-                print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
-                print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
-                print "Ofertas no editadas por estar en el tope de la oferta minima (10$) :" + str(noEditLowerPrice) #-->va
-                print "Ofertas no editadas por ser producto marca Stanley:" + str(noEditStanleyItem) #-->nueva
-                print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
-                print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
-                print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
-                print "Ofertas potencialmente actualizables pero sin actualizar por no contar con autorizacion (ofertas descartadas): " + str(noEditByNoAuthorization) #-->nueva
-                print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
-                print "**********************************************"
+                youMustEdit=
+                ####  imprimir los stats
+                self.printHeader(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
                 ###################################################################################################
                 # Flags importantes, updatingAccepted
                 opener = urllib2.build_opener()
@@ -746,7 +728,7 @@ class GrabrSpider(CrawlSpider):
                         logging.info("Trying to update through normal flow")
                         # print "Seguiremos probando si es factible actualizar por el flujo normal"
                         tuOferta = float(re.search(r'\d+', (tuOferta.replace('.','')).replace(',','.')).group())
-                        if tuOferta == 5:
+                        if tuOferta == 10:
                             noEditLowerPrice= noEditLowerPrice +1
                             updateException = True
                         else:
@@ -866,24 +848,21 @@ class GrabrSpider(CrawlSpider):
                             WebDriverWait(self.driver, 25).until(EC.presence_of_element_located((By.XPATH, "//input[@class='w100p']")))
                             inputOfferElement = self.driver.find_element_by_xpath("//input[@class='w100p']")
                         except Exception as e:
-                            # print "No se encontro el formulario para editar"
                             logging.error(e)
+                            logging.warning("No se encontro el formulario para editar")
                             #closing starts
                             self.driver.close()
                             sleep(0.5)
                             while not self.internet_on():
                                 continue
                             logging.warning("Close 2")
-                            # print "close 2"
                             self.driver.switch_to_window(self.driver.window_handles[0])
                             #closing ends
-                            logging.info("")
                             # print "Nos olvidamos de esta oferta y seguimos adelante"
                             logging.info("Skip this item and continue with the next")
                             updateException=True
                             message= "Actualizacion fallada porque no se puedo abrir el formulario de editar"
                             noEditUpdateForm = noEditUpdateForm +1
-
                         if not failException:   #si no se generaron excepciones continuamos
                             while not self.internet_on():
                                 continue
@@ -891,12 +870,12 @@ class GrabrSpider(CrawlSpider):
                             try:
                                 inputOfferElement.clear()
                             except Exception as e:
-                                print str(e)
+                                logging.error(e)
                                 self.driver.close()
                                 sleep(0.5)
                                 while not self.internet_on():
                                     continue
-                                print "close 2"
+                                logging.info("close 2")
                                 self.driver.switch_to_window(self.driver.window_handles[0])
                                 noEditUpdateForm = noEditUpdateForm+1
                                 continue
@@ -904,8 +883,24 @@ class GrabrSpider(CrawlSpider):
                             #colocamos el nuevo precio
                             precioOferta = str(int(round(precioOferta)))
                             # print precioOferta
+                            logging.info("Enviando nuevo precio de oferta...")
                             inputOfferElement.send_keys(precioOferta)
-                            editButton  = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 px50 mt30 bdr5']")
+                            logging.info("Nuevo precio de oferta enviado")
+                            try:
+                                editButton  = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 px50 mt30 bdr5']")
+                            except Exception as e:
+                                logging.error(e)
+                                logging.warning("Error al cargar el boton para editar")
+                                logging.info("Regresando a la ventana anterior...")
+                                self.driver.close()
+                                sleep(0.5)
+                                while not self.internet_on():
+                                    continue
+                                logging.info("close 2")
+                                self.driver.switch_to_window(self.driver.window_handles[0])
+                                logging.info("Se regreso a la ventana anterior")
+                                noEditUpdateForm = noEditUpdateForm+1
+                                continue
                             editButton.click()
                             sleep(2)
                             self.driver.close()
@@ -974,7 +969,7 @@ class GrabrSpider(CrawlSpider):
                     # logging.info("Found Next button")
                     # print "encontro el boton de siguiente"
                     # print siguienteElement
-                    sleep(2)
+                    # sleep(2)
                     k=0
                     while True:
                         try:
@@ -1144,13 +1139,16 @@ class GrabrSpider(CrawlSpider):
                         monthNumber=int(listDate[1])
                         yearNumber =int(listDate[2])
 
+                        #obtiene el textbox para poner la ciudad de origen
                         inputFromElement = self.driver.find_element_by_xpath("//label[@class='fx-r ai-c cur-d pl15 input input--g mb20 bdr5']//input[@class='fxg1 miw0']")
+                        logging.info("Poniendo la ciudad from...")
                         inputFromElement.send_keys(fromCityName)
+                        logging.info("Se escribio la ciudad from: " + str(fromCityName))
                         sleep(2)
 
                         k=0
                         while True:
-                            logging.info("Entro a poner la ciudad from")
+                            logging.info("Entro a seleccionar del combobox")
                             try:
                                 fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
                                 firstCityFrom =  fromCitiesList[fromCityOption-1]
@@ -1182,7 +1180,7 @@ class GrabrSpider(CrawlSpider):
                             print "====================FINAL===================="
                             continue #Fin de flujo
 
-                        logging.info("Salio de poner la ciudad from")
+                        logging.info("Se selecciono la primera ciudad from")
 
                         sleep(1.8)
                         k=0
@@ -1190,8 +1188,8 @@ class GrabrSpider(CrawlSpider):
                             logging.info("Entro para abrir el input de la fecha")
                             try:
                                 dateInput = self.driver.find_element_by_xpath("//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")
-
                                 dateInput.click()
+                                logging.info("Input de la fecha abierto")
                                 break
                             except Exception as e:
                                 k=k+1
@@ -1235,13 +1233,13 @@ class GrabrSpider(CrawlSpider):
                             titleMonthYear = Selector(text=html).xpath("//span[@class='tt-c']/text()").extract()
                             titleMonthYear = titleMonthYear[0]
                             #titleMonthYear = self.driver.find_element_by_xpath("//span[@class='tt-c']").text()
-                            print titleMonthYear
+                            logging.info(titleMonthYear)
                             #titleMonthYear = titleMonthYear[0]
                             listTitleMonthYear = titleMonthYear.split(" De ")
                             if len(listTitleMonthYear)!=2:
                                 listTitleMonthYear = titleMonthYear.split(" de ")
 
-                            print listTitleMonthYear
+                            logging.info(listTitleMonthYear)
                             monthTitle = (listTitleMonthYear[0]).lower()
                             yearTitleNumber = int(listTitleMonthYear[1])
                             monthTitleNumber = self.monthStringToInt(monthTitle)
@@ -1291,20 +1289,24 @@ class GrabrSpider(CrawlSpider):
                     m=0
                     while True:
                         try:
+                            logging.info("Se hara click en el boton siguiente")
                             siguienteElement.click()
+                            logging.info("Se hizo click en el boton siguiente")
                             break
                         except Exception as e:
                             m = m+1
                             if m==5:
                                 break
                             logging.warning("No se pudo dar click en el boton siguiente asi que lo tratamos de reparar")
+                            logging.info("Buscando el boton siguiente...")
                             siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
+                            logging.info("Encontro el boton siguiente")
 
 
                     sleep(1.8)
                     logging.info("ENTRANDO AL METODO makeOffer")
-                    result=self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG)
-                    logging.info("SALIO DEL METODO makeOffer")
+                    result = self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG)
+                    logging.info("SALIO DEL METODO makeOffer con result = " + str(result))
                     if result== -1:
                         self.driver.close()
                         while not self.internet_on():
@@ -1811,7 +1813,10 @@ class GrabrSpider(CrawlSpider):
             inputOfferElement.clear()
             logging.info("Textbox cleared")
         except Exception as e:
-            logging.error(str(e))
+            if hasattr(e, 'message'):
+                logging.error(e.message)
+            else:
+                logging.error(e)
             logging.warning("No se pudo ubicar el input para el precio")
             # self.driver.close()
             # while not self.internet_on():
@@ -1824,7 +1829,9 @@ class GrabrSpider(CrawlSpider):
             return -1
 
         inputOfferElement.clear()
+        logging.info("Enviando el precio de la oferta...")
         inputOfferElement.send_keys(str(int(round(item['offerPrice']))))
+        logging.info("Precio de la oferta enviada")
         inputDate = self.driver.find_elements_by_xpath("//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")
         inputDate =  inputDate[0]
         inputDate.click()
@@ -1836,7 +1843,9 @@ class GrabrSpider(CrawlSpider):
 
             while True:
                 try:
+                    logging.info("Tratando de obtener el html de la pagina...")
                     html = self.driver.page_source
+                    logging.info("html de la pagina obtenido")
                     break
                 except httplib.IncompleteRead:
                     continue
@@ -1853,7 +1862,7 @@ class GrabrSpider(CrawlSpider):
                     logging.info("Skip this item and continue with the next")
                     fail = True
                     break
-            if fail==True:
+            if fail:
                 break
             html= html.encode('utf-8')
             titleMonthYear = []
@@ -1933,7 +1942,7 @@ class GrabrSpider(CrawlSpider):
                     arrowNext.click()
 
                 firstTimeFlag=True
-        if fail==True:
+        if fail:
             return -1
 
         logging.info("Aqui empieza la demora")
@@ -1991,8 +2000,10 @@ class GrabrSpider(CrawlSpider):
                 return -1
         sleep(1)
 
+        logging.info("Aceptando los terminos y condiciones...")
         checkboxElement = self.driver.find_element_by_xpath("//div[@class='as-fs fxs0 w20 h20 fx-r ai-c jc-c bdw1 bds-s bdr5 bdc-g44']")
         checkboxElement.click()
+        logging.info("Terminos y condiciones aceptados")
         sleep(1)
         logging.info("Searching send offer button...")
         # print "Vamos a ubicar el boton de mandar oferta"
@@ -2153,3 +2164,25 @@ class GrabrSpider(CrawlSpider):
         if nombreItem.find("LOL") >= 0 or nombreItem.find("Lol") >= 0 or nombreItem.find("L.O.L") >= 0 or nombreItem.find("l.o.l") >= 0 or nombreItem.find("L.o.l") >= 0:
             return True #turns out i am retarded
         return False
+
+    def printHeader(self, i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers):
+        print "====================INICIO===================="
+        print "**********************************************"
+        print "Total: " +str(i+1)+" de "+str(len(elements))
+        print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
+        print "Ofertas Stanley:" + str(stanleyOffers)
+        print "Ofertas Funko Pop:" + str(funkoOffers)
+        print "Ofertas L.O.L.:" + str(lolOffers)
+        print "Ofertas editadas para mejorar la subasta: " + str(editedOffers) #-->va
+        print "Ofertas no creadas por fallar la carga de datos en la web:" + str(failedOffers) #-->va
+        print "Ofertas no editadas por fallar la obtencion de su link: " + str(noEditFailedOffers) #-->va
+        print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
+        print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
+        print "Ofertas no editadas por estar en el tope de la oferta minima (10$) :" + str(noEditLowerPrice) #-->va
+        print "Ofertas no editadas por ser producto marca Stanley:" + str(noEditStanleyItem) #-->nueva
+        print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
+        print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
+        print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
+        print "Ofertas potencialmente actualizables pero sin actualizar por no contar con autorizacion (ofertas descartadas): " + str(noEditByNoAuthorization) #-->nueva
+        print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
+        print "**********************************************"
