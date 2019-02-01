@@ -68,8 +68,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "17/02/2019"
-        raw_final_date = "20/02/2019"
+        raw_travel_date = "23/02/2019"
+        raw_final_date = "26/02/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 5
@@ -206,26 +206,6 @@ class GrabrSpider(CrawlSpider):
 
             failedNotExistAnymoreOffers = 0
 
-            # csv = open("itemsSinOfertas.csv", "w")
-            # encabezado = "nombreUsuarioComprador, nombreItem, precioBaseItem,urlOferta\n"
-            # csv.write(encabezado)
-
-            # csvFailed = open("itemsFallados.csv","w")
-            # encabezadoFailed = "nombreUsuarioComprador, nombreItem, urlOferta\n"
-            # csvFailed.write(encabezadoFailed)
-
-            # csvStanleys = open("items_stanley.csv", "w")
-            # encabezadoStanley = "urlOferta\n"
-            # csvStanleys.write(encabezadoStanley)
-
-            # csvFunkos = open("items_funko_pop.csv", "w")
-            # encabezadoFunko = "urlOferta\n"
-            # csvFunkos.write(encabezadoFunko)
-
-            # csvLols = open("items_lol.csv", "w")
-            # encabezadoLol = "urlOferta\n"
-            # csvLols.write(encabezadoLol)
-
             today = datetime.now()
 
             deltaDays = timedelta(days=(iterations+1))
@@ -264,11 +244,11 @@ class GrabrSpider(CrawlSpider):
                 inputPasswordElement = self.driver.find_element_by_xpath("//input[@type='password']")
                 inputPasswordElement.send_keys(password)
                 submitButton = self.driver.find_element_by_xpath("//button[@type='submit']")
-                sleep(1)
-                submitButton.click()
                 sleep(2)
+                submitButton.click()
+                sleep(3)
                 try:
-                    WebDriverWait(self.driver, 15).until(EC.text_to_be_present_in_element((By.XPATH, "//div[@id='app-root']"), "2"))
+                    WebDriverWait(self.driver, 20).until(EC.text_to_be_present_in_element((By.XPATH, "//div[@id='app-root']"), "2"))
                 except Exception as e:
                     logging.error("No se pudo iniciar sesion")
                     logging.error(e)
@@ -845,7 +825,7 @@ class GrabrSpider(CrawlSpider):
                         try:
                             while not self.internet_on():
                                 continue
-                            WebDriverWait(self.driver, 25).until(EC.presence_of_element_located((By.XPATH, "//input[@class='w100p']")))
+                            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//input[@class='w100p']")))
                             inputOfferElement = self.driver.find_element_by_xpath("//input[@class='w100p']")
                         except Exception as e:
                             logging.error(e)
@@ -1536,10 +1516,14 @@ class GrabrSpider(CrawlSpider):
         logging.info("hayFechaViaje: " + str(hayFechaViaje))
         logging.info("USE_CLIPBOARD_FLAG: " + str(USE_CLIPBOARD_FLAG))
         fail=False
-        if not hayFechaViaje:
+        ######test
+        # if not hayFechaViaje:
+        if True:
             #Hemos entrado de frente al segundo paso, para asegurarnos nuestra correcta fecha de viaje
             #regresamos al paso 1 para seleccionarla si es que no existe, o si existe, igual la seleccionamos porciacaso
-            logging.info("Vamos a retroceder al primer paso porque NO HAY FECHA DE VIAJE")
+
+            # logging.info("Vamos a retroceder al primer paso porque NO HAY FECHA DE VIAJE")
+            logging.info("Entrando para retroceder al primer paso")
 
             #sleep critico
             # sleep(3)
@@ -1547,7 +1531,7 @@ class GrabrSpider(CrawlSpider):
             try:
                 logging.info("Empezamos con el riesgo...")
                 logging.info("Esperando a que aparezca el boton para ir al primer paso...")
-                WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")))
+                WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")))
                 logging.info("Por aca siempre hay riesgo de que falle la oferta porque no se encuentra el boton del primer paso")
                 firstStep =self.driver.find_element_by_xpath("//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")
                 logging.info("Se encontro el boton para ir al primer paso...")
@@ -1570,7 +1554,7 @@ class GrabrSpider(CrawlSpider):
 
             try:
                 logging.warning("POR AQUI GENERALMENTE OCURRE UNA EXCEPCION QUE HACE FALLAR EL FLUJO DE LA OFERTA")
-                WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fx-r jc-sb ai-c']")))
+                WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fx-r jc-sb ai-c']")))
                 # print "Testing 1"
                 logging.info("Passed test buscar radio button anadir nuevo viaje")
                 addTravelButton  = self.driver.find_element_by_xpath("//div[@class='fx-r jc-sb ai-c']")
@@ -1694,9 +1678,15 @@ class GrabrSpider(CrawlSpider):
                 while not self.internet_on():
                     continue
                 inputFromElement.send_keys(fromCityName)
-                WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")))
-                fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
-                logging.info("Longitud de la lista: "+ str(len(fromCitiesList)))
+                try:
+                    WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")))
+                    fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
+                    logging.info("Longitud de la lista: "+ str(len(fromCitiesList)))
+                except Exception as e:
+                    logging.error(e)
+                    logging.warning("No se pudo cargar la lista de ciudades")
+                    logging.info("Skip this item and continue with the next")
+                    return -1
 
                 firstCityFrom =  fromCitiesList[fromCityOption-1] #ward solved
                 firstCityFrom.click()
@@ -1803,8 +1793,8 @@ class GrabrSpider(CrawlSpider):
             # initial waiting time is 15
             # for testing purposes we're gonna set it to 20 or so
             logging.info("Esperando a que el input para el precio este presente...")
-            WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
-            logging.info("El input esta presente o salio de la espera luego de 15 segundos")
+            WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
+            logging.info("El input esta presente o salio de la espera luego de 60 segundos")
             logging.info("Empezando test para obtener el textbox para el precio...")
             inputOfferElement =self.driver.find_element_by_xpath("//input[@type='number']")
             logging.info("Se pudo obtener el textbox para el precio")
@@ -1949,7 +1939,7 @@ class GrabrSpider(CrawlSpider):
         inputText = None
         try:
             logging.info("Obtenemos control sobre el area de comentarios")
-            WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")))
+            WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")))
             inputText = firstStep =self.driver.find_element_by_xpath("//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")
             sleep(1)
             inputText.clear()
@@ -2008,7 +1998,7 @@ class GrabrSpider(CrawlSpider):
         logging.info("Searching send offer button...")
         # print "Vamos a ubicar el boton de mandar oferta"
         try:
-            WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb h50 mt20 px50 w100p bdr5 MD_mt40']")))
+            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb h50 mt20 px50 w100p bdr5 MD_mt40']")))
             offerButton = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb h50 mt20 px50 w100p bdr5 MD_mt40']")
 
             #sleep critico
