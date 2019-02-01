@@ -474,7 +474,7 @@ class GrabrSpider(CrawlSpider):
                 isStanley = False
                 isFunko = False
                 isLol = False
-                youMustEdit=
+                youMustEdit = False
                 ####  imprimir los stats
                 self.printHeader(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
                 ###################################################################################################
