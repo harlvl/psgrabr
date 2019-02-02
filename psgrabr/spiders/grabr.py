@@ -53,9 +53,10 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = False
-        TEST_RUN_FLAG = True
+        TEST_RUN_FLAG = False
         HEADLESS_FLAG = True
         NO_INPUT_FLAG = True
+        SERVER_FLAG = True
 
         username='harleen_vl@hotmail.com'
         password='w0mirnms' #set a working password when NO_INPUT_FLAG is False
@@ -68,8 +69,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "23/02/2019"
-        raw_final_date = "26/02/2019"
+        raw_travel_date = "08/02/2019"
+        raw_final_date = "12/02/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 5
@@ -155,7 +156,6 @@ class GrabrSpider(CrawlSpider):
             fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
             toCityName = raw_input('Ingresa la ciudad destino del envio: ')
 
-        iterations = 1
         while True:
             if NO_INPUT_FLAG:
                 break
@@ -445,8 +445,8 @@ class GrabrSpider(CrawlSpider):
             #here it begins to check each element(item)
             for i in range(len(elements)):
                 if TEST_RUN_FLAG:
-                    if i > 5:
-                        logging.info("Only 5 elements were parsed for being test mode")
+                    if i > 3:
+                        logging.info("Only 3 elements were parsed for being test mode")
                         break
                 offerLink = ""
                 precioOferta=None
@@ -680,11 +680,10 @@ class GrabrSpider(CrawlSpider):
                     else:
                         logging.info("No se pudo obtener el link para poder ofertar")
                         message = "No se pudo obtener el link para poder ofertar"
-                        fail
+                        fail = True
                 # elif updatingAccepted and not zeroOffersFlag:
                 elif updatingAccepted:
                     logging.info("Offer was already made, might need update")
-                    # print "se encontro que ya se hizo una oferta asi que puede que este elemento va a nacesitar actualizacion"
                     if self.isStanley(nombreItem):
                     # if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
                         logging.info("Not updating Stanley items")
@@ -932,13 +931,13 @@ class GrabrSpider(CrawlSpider):
                     # print "Vamos a generar una nueva oferta en: " + offerLink
                 while not self.internet_on():
                     continue
-                logging.info("Creando una nueva ventana...")
+                # logging.info("Creando una nueva ventana...")
                 self.driver.execute_script('window.open("' + offerLink + '", "_blank");')
                 sleep(2)
-                logging.info("Ventana nueva creada")
-                logging.info("Cambiando de ventana...")
+                # logging.info("Ventana nueva creada")
+                # logging.info("Cambiando de ventana...")
                 self.driver.switch_to_window(self.driver.window_handles[1])
-                logging.info("Cambio de ventana hecho")
+                # logging.info("Cambio de ventana hecho")
 
                 try:
                     logging.info("Buscando el boton siguiente...")
@@ -946,8 +945,6 @@ class GrabrSpider(CrawlSpider):
                     logging.info("Encontro el boton siguiente")
                     #......................................
                     sleep(1.5)
-                    # logging.info("Found Next button")
-                    # print "encontro el boton de siguiente"
                     # print siguienteElement
                     # sleep(2)
                     k=0
@@ -1039,15 +1036,16 @@ class GrabrSpider(CrawlSpider):
                         logging.info("j, travel: " + str(j) + " ; " + str(travel))
                         travelText = travel.text
                         travelText =  travelText.encode('utf-8')
-                        print travelText
+                        logging.info("travelText: " + str(travelText))
                         posList= [pos for pos, char in enumerate(travelText) if char == ',']
                         if len(posList)<=0:
                             fail=True
                             break
 
-                        print posList
+                        logging.info("posList: " + str(posList))
                         posKey= posList[-1]
                         travelText= travelText[posKey+1:len(travelText)]
+                        logging.info("travelText luego de recortarlo: " + str(travelText))
                         try:
                             logging.info("Travel text: " + travelText)
                             #listDayMonth = travelText.split(" de ")
@@ -1089,6 +1087,9 @@ class GrabrSpider(CrawlSpider):
                         deltaDays = timedelta(days=1)
                         travelDateCurr = travelDateCurr+deltaDays
                         travelDateFormat = datetime.strptime(travelDate, '%d/%m/%Y')
+                        logging.info(" <<<<< FUERA del metodo makeOffer >>>>>")
+                        logging.warning("travelDateCurr: " + str(travelDateCurr))
+                        logging.warning("travelDateFormat: " + str(travelDateFormat))
                         if travelDateCurr == travelDateFormat:
                             logging.info("Ya se habia configurado el viaje...")
                             alreadyDate=True
@@ -1249,7 +1250,7 @@ class GrabrSpider(CrawlSpider):
                                     #print "Index: "+str(index)
                                 cday = calendarDays[index]
                                 cday.click()
-                                logging.info("Termino el ciclo for")
+                                # logging.info("Termino el ciclo for")
                                 break
                             elif (yearNumber*100+monthNumber ) < (yearTitleNumber*100+monthTitleNumber):
                                 arrows = self.driver.find_elements_by_xpath("//button[@class='button pos-r d-ib va-t fxs0 fx-r ai-c jc-c p10 bds-s bdw1 bdr-c lh1 c-g44 bdc-g12 cur-p trd300ms MD_c-bb-hf MD_bdc-bb-hf']/div[@class='button__content']")
@@ -1284,8 +1285,8 @@ class GrabrSpider(CrawlSpider):
 
 
                     sleep(1.8)
-                    logging.info("ENTRANDO AL METODO makeOffer")
-                    result = self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG)
+                    logging.info("ENTRANDO AL METODO makeOffer, linea 1284")
+                    result = self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG, SERVER_FLAG)
                     logging.info("SALIO DEL METODO makeOffer con result = " + str(result))
                     if result== -1:
                         self.driver.close()
@@ -1330,10 +1331,10 @@ class GrabrSpider(CrawlSpider):
                     ##### entra a este flujo cuando no encuentra el boton siguiente
                     logging.warning("Excepcion de NoSuchElementException")
                     logging.info("ENTRANDO AL METODO makeOffer")
-                    result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False, USE_CLIPBOARD_FLAG)
-                    logging.info("SALIO DEL METODO makeOffer")
+                    result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False, USE_CLIPBOARD_FLAG, SERVER_FLAG)
+                    logging.info("SALIO DEL METODO makeOffer con result = " + str(result))
                     if result == -1:
-                        logging.warning("NO SALIO BIEN")
+                        logging.warning(">>>>>>NO SALIO BIEN<<<<<<")
                         self.driver.close()
                         while not self.internet_on():
                             continue
@@ -1506,7 +1507,7 @@ class GrabrSpider(CrawlSpider):
     def getDateNumber(self,day,month,year):
         return year*10000 + month*100 + day
 
-    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, USE_CLIPBOARD_FLAG=True):
+    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, USE_CLIPBOARD_FLAG=True, SERVER_FLAG=False):
         #finaldate  ya es una fecha verificada
         logging.info("VARIABLES DE makeOffer")
         logging.info("finalDate: " + str(finaldate))
@@ -1517,8 +1518,8 @@ class GrabrSpider(CrawlSpider):
         logging.info("USE_CLIPBOARD_FLAG: " + str(USE_CLIPBOARD_FLAG))
         fail=False
         ######test
-        # if not hayFechaViaje:
-        if True:
+        if not hayFechaViaje:
+        # if True:
             #Hemos entrado de frente al segundo paso, para asegurarnos nuestra correcta fecha de viaje
             #regresamos al paso 1 para seleccionarla si es que no existe, o si existe, igual la seleccionamos porciacaso
 
@@ -1593,7 +1594,7 @@ class GrabrSpider(CrawlSpider):
                     k=k+1
                     if k==5: break
                     sleep(1)
-                    print "pasa por la excepcion 3"
+                    logging.info("pasa por la excepcion 3")
             if k==5:
                 # self.driver.close()
                 # while not self.internet_on():
@@ -1620,10 +1621,10 @@ class GrabrSpider(CrawlSpider):
                 posList= [pos for pos, char in enumerate(travelText) if char == ',']
                 if len(posList)<=0:
                     return -1
-                # print "posList"
-                # print posList
-                posKey= posList[-1]
-                travelText= travelText[posKey+1:len(travelText)]
+                logging.info("posList: " + str(posList))
+                posKey = posList[-1]
+                travelText = travelText[posKey+1:len(travelText)]
+                logging.info("travelText luego de recortarlo: " + str(travelText))
 
                 try:
                     # print"Travel text"+ travelText
@@ -1656,6 +1657,16 @@ class GrabrSpider(CrawlSpider):
                 deltaDays = timedelta(days=1)
                 travelDateCurr = travelDateCurr+deltaDays
                 travelDateFormat = datetime.strptime(travelDate, '%d/%m/%Y')
+                logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
+                logging.warning("travelDateCurr: " + str(travelDateCurr))
+                logging.warning("travelDateFormat: " + str(travelDateFormat))
+                if SERVER_FLAG:
+                    #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
+                    #### por eso se va por otro flujo
+                    #### hardcodearemos la solucion por ahora
+                    if(travelDateCurr.day - travelDateFormat.day) == 1:
+                        travelDateCurr = travelDateFormat
+
                 if travelDateCurr == travelDateFormat:
                     logging.info("Ya se habia configurado el viaje...")
                     alreadyDate=True
@@ -1664,11 +1675,14 @@ class GrabrSpider(CrawlSpider):
             siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
 
             if alreadyDate:
-                travelCurr =beforeTravels[j]
-
+                logging.info("Se encontro que ya habia un viaje creado para esa fecha")
+                travelCurr = beforeTravels[j]
+                logging.info("Seleccionando el viaje existente...")
                 travelCurr.click()
+                logging.info("Se eligio el viaje existente")
                 sleep(1.1)
             else:
+                logging.info("No habia un viaje creado para esa fecha")
                 listDate = travelDate.split("/")
                 dayNumber=int(listDate[0])
                 monthNumber=int(listDate[1])
@@ -1677,7 +1691,9 @@ class GrabrSpider(CrawlSpider):
                 inputFromElement = self.driver.find_element_by_xpath("//label[@class='fx-r ai-c cur-d pl15 input input--g mb20 bdr5']//input[@class='fxg1 miw0']")
                 while not self.internet_on():
                     continue
+                logging.info("Enviando ciudad " + fromCityName + " para crear el viaje...")
                 inputFromElement.send_keys(fromCityName)
+                logging.info("Ciudad escrita")
                 try:
                     WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")))
                     fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
@@ -1690,6 +1706,7 @@ class GrabrSpider(CrawlSpider):
 
                 firstCityFrom =  fromCitiesList[fromCityOption-1] #ward solved
                 firstCityFrom.click()
+                logging.info("Se eligio la primera ciudad")
                 sleep(1.1)
 
                 k=0
@@ -1713,7 +1730,9 @@ class GrabrSpider(CrawlSpider):
                     logging.info("Skip this item and continue with the next")
                     return -1
 
+                logging.info("Buscando el input para la fecha...")
                 dateInput.click()
+                logging.info("Se hizo click en el input de la fecha")
                 sleep(1)
 
                 firstTimeFlag= False
@@ -1733,6 +1752,7 @@ class GrabrSpider(CrawlSpider):
                         listTitleMonthYear = titleMonthYear.split(" de ")
 
                     # print listTitleMonthYear
+                    #obtener un "febrero de 2019" y convertirlo a 2
                     monthTitle = (listTitleMonthYear[0]).lower()
                     yearTitleNumber = int(listTitleMonthYear[1])
                     monthTitleNumber = self.monthStringToInt(monthTitle)
@@ -1776,7 +1796,9 @@ class GrabrSpider(CrawlSpider):
                             arrowNext.click()
 
                         firstTimeFlag=True
+            logging.info("Intentando clickear el boton siguiente...")
             siguienteElement.click()
+            logging.info("Se pudo clickear el boton siguiente")
             sleep(1.5)
 
         else:
@@ -1793,8 +1815,8 @@ class GrabrSpider(CrawlSpider):
             # initial waiting time is 15
             # for testing purposes we're gonna set it to 20 or so
             logging.info("Esperando a que el input para el precio este presente...")
-            WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
-            logging.info("El input esta presente o salio de la espera luego de 60 segundos")
+            WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
+            logging.info("El input esta presente o salio de la espera luego de 15 segundos")
             logging.info("Empezando test para obtener el textbox para el precio...")
             inputOfferElement =self.driver.find_element_by_xpath("//input[@type='number']")
             logging.info("Se pudo obtener el textbox para el precio")
@@ -2042,20 +2064,6 @@ class GrabrSpider(CrawlSpider):
             return bool(re.match(
              "^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$", email))
 
-    def parse_two (self,response):
-        item = response.meta['item']
-        names = response.xpath("//section[@class='MD_d-n']//div[@class='fw-sb ellipsis mr5']/text()").extract()
-        prices = response.xpath("//section[@class='MD_d-n']//div[@class='fw-sb']/span/text()").extract()
-        numberOfNames= len(names)
-        numberOfPrices = len(prices)
-        numberOfElements= max([ numberOfNames,numberOfPrices])
-        sublist = {}
-        for i in range (0, numberOfElements):
-            sublistItem = {'name':names[i],'price':prices[i]}
-            sublist[i] = sublistItem
-        item['sublist'] = sublist
-        yield item
-
     def monthStringToInt(self,monthTitle):
         months = {
             "enero":1,
@@ -2115,14 +2123,6 @@ class GrabrSpider(CrawlSpider):
             return True
         except urllib2.URLError as err:
             return False
-
-    def moreItems(self, previous_len):
-        while not self.internet_on():
-            continue
-        body = self.driver.page_source
-        new_items = Selector(text=body).xpath("//div[@class='ml5']//text()").extract()
-        new_len = len(new_items)
-        return new_len if new_len > previous_len else 0
     
     def getOfferPrice(self, precioMin):
         precioOferta = 4
