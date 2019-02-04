@@ -30,6 +30,8 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 
 from time import sleep
 
+# import subprocess
+
 '''
 Unless flags say otherwise, this spider will need input from a user.
 '''
@@ -53,13 +55,14 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = False
-        TEST_RUN_FLAG = False
+        TEST_RUN_FLAG = True
+        MAX_ITEMS_TEST = 10
         HEADLESS_FLAG = True
         NO_INPUT_FLAG = True
         SERVER_FLAG = True
 
         username='harleen_vl@hotmail.com'
-        password='w0mirnms' #set a working password when NO_INPUT_FLAG is False
+        password='garbage' #set a working password when NO_INPUT_FLAG is False
         annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -69,8 +72,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "08/02/2019"
-        raw_final_date = "12/02/2019"
+        raw_travel_date = "28/02/2019"
+        raw_final_date = "04/03/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 5
@@ -79,6 +82,22 @@ class GrabrSpider(CrawlSpider):
         """
         End constants and flags
         """
+        # try:
+        #     logging.info("Trying to check firefox version...")
+        #     output = subprocess.check_output(['firefox', '--version'])
+        #     logging.info(output)
+        # except Exception as e:
+        #     logging.error(e)
+        #     logging.info("Could not check firefox version")
+
+        # try:
+        #     logging.info("Trying to check geckodriver version...")
+        #     output2 = subprocess.check_output(['geckodriver', '--version'])
+        #     logging.info(output2)
+        # except Exception as e:
+        #     logging.error(e)
+        #     logging.info("Could not check geckodriver version")
+
         if HEADLESS_FLAG:
             logging.info("Creating firefox options...")
             options = webdriver.FirefoxOptions()
@@ -445,8 +464,8 @@ class GrabrSpider(CrawlSpider):
             #here it begins to check each element(item)
             for i in range(len(elements)):
                 if TEST_RUN_FLAG:
-                    if i > 3:
-                        logging.info("Only 3 elements were parsed for being test mode")
+                    if i > MAX_ITEMS_TEST:
+                        logging.info("Only " + str(MAX_ITEMS_TEST) +  " elements were parsed for being test mode")
                         break
                 offerLink = ""
                 precioOferta=None
@@ -456,7 +475,8 @@ class GrabrSpider(CrawlSpider):
                 isLol = False
                 youMustEdit = False
                 ####  imprimir los stats
-                self.printHeader(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
+                self.printStats(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
+                logging.info("==============END STATS==============")
                 ###################################################################################################
                 # Flags importantes, updatingAccepted
                 opener = urllib2.build_opener()
@@ -477,13 +497,11 @@ class GrabrSpider(CrawlSpider):
                 tuOferta= elem.xpath(".//span[@class='fw-sb lh-h SM_fz-xxxl']/text()").extract_first()
 
                 logging.info("Name of the item: "+ nombreItem.encode('utf-8'))
-                # print "El nombre del item es: "+ nombreItem.encode('utf-8')
 
                 #se obtiene una lista en donde debe ser una lista de un elemento con la oferta que se ha hecho, esta oferta está sin recargos
                 link = basepath + links[i] #Obtenemos el link para ver el detalle de la oferta y sacar información adicional
                 link = link.encode('utf-8') #link de detalle de oferta
                 logging.info("Link with information about the offer: " + link)
-                # print "Link de donde sacaremos la info de la oferta: " + link
                 #####################
                 #tuOferta determina si el camino va por la creacion o actualizacion de la oferta
                 #Sacaremos el contenido del detalle de la oferta siempre
@@ -548,7 +566,7 @@ class GrabrSpider(CrawlSpider):
                 except:
                     logging.error("Couldn't read base price, continuing with the next item")
                     # print "No se pudo leer el precio base, continuamos con el siguiente item"
-                    print "====================FINAL===================="
+                    logging.info("==============END STATS==============")
                     continue
                 # print "info de precio_base:"
                 # print type(precio_base)
@@ -603,7 +621,6 @@ class GrabrSpider(CrawlSpider):
                 #--------------------------------------------------*************-------------------------------------
                 logging.info("BEGIN THE EVALUATION BE IT FOR CREATING A NEW OFFER OR UPDATING AN EXISTING ONE")
                 # print "EMPIEZA LA EVALUACION EN CASO DE QUE SE CREE LA OFERTA(nueva o no) O SE VAYA A QUERER ACTUALIZAR"
-                # print tuOferta
                 if not tuOferta:
                     tuOferta=0
 
@@ -616,10 +633,8 @@ class GrabrSpider(CrawlSpider):
                         logging.info("A new offer will be created")
                         # print "No tienes la etiqueta tu oferta, asi que se debe crear una oferta"
                     if self.isStanley(nombreItem):
-                    # if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
                         #caso es un producto stanley
                         logging.info("Stanley item found")
-                        # print "Se encontro un producto Stanley"
                         isStanley = True
                         quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
                         if quantity:
@@ -687,25 +702,21 @@ class GrabrSpider(CrawlSpider):
                     if self.isStanley(nombreItem):
                     # if nombreItem.find("stanley") >= 0 or nombreItem.find("Stanley") >= 0:
                         logging.info("Not updating Stanley items")
-                        # print "Potencial actualizacion pero el producto es Stanley"
                         noEditStanleyItem = noEditStanleyItem +1
                         message = "Oferta no editada por haber ya enviado una oferta y ser Stanley"
                         updateException = True
                     elif self.isFunko(nombreItem):
                         logging.info("Not updating Funko Pop items")
-                        # print "Potencial actualizacion pero el producto es Funko Pop"
                         noEditFunkoItem = noEditFunkoItem +1
                         message = "Oferta no editada por haber ya enviado una oferta y ser Funko Pop"
                         updateException = True
                     elif self.isLol(nombreItem):
                         logging.info("Not updating LOL items")
-                        # print "Potencial actualizacion pero el producto es LOL"
                         noEditLolItem = noEditLolItem +1
                         message = "Oferta no editada por haber ya enviado una oferta y ser LOL"
                         updateException = True
                     else: #caso normal
                         logging.info("Trying to update through normal flow")
-                        # print "Seguiremos probando si es factible actualizar por el flujo normal"
                         tuOferta = float(re.search(r'\d+', (tuOferta.replace('.','')).replace(',','.')).group())
                         if tuOferta == 10:
                             noEditLowerPrice= noEditLowerPrice +1
@@ -733,8 +744,6 @@ class GrabrSpider(CrawlSpider):
                                 try:
                                     editLink = editButton.get_attribute("href") #ward solved
                                     logging.info("Edit link retrieved")
-                                    # print "Se pudo obtener el link de editar..."
-                                    # print editLink
                                 except Exception as e:
                                     logging.error(e)
                                     editLinkExtracted = False
@@ -757,8 +766,6 @@ class GrabrSpider(CrawlSpider):
                             if not updateException:
                                 oldOfferValue = tuOferta
                                 #abrira el formulario de editar para obtener su valor de la antigua oferta
-                                # print "oldOfferValue"
-                                # print oldOfferValue
                                 if oldOfferValue > precioMin:
                                     if precioMin>=210:
                                         precioOferta = precioMin - 10
@@ -789,25 +796,9 @@ class GrabrSpider(CrawlSpider):
                     continue
 
                 elif zeroOffersFlag :
-                    # print "si no hay ofertantes guardamos los datos en el archivo"
-                    # print my_item
-                    # tag1 = my_item['nombreUsuarioComprador']
-                    # tag2 = my_item['nombreItem']
-                    # print type(my_item['precioBaseItem'])
-                    # tag3 = my_item['precioBaseItem']
-                    # print tag3
-                    # tag4 = link
-                    # tag1 = tag1.encode('utf-8')
-                    # tag2 = tag2.encode('utf-8')
-                    # tag3 = tag3.encode('utf-8') if tag3 is not None else 'None'
-                    # tag4 = tag4.encode('utf-8')
-
-                    # row = tag1+ "," +  tag2 + "," + tag3 + "," + tag4+"\n"
-                    # csv.write(row)
                     my_item['offerPrice']=-1
                     my_item['message'] = message
                     # yield my_item
-                    # print "====================FINAL===================="
                     # continue  # I DIDNT SEE THIS FUCKING CONTINUE AND I THOUGHT THE PROGRAM WAS FUCKED UP WTF THE FUCK
                 else:
                     if youMustEdit:
@@ -912,7 +903,7 @@ class GrabrSpider(CrawlSpider):
 
                     if youMustEdit or failException or updateException:
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                         continue #Fin de flujo
                 if zeroOffersFlag:
                     logging.info("Creating the FIRST OFFER")
@@ -977,7 +968,7 @@ class GrabrSpider(CrawlSpider):
                         # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                         continue #Fin de flujo
                     logging.info("Haciendo click en el boton addTravel")
                     addTravelButton.click()
@@ -1018,7 +1009,7 @@ class GrabrSpider(CrawlSpider):
                         # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                         continue #Fin de flujo
 
                     ##########################
@@ -1073,7 +1064,7 @@ class GrabrSpider(CrawlSpider):
                             # csvFailed.write(row2)
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
-                            print "====================FINAL===================="
+                            logging.info("==============END STATS==============")
                             continue #Fin de flujo
 
                         #monthText = self.monthStringToInt(monthText)
@@ -1106,7 +1097,7 @@ class GrabrSpider(CrawlSpider):
                         # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                         continue #Fin de flujo
                     if alreadyDate:
                         travelCurr =beforeTravels[j]
@@ -1158,7 +1149,7 @@ class GrabrSpider(CrawlSpider):
                             # csvFailed.write(row2)
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
-                            print "====================FINAL===================="
+                            logging.info("==============END STATS==============")
                             continue #Fin de flujo
 
                         logging.info("Se selecciono la primera ciudad from")
@@ -1196,7 +1187,7 @@ class GrabrSpider(CrawlSpider):
                             failedOffers = failedOffers +1
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
-                            print "====================FINAL===================="
+                            logging.info("==============END STATS==============")
                             continue #Fin de flujoe flujo
 
                         logging.info("Salio para abrir el input de la fecha")
@@ -1285,7 +1276,7 @@ class GrabrSpider(CrawlSpider):
 
 
                     sleep(1.8)
-                    logging.info("ENTRANDO AL METODO makeOffer, linea 1284")
+                    logging.info("ENTRANDO AL METODO makeOffer")
                     result = self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG, SERVER_FLAG)
                     logging.info("SALIO DEL METODO makeOffer con result = " + str(result))
                     if result== -1:
@@ -1308,7 +1299,7 @@ class GrabrSpider(CrawlSpider):
                         failedOffers = failedOffers +1
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                         continue #Fin de flujo
                     elif result == 1:
                         logging.info(">>>>>>SALIO BIEN<<<<<<")
@@ -1326,7 +1317,7 @@ class GrabrSpider(CrawlSpider):
                             row = link.encode('utf-8') + "\n"
                             # csvLols.write(row)
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                 except NoSuchElementException :
                     ##### entra a este flujo cuando no encuentra el boton siguiente
                     logging.warning("Excepcion de NoSuchElementException")
@@ -1359,7 +1350,7 @@ class GrabrSpider(CrawlSpider):
                         # csvFailed.write(row2)
                         my_item['message'] = "Envio de oferta fallida"
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
                         continue #Fin de flujo
                     elif result == 1:
                         logging.info(">>>>>>SALIO BIEN<<<<<<")
@@ -1377,35 +1368,19 @@ class GrabrSpider(CrawlSpider):
                             row = link.encode('utf-8') + "\n"
                             # csvLols.write(row)
                         yield my_item
-                        print "====================FINAL===================="
+                        logging.info("==============END STATS==============")
 
                 #sleep(1.2)
                 self.driver.close()
                 while not self.internet_on():
                     continue
-                sleep(0.5)
+                sleep(2.0)
 
                 self.driver.switch_to_window(self.driver.window_handles[0])
                 sleep(1.2)
 
-            print "Total: " +str(i+1)+" de "+str(len(elements))
-            print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
-            print "Ofertas Stanley:" + str(stanleyOffers)
-            print "Ofertas Funko Pop:" + str(funkoOffers)
-            print "Ofertas L.O.L.:" + str(lolOffers)
-            print "Ofertas editadas para mejorar la subasta: " + str(editedOffers) #-->va
-            print "Ofertas no creadas por fallar la carga de datos en la web:" + str(failedOffers) #-->va
-            print "Ofertas no editadas por fallar la obtencion de su link: " + str(noEditFailedOffers) #-->va
-            print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
-            print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
-            print "Ofertas no editadas por estar en el tope de la oferta minima (10$) :" + str(noEditLowerPrice) #-->va
-            print "Ofertas no editadas por ser producto marca Stanley :" + str(noEditStanleyItem) #-->nueva
-            print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
-            print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
-            print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
-            print "Ofertas actualizables pero sin actualizar por no contar con autorizacion: " + str(noEditByNoAuthorization) #-->nueva
-            print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
-            print "**********************************************"
+            self.printStats(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
+            logging.info("==============END STATS==============")
 
             ################# parte para testing only
             if TEST_RUN_FLAG:
@@ -1664,8 +1639,12 @@ class GrabrSpider(CrawlSpider):
                     #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
                     #### por eso se va por otro flujo
                     #### hardcodearemos la solucion por ahora
-                    if(travelDateCurr.day - travelDateFormat.day) == 1:
+                    delta_dif = timedelta(days=1)
+                    if (travelDateCurr - travelDateFormat) == delta_dif:
+                        logging.info("There was a 1 day difference between the dates")
                         travelDateCurr = travelDateFormat
+                    # if(travelDateCurr.day - travelDateFormat.day) == 1:
+                    #     travelDateCurr = travelDateFormat
 
                 if travelDateCurr == travelDateFormat:
                     logging.info("Ya se habia configurado el viaje...")
@@ -2026,6 +2005,7 @@ class GrabrSpider(CrawlSpider):
             #sleep critico
             sleep(1)
             offerButton.send_keys(Keys.ENTER)
+            logging.info("Offer sent")
             sleep(1)
         except Exception as e:
             # print "No se ubico el boton para enviar oferta"
@@ -2043,18 +2023,20 @@ class GrabrSpider(CrawlSpider):
 
         logging.info("Vamos a intentar cerrar el pop up dando clic en 'Ahora no'")
         sleep(3)
+        finalPopUp = None
         try:
             finalPopUp = self.driver.find_element_by_xpath('//div[@class="px20 bgc-g3 pt20"]/div[@class="py15"]')
             logging.info("Pop-up captado sin problemas")
         except NoSuchElementException:
             logging.info("No habia pop-up")
 
-        try:
-            finalPopUp.click()
-            logging.info("pop-up cerrado")
-        except Exception as e:
-            logging.error(e)
-            logging.warning("No se pudo clickear el final pop-up aunque se encontro")
+        if finalPopUp:
+            try:
+                finalPopUp.click()
+                logging.info("pop-up cerrado")
+            except Exception as e:
+                logging.error(e)
+                logging.warning("No se pudo clickear el final pop-up aunque se encontro")
 
         sleep(2)
         return 1
@@ -2155,9 +2137,8 @@ class GrabrSpider(CrawlSpider):
             return True #turns out i am retarded
         return False
 
-    def printHeader(self, i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers):
-        print "====================INICIO===================="
-        print "**********************************************"
+    def printStats(self, i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers):
+        logging.info("================STATS================")
         print "Total: " +str(i+1)+" de "+str(len(elements))
         print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
         print "Ofertas Stanley:" + str(stanleyOffers)
@@ -2175,4 +2156,3 @@ class GrabrSpider(CrawlSpider):
         print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
         print "Ofertas potencialmente actualizables pero sin actualizar por no contar con autorizacion (ofertas descartadas): " + str(noEditByNoAuthorization) #-->nueva
         print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
-        print "**********************************************"
