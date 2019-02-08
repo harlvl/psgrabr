@@ -10,4 +10,5 @@ psgrabr/middlewares.py
 psgrabr/pipelines.py
 psgrabr/settings.py
 psgrabr/spiders/__init__.py
-psgrabr/spiders/grabr.py
+psgrabr/spiders/grabr50.py
+psgrabr/spiders/grabr100.py

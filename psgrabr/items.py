@@ -14,7 +14,7 @@ class ScrapyProjectItem(scrapy.Item):
     nombreItem = scrapy.Field()
     precioBaseItem = scrapy.Field()
     nombreUsuarioComprador = scrapy.Field()
-    sublist = scrapy.Field()
+    # sublist = scrapy.Field()   ### da error cuando se ejecuta en el servidor
     externalLink = scrapy.Field()
     offerLink = scrapy.Field()
     offerPrice = scrapy.Field()

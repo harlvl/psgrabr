@@ -54,5 +54,4 @@ websocket-client==0.54.0
 win-inet-pton==1.0.1
 wincertstore==0.2
 zope.interface==4.6.0
-webdriverdownloader==0.1.dev2
 scrapinghub-entrypoint-scrapy
