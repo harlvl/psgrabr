@@ -53,13 +53,13 @@ class GrabrSpider(CrawlSpider):
         """
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
-        USE_CLIPBOARD_FLAG = False
+        USE_CLIPBOARD_FLAG = True
         TEST_RUN_FLAG = False   # 1 scroll
         MAX_ITEMS_FLAG = False
         MAX_ITEMS = 10
-        HEADLESS_FLAG = True
-        NO_INPUT_FLAG = True
-        SERVER_FLAG = True
+        HEADLESS_FLAG = False
+        NO_INPUT_FLAG = False
+        SERVER_FLAG = False
 
         username='p@z.com'
         password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
@@ -212,6 +212,7 @@ class GrabrSpider(CrawlSpider):
             stanleyOffers = 0
             funkoOffers = 0
             lolOffers = 0
+            poopsieOffers = 0
 
             noEditFailedOffers=0
             noEditBetterPrice=0
@@ -221,6 +222,7 @@ class GrabrSpider(CrawlSpider):
             noEditByNoAuthorization = 0
             noEditStanleyItem = 0
             noEditFunkoItem = 0
+            noEditPoopsieItem = 0
             noEditLolItem = 0
             noEditUpdateForm = 0
             funkoItemsSuccess = 0
@@ -466,9 +468,10 @@ class GrabrSpider(CrawlSpider):
                 isStanley = False
                 isFunko = False
                 isLol = False
+                isPoopsie = False
                 youMustEdit = False
                 ####  imprimir los stats
-                self.printStats(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
+                self.printStats(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, poopsieOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, noEditPoopsieItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
                 logging.info("==============END STATS==============")
                 ###################################################################################################
                 # Flags importantes, updatingAccepted
@@ -651,6 +654,19 @@ class GrabrSpider(CrawlSpider):
 
                         precioOferta = quantity * 20.0 #valor predefinido por ser LOL
                         message ="Es un producto de marca LOL"
+                    elif self.isPoopsie(nombreItem):
+                        #caso es un producto Poopsie
+                        logging.info("Poopsie item found")
+                        isPoopsie = True
+                        quantity = Selector(text=html).xpath("//div[@class='ml20']/text()").extract_first()
+                        if quantity:
+                            quantity = int(quantity)
+                        else:
+                            logging.info("Couldn't find quantity, setting to 1")
+                            quantity=1
+
+                        precioOferta = quantity * 30.0 #valor predefinido por ser Poopsie
+                        message ="Es un producto de marca Poopsie"
                     else:
                         logging.info("Normal item found")
                         if zeroOffersFlag:
@@ -691,6 +707,11 @@ class GrabrSpider(CrawlSpider):
                         logging.info("Not updating LOL items")
                         noEditLolItem = noEditLolItem +1
                         message = "Oferta no editada por haber ya enviado una oferta y ser LOL"
+                        updateException = True
+                    elif self.isPoopsie(nombreItem):
+                        logging.info("Not updating Poopsie items")
+                        noEditPoopsieItem = noEditPoopsieItem + 1
+                        message = "Oferta no editada por haber ya enviado una oferta y ser Poopsie"
                         updateException = True
                     else: #caso normal
                         logging.info("Trying to update normal item")
@@ -1234,6 +1255,8 @@ class GrabrSpider(CrawlSpider):
                             funkoOffers += 1
                         elif isLol:
                             lolOffers += 1
+                        elif isPoopsie:
+                            poopsieOffers += 1
                         yield my_item
                         logging.info("==============END STATS==============")
                 except NoSuchElementException :
@@ -1270,6 +1293,8 @@ class GrabrSpider(CrawlSpider):
                             funkoOffers += 1
                         elif isLol:
                             lolOffers += 1
+                        elif isPoopsie:
+                            poopsieOffers += 1
                         yield my_item
                         logging.info("==============END STATS==============")
 
@@ -1282,7 +1307,7 @@ class GrabrSpider(CrawlSpider):
                 self.driver.switch_to_window(self.driver.window_handles[0])
                 sleep(1.2)
 
-            self.printStats(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
+            self.printStats(i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, poopsieOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, noEditPoopsieItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers)
             logging.info("==============END STATS==============")
 
             ################# parte para testing only
@@ -2019,24 +2044,28 @@ class GrabrSpider(CrawlSpider):
         return False
 
     def isPoopsie(self, nombreItem):
-        pass
+        if nombreItem.find("Poopsie") >= 0 or nombreItem.find("poopsie") >= 0:
+            return True
+        return False
 
-    def printStats(self, i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers):
+    def printStats(self, i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, poopsieOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, noEditPoopsieItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers):
         logging.info("================STATS================")
         print "Total: " +str(i+1)+" de "+str(len(elements))
         print "Ofertas procesadas con exito: " + str(completedOffers) #-->va
         print "Ofertas Stanley:" + str(stanleyOffers)
         print "Ofertas Funko Pop:" + str(funkoOffers)
         print "Ofertas L.O.L.:" + str(lolOffers)
+        print "Ofertas Poopsie Slime:" + str(poopsieOffers)
         print "Ofertas editadas para mejorar la subasta: " + str(editedOffers) #-->va
         print "Ofertas no creadas por fallar la carga de datos en la web:" + str(failedOffers) #-->va
         print "Ofertas no editadas por fallar la obtencion de su link: " + str(noEditFailedOffers) #-->va
         print "Ofertas no editadas por tener ya, el mejor precio en la subasta: " + str(noEditBetterPrice) #-->va
         print "Ofertas no editadas por fallo para abrir su formulario de edicion: "+ str(noEditUpdateForm)
         print "Ofertas no editadas por estar en el tope de la oferta minima (10$) :" + str(noEditLowerPrice) #-->va
-        print "Ofertas no editadas por ser producto marca Stanley:" + str(noEditStanleyItem) #-->nueva
-        print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem) #-->nueva
-        print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem) #-->nueva
+        print "Ofertas no editadas por ser producto marca Stanley:" + str(noEditStanleyItem)
+        print "Ofertas no editadas por ser producto marca Funko Pop:" + str(noEditFunkoItem)
+        print "Ofertas no editadas por ser producto marca LOL:" + str(noEditLolItem)
+        print "Ofertas no editadas por ser producto marca Poopsie Slime:" + str(noEditPoopsieItem)
         print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
         print "Ofertas potencialmente actualizables pero sin actualizar por no contar con autorizacion (ofertas descartadas): " + str(noEditByNoAuthorization) #-->nueva
         print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
