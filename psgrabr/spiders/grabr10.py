@@ -61,7 +61,7 @@ class GrabrSpider(CrawlSpider):
         NO_INPUT_FLAG = True
         SERVER_FLAG = True
 
-        username='pedidos@zappyboxes.com'
+        username='p@z.com'
         password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
         # annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         # Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
@@ -2017,6 +2017,9 @@ class GrabrSpider(CrawlSpider):
         if nombreItem.find("LOL") >= 0 or nombreItem.find("Lol") >= 0 or nombreItem.find("L.O.L") >= 0 or nombreItem.find("l.o.l") >= 0 or nombreItem.find("L.o.l") >= 0:
             return True
         return False
+
+    def isPoopsie(self, nombreItem):
+        pass
 
     def printStats(self, i, elements, completedOffers, stanleyOffers, funkoOffers, lolOffers, editedOffers, failedOffers, noEditFailedOffers, noEditBetterPrice, noEditUpdateForm, noEditLowerPrice, noEditStanleyItem, noEditFunkoItem, noEditLolItem, zeroOffers, noEditByNoAuthorization, failedNotExistAnymoreOffers):
         logging.info("================STATS================")
