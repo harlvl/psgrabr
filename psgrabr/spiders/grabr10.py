@@ -36,7 +36,7 @@ Unless flags say otherwise, this spider will need input from a user.
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "grabr10"
+    name = "grabr_firefox"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -56,29 +56,30 @@ class GrabrSpider(CrawlSpider):
         USE_CLIPBOARD_FLAG = True
         TEST_RUN_FLAG = False   # 1 scroll
         MAX_ITEMS_FLAG = False
-        MAX_ITEMS = 10
+        MAX_ITEMS = 4
         HEADLESS_FLAG = False
         NO_INPUT_FLAG = False
         SERVER_FLAG = False
 
-        username='p@z.com'
-        password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
+        username='harleen_vl@hotmail.com'
+        password='w0mirnms4kla3r' #set a working password when NO_INPUT_FLAG is False
         # annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         # Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         # ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
         # Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
         # Saludos :)"""
 
-        annotation = """Hola, mi nombre es Heber. Me dedico al transporte de encargos desde Usa a Buenos Aires con envios semanales y podria llevarte este pedido.<br/><ul><li>Si eliges mi servicio debes dejar escrito todos los detalles (color, talla, capacidad, etc) para la compra de tu producto.</li><li>En Buenos Aires cuento con una <b>oficina</b> de entrega, ubicada en <b>Microcentro</b> a una cuadra del Obelisco; la direccion exacta te la envio en visperas del viaje. Si eres de provincia puedo enviar tu pedido por OCA.</li><li>Tu pedido es manejado con total cuidado, llevo <b>tu producto con caja y empaque original</b>.</li></ul><br/>Si te dedicas a la venta y requieres envios constantemente, contactate conmigo, manejamos <b>tarifas especiales por cantidad</b>.<br/><br/><b>Recuerda! Ten en consideracion lo siguiente</b><ul><li>Tu producto es comprado con mi dinero, <b>Grabr me paga cuando tu confirmas que recibes tu articulo</b>. Esto asegura que recibiras tu producto, <b> tu dinero esta 100% protegido.</b></li><li>Si el producto tiene gastos de envio extras que no esten incluidos en la publicacion, tienes 2 opciones: editar el pedido para incluirlos (el envio es a Miami zip code 33186) o pagar en Buenos Aires al recoger.</li><li>Tambien te pido que confirmes conmigo si tu articulo es pesado (mas de 2 pounds) antes de aceptar mi oferta, para mi es muy importante ya que facilita la fluidez en el transporte.</li></ul><br/>Si es tu primera compra en Grabr, acepta mi oferta y podras usar el cupon <b>heber-burga</b> para ahorrarte $10 USD ;) <br/><br/>Gracias,<br/><br/>Heber B.<br/><br/><b>IMPORTANTE! </b> Con el fin de evitar cancelaciones de ordenes debes de tomar los siguiente puntos en consideracion:<br/><ul><li>No transporto monitores, televisores, quimicos, liquidos, aerosoles, armas de fuego, armas de fogueo, productos perecederos, semillas, productos de origen animal asi esten empacados al vacio y libros.</li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta. </li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Revisa que tu producto tenga el precio en dolares mmericanos. No compramos de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.</li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186. </li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
+        # annotation = """Hola, mi nombre es Luis. Me dedico al transporte de encargos desde Usa a Buenos Aires con envios semanales y podria llevarte este pedido.<br/><ul><li>Si eliges mi servicio debes dejar escrito todos los detalles (color, talla, capacidad, etc) para la compra de tu producto.</li><li>En Buenos Aires cuento con una <b>oficina</b> de entrega, ubicada en <b>Microcentro</b> a una cuadra del Obelisco; la direccion exacta te la envio en visperas del viaje. Si eres de provincia puedo enviar tu pedido por OCA.</li><li>Tu pedido es manejado con total cuidado, llevo <b>tu producto con caja y empaque original</b>.</li></ul><br/>Si te dedicas a la venta y requieres envios constantemente, contactate conmigo, manejamos <b>tarifas especiales por cantidad</b>.<br/><br/><b>Recuerda! Ten en consideracion lo siguiente</b><ul><li>Tu producto es comprado con mi dinero, <b>Grabr me paga cuando tu confirmas que recibes tu articulo</b>. Esto asegura que recibiras tu producto, <b> tu dinero esta 100% protegido.</b></li><li>Si el producto tiene gastos de envio extras que no esten incluidos en la publicacion, tienes 2 opciones: editar el pedido para incluirlos (el envio es a Miami zip code 33186) o pagar en Buenos Aires al recoger.</li><li>Tambien te pido que confirmes conmigo si tu articulo es pesado (mas de 2 pounds) antes de aceptar mi oferta, para mi es muy importante ya que facilita la fluidez en el transporte.</li></ul><br/>Si es tu primera compra en Grabr, acepta mi oferta y podras usar el cupon <b>heber-burga</b> para ahorrarte $10 USD ;) <br/><br/>Gracias,<br/><br/>Heber B.<br/><br/><b>IMPORTANTE! </b> Con el fin de evitar cancelaciones de ordenes debes de tomar los siguiente puntos en consideracion:<br/><ul><li>No transporto monitores, televisores, quimicos, liquidos, aerosoles, armas de fuego, armas de fogueo, productos perecederos, semillas, productos de origen animal asi esten empacados al vacio y libros.</li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta. </li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Revisa que tu producto tenga el precio en dolares mmericanos. No compramos de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.</li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186. </li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
         # annotation = annotation.decode(sys.stdin.encoding)
+        annotation = "Hola quisiera llevar tu producto"
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "24/02/2019"
-        raw_final_date = "26/02/2019"
+        raw_travel_date = "11/03/2019"
+        raw_final_date = "28/03/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
-        iterations = 10  ## entre 10 y 20 items por scroll
+        iterations = 1  ## entre 10 y 20 items por scroll
         updatingAccepted = 0   ## actualizar ofertas ya enviadas
 
         """
@@ -258,6 +259,7 @@ class GrabrSpider(CrawlSpider):
                     except Exception as e:
                         logging.error(e)
                         logging.warning("Could not create web driver")
+                        break
                         sys.exit()
                 self.driver.get(response.url)
                 sleep(1.5)
@@ -782,8 +784,10 @@ class GrabrSpider(CrawlSpider):
                 elif not updatingAccepted and tuOferta!=0:
                     youMustPass = True
 
+                logging.info("TERMINA LA EVALUACION DE SI ES PARA CREAR O ACTUALIZAR LA OFERTA")
                 #TERMINA LA EVALUACION DE SI ES PARA CREAR O ACTUALIZAR LA OFERTA
                 #--------------------------------------------------*************-------------------------------------
+                logging.info("youMustPass: " + str(youMustPass))
                 if youMustPass:
                     noEditByNoAuthorization = noEditByNoAuthorization+1
                     continue
@@ -1213,9 +1217,9 @@ class GrabrSpider(CrawlSpider):
                     m=0
                     while True:
                         try:
-                            # logging.info("Se hara click en el boton siguiente")
+                            logging.info("Se hara click en el boton siguiente")
                             siguienteElement.click()
-                            # logging.info("Se hizo click en el boton siguiente")
+                            logging.info("Se hizo click en el boton siguiente")
                             break
                         except Exception as e:
                             m = m+1
