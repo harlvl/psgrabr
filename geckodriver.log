@@ -1,13 +1,11 @@
-1552401617436	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hlvl\\AppData\\Local\\Temp\\rust_mozprofile.3hXNQ9ftgles"
-1552401619166	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
-1552401619167	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
-1552401623324	Marionette	INFO	Listening on port 65056
-1552401623467	Marionette	WARN	TLS certificate errors will be ignored for this session
-[Parent 11800, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-1552401649316	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
-bail@chrome://marionette/content/sync.js:196:64
-1552401649393	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
-bail@chrome://marionette/content/sync.js:196:64
+1552422387312	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hlvl\\AppData\\Local\\Temp\\rust_mozprofile.Ca5rmceD7VGf"
+1552422388832	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
+1552422388833	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
+[Parent 9284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Child 14344, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Child 14344, Chrome_ChildThread] WARNING: 1552422392049	Marionette	INFO	Listening on port 51577
+1552422392237	Marionette	WARN	TLS certificate errors will be ignored for this session
+[Parent 9284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
 console.error: BroadcastService: 
   receivedBroadcastMessage: handler for
   remote-settings/monitor_changes
@@ -16,28 +14,26 @@ console.error: BroadcastService:
   Stack:
     remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:188:13
 
-[Parent 11800, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-1552401744341	Marionette	INFO	Stopped listening on port 65056
-[Parent 11800, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 5452, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 5452, ChrIPDL protocol error: Handler returned error code!
-
-###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
-
-[Parent 11800, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 1636, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 1636, Chrome_ChildThread] WARNI[Parent 11800, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 4216, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 4[GP
+1552422417303	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+bail@chrome://marionette/content/sync.js:196:64
+1552422417368	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+bail@chrome://marionette/content/sync.js:196:64
+[Parent 9284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Parent 9284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+1552422511648	Marionette	INFO	Stopped listening on port 51577
+[Child 9724, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Child 9724, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Parent 9284, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Child 2944, Chrome_ChildThread] WARNING: pipe error: 109: file z:/bu[Paild/build/src/ipc/chromirenum/src/chrot 9284, Gecko_Ime/cOThrommon/ipc_channel_win.cc, line ead] W332ARN
+ING: pipe[Child 2944, Chrome_Chil error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Child 16200, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
+[Child 16200, Chrom
 ###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
 
-U
+
 ###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
 
-rror: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 332
-[Child 89481552400827163	Marionette	INFO	Stopped listening on port 62984
-
-###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+ closing: too late to send/recv, messages will be lost
 
 [GPU 11832, 
 ###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv

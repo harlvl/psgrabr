@@ -44,7 +44,11 @@ class GrabrSpider(CrawlSpider):
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
-    TEST_OFFER = False
+    TEST_OFFER_FLAG = False
+    PREDEFINED_CITY_FLAG = True
+    CITY_MIAMI = "Miami"
+    CITY_PER = "Lima"
+    CITY_ARG = "Buenos Aires"
 
     def parse(self, response):
         LOGGER.setLevel(logging.WARNING)
@@ -110,8 +114,8 @@ class GrabrSpider(CrawlSpider):
             options.add_argument('-headless')
             # logging.info("-headless argument added to options")
 
-        fromCityOption = 0
-        toCityOption = 0
+        fromCityOption = 1
+        toCityOption = 1
         newAccountFlag = 0
         newAnnotationFlag = 0
 
@@ -125,7 +129,7 @@ class GrabrSpider(CrawlSpider):
             if NO_INPUT_FLAG:
                 break
             try:
-                newAccountFlag = raw_input('Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
+                newAccountFlag = raw_input('>Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
                 newAccountFlag = int(newAccountFlag)
                 if newAccountFlag >=0 and newAccountFlag <= 1:
                     break
@@ -135,17 +139,17 @@ class GrabrSpider(CrawlSpider):
 
         if newAccountFlag ==1:
             while True:
-                username = raw_input('Ingrese su correo: ')
+                username = raw_input('>Ingrese su correo: ')
                 if self.is_valid_email(username):
                     break
 
-            password = raw_input('Ingrese su contraseña: ')
+            password = raw_input('>Ingrese su contraseña: ')
 
         while True:
             if NO_INPUT_FLAG:
                 break
             try:
-                newAnnotationFlag = raw_input('Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
+                newAnnotationFlag = raw_input('>Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
                 newAnnotationFlag = int(newAnnotationFlag)
                 if newAnnotationFlag >=0 and newAnnotationFlag <= 1:
                     break
@@ -162,22 +166,43 @@ class GrabrSpider(CrawlSpider):
         while True:
             if NO_INPUT_FLAG:
                 break
-            travelDate= self.enterDate('Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
+            travelDate= self.enterDate('>Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
             if travelDate!=0 and travelDate!=-1:
                 break
 
         while True:
             if NO_INPUT_FLAG:
                 break
-            finalDate = self.enterDate('Ingresa la fecha de entrega con el siguiente formato (dd/mm/yyyy): ',travelDate)
+            finalDate = self.enterDate('>Ingresa la fecha de entrega con el siguiente formato (dd/mm/yyyy): ',travelDate)
             if finalDate!=0 and finalDate != -1:
                 break
             if (finalDate == -1):
                 print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
 
         if not NO_INPUT_FLAG:
-            fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
-            toCityName = raw_input('Ingresa la ciudad destino del envio: ')
+            # fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
+            # toCityName = raw_input('Ingresa la ciudad destino del envio: ')
+
+            ## ask to choose a city
+            fromCityName = self.CITY_MIAMI
+            print "----------------------------------------------------"
+            print "Ciudad de origen predefinida: " + fromCityName.upper()
+            while True:
+                if NO_INPUT_FLAG:
+                    break
+                print "Lista de ciudades destino:"
+                print "1) " + self.CITY_ARG
+                print "2) " + self.CITY_PER
+                print "----------------------------"
+                city_option = raw_input('>Elija la ciudad de destino: ')
+                try:
+                    city_option = int(city_option)
+                    if city_option == 1 or city_option == 2:
+                        toCityName = self.CITY_ARG if city_option == 1 else self.CITY_PER
+                        break
+                    print "Ingrese una opcion valida"
+                except:
+                    print "Ingrese una opcion valida"
 
         while True:
             if NO_INPUT_FLAG:
@@ -327,6 +352,7 @@ class GrabrSpider(CrawlSpider):
                 while True:
                     if NO_INPUT_FLAG:
                         break
+                    break
                     try:
                         fromCityOption = raw_input('Selecciona una opcion: ')
                         fromCityOption = int(fromCityOption)
@@ -341,6 +367,7 @@ class GrabrSpider(CrawlSpider):
                 sleep(1.5)
                 firstCityFrom =  fromCitiesList[fromCityOption-1]
                 firstCityFrom.click()
+                logging.info("Se ha seleccionado la primera opcion")
 
                 inputCityTo = self.driver.find_element_by_xpath('//label[@class="fx-r ai-c cur-d pl15 input input--w w100p mt10 bdr5 bdw1 bdc-g12 bds-s MD_bdls-n MD_bdlr0 MD_bdbr0 MD_mt0"]//input[@class="fxg1 miw0"]')
                 inputCityTo.send_keys(toCityName)
@@ -369,6 +396,7 @@ class GrabrSpider(CrawlSpider):
                 while True:
                     if NO_INPUT_FLAG:
                         break
+                    break
                     try:
                         toCityOption = raw_input('Selecciona una opcion: ')
                         toCityOption = int(toCityOption)
@@ -382,7 +410,7 @@ class GrabrSpider(CrawlSpider):
 
                 firstCityTo =  toCitiesList[toCityOption-1]
                 firstCityTo.click()
-
+                logging.info("Se ha seleccionado la primera opcion")
                 sleep(1)
                 searchButton = self.driver.find_element_by_xpath('//button[@class="button pos-r d-ib va-t btn fxs0 h50 w100p px30 mt10 bdr5 MD_mt0 MD_bdtr0 btn--bb"]/div')
                 searchButton.click()
@@ -1743,7 +1771,7 @@ class GrabrSpider(CrawlSpider):
 
         inputOfferElement.clear()
         logging.info("Enviando el precio de la oferta...")
-        if self.TEST_OFFER:
+        if self.TEST_OFFER_FLAG:
             logging.info("Valor de la oferta: " + str(item['offerPrice']))
             logging.info("Valor de la oferta de prueba: " + str(item['offerPrice'] + 30))
             inputOfferElement.send_keys(str(int(round(item['offerPrice'])) + 30))
