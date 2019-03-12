@@ -36,7 +36,7 @@ Unless flags say otherwise, this spider will need input from a user.
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "grabr_firefox"
+    name = "grabr_f"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -44,6 +44,7 @@ class GrabrSpider(CrawlSpider):
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
+    TEST_OFFER = False
 
     def parse(self, response):
         LOGGER.setLevel(logging.WARNING)
@@ -56,13 +57,13 @@ class GrabrSpider(CrawlSpider):
         USE_CLIPBOARD_FLAG = True
         TEST_RUN_FLAG = False   # 1 scroll
         MAX_ITEMS_FLAG = False
-        MAX_ITEMS = 4
+        MAX_ITEMS = 2
         HEADLESS_FLAG = False
         NO_INPUT_FLAG = False
         SERVER_FLAG = False
 
-        username='harleen_vl@hotmail.com'
-        password='w0mirnms4kla3r' #set a working password when NO_INPUT_FLAG is False
+        username='pevl.psmart1@gmail.com'
+        password='123' #set a working password when NO_INPUT_FLAG is False
         # annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         # Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         # ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -75,8 +76,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "11/03/2019"
-        raw_final_date = "28/03/2019"
+        raw_travel_date = "18/03/2019"
+        raw_final_date = "22/03/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
@@ -1412,6 +1413,7 @@ class GrabrSpider(CrawlSpider):
 
     def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, USE_CLIPBOARD_FLAG=True, SERVER_FLAG=False):
         #finaldate  ya es una fecha verificada
+        logging.info("=================================================================")
         logging.info("VARIABLES DE makeOffer")
         logging.info("finalDate: " + str(finaldate))
         logging.info("fromCityName: " + str(fromCityName))
@@ -1419,6 +1421,7 @@ class GrabrSpider(CrawlSpider):
         logging.info("travelDate: " + str(travelDate))
         logging.info("hayFechaViaje: " + str(hayFechaViaje))
         logging.info("USE_CLIPBOARD_FLAG: " + str(USE_CLIPBOARD_FLAG))
+        logging.info("=================================================================")
         fail=False
         ######test
         if not hayFechaViaje:
@@ -1740,9 +1743,20 @@ class GrabrSpider(CrawlSpider):
 
         inputOfferElement.clear()
         logging.info("Enviando el precio de la oferta...")
-        inputOfferElement.send_keys(str(int(round(item['offerPrice']))))
-        # logging.info("Precio de la oferta enviada")
+        if self.TEST_OFFER:
+            logging.info("Valor de la oferta: " + str(item['offerPrice']))
+            logging.info("Valor de la oferta de prueba: " + str(item['offerPrice'] + 30))
+            inputOfferElement.send_keys(str(int(round(item['offerPrice'])) + 30))
+        else:
+            inputOfferElement.send_keys(str(int(round(item['offerPrice']))))
+        logging.info("Precio de la oferta enviada")
+        logging.info("Waiting for input date to be present...")
+        WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")))
+        logging.info("Done waiting for input date")
         inputDate = self.driver.find_elements_by_xpath("//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")
+        logging.info("type of //div[@class='input-substitute fx-r ai-c jc-sb cur-p']: " + str(type(inputDate)))
+        tempInputDate = self.driver.find_element_by_xpath("//div[@class='fxg1 miw0 ellipsis']")
+        logging.info("type of //div[@class='fxg1 miw0 ellipsis']: " + str(type(tempInputDate)))
         inputDate =  inputDate[0]
         inputDate.click()
         firstTimeFlag= False
@@ -1755,7 +1769,7 @@ class GrabrSpider(CrawlSpider):
                 try:
                     logging.info("Tratando de obtener el html de la pagina...")
                     html = self.driver.page_source
-                    # logging.info("html de la pagina obtenido")
+                    logging.info("html de la pagina obtenido")
                     break
                 except httplib.IncompleteRead:
                     continue
@@ -1854,7 +1868,7 @@ class GrabrSpider(CrawlSpider):
         logging.info("Aqui empieza la demora")
         inputText = None
         try:
-            # logging.info("Obtenemos control sobre el area de comentarios")
+            logging.info("Obtenemos control sobre el area de comentarios")
             WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")))
             inputText = firstStep =self.driver.find_element_by_xpath("//textarea[@class='pos-a t0 l0 h100p w100p rz-n p-i']")
             sleep(1)
@@ -1897,8 +1911,9 @@ class GrabrSpider(CrawlSpider):
         else:
             try:
                 logging.info("Trying to send the annotation without using the clipboard")
+                sleep(2)
                 inputText.send_keys(annotation)
-                # logging.info("Annotation sent")
+                logging.info("Annotation sent")
             except Exception as e:
                 logging.error(e)
                 logging.warning("Couldn't send annotation")
@@ -1906,9 +1921,9 @@ class GrabrSpider(CrawlSpider):
         sleep(1)
 
         logging.info("Aceptando los terminos y condiciones...")
-        checkboxElement = self.driver.find_element_by_xpath("//div[@class='as-fs fxs0 w20 h20 fx-r ai-c jc-c bdw1 bds-s bdr5 bdc-g44']")
+        checkboxElement = self.driver.find_element_by_xpath("//div[@class='mt20']//div[@class='as-fs fxs0 w20 h20 fx-r ai-c jc-c bdw1 bds-s bdr5 bdc-g44']")
         checkboxElement.click()
-        # logging.info("Terminos y condiciones aceptados")
+        logging.info("Terminos y condiciones aceptados")
         sleep(1)
         logging.info("Searching send offer button...")
         # print "Vamos a ubicar el boton de mandar oferta"
@@ -1919,7 +1934,7 @@ class GrabrSpider(CrawlSpider):
             #sleep critico
             sleep(1)
             offerButton.send_keys(Keys.ENTER)
-            # logging.info("Offer sent")
+            logging.info("Offer sent")
             sleep(1)
         except Exception as e:
             # print "No se ubico el boton para enviar oferta"

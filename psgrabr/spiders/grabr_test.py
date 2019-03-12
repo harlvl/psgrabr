@@ -36,7 +36,7 @@ Unless flags say otherwise, this spider will need input from a user.
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "grabr_c"
+    name = "gf"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -44,7 +44,7 @@ class GrabrSpider(CrawlSpider):
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
-    TEST_OFFER = False
+    TEST_OFFER = True
 
     def parse(self, response):
         LOGGER.setLevel(logging.WARNING)
@@ -55,15 +55,15 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = True
-        TEST_RUN_FLAG = False   # 1 scroll
-        MAX_ITEMS_FLAG = False
+        TEST_RUN_FLAG = True   # 1 scroll
+        MAX_ITEMS_FLAG = True
         MAX_ITEMS = 2
         HEADLESS_FLAG = False
-        NO_INPUT_FLAG = False
+        NO_INPUT_FLAG = True
         SERVER_FLAG = False
 
         username='pevl.psmart1@gmail.com'
-        password='123' #set a working password when NO_INPUT_FLAG is False
+        password='w0mirnms' #set a working password when NO_INPUT_FLAG is False
         # annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         # Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         # ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -246,7 +246,7 @@ class GrabrSpider(CrawlSpider):
                 if HEADLESS_FLAG:
                     try:
                         logging.info("Creating headless web driver...")
-                        self.driver = webdriver.Chrome(firefox_options=options)
+                        self.driver = webdriver.Firefox(firefox_options=options)
                         # logging.info("Created headless web driver.")
                     except Exception as e:
                         logging.error(e)
@@ -255,7 +255,7 @@ class GrabrSpider(CrawlSpider):
                 else:
                     try:
                         logging.info("Creating web driver...")
-                        self.driver = webdriver.Chrome()
+                        self.driver = webdriver.Firefox()
                         # logging.info("Created.")
                     except Exception as e:
                         logging.error(e)
