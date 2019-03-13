@@ -763,8 +763,13 @@ class GrabrSpider(CrawlSpider):
 
                             sleep(1.7)
                             logging.info("Retrieving edit link")
-                            WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, "//a[@class='btn btn--g pos-r fxg1 h50 bdr5 mb20 SM_mr10 SM_mb0']")))
-                            editButtons =self.driver.find_elements_by_xpath("//a[@class='btn btn--g pos-r fxg1 h50 bdr5 mb20 SM_mr10 SM_mb0']")
+                            try:
+                                WebDriverWait(self.driver, 50).until(EC.presence_of_element_located((By.XPATH, "//a[@class='btn btn--g pos-r fxg1 h50 bdr5 mb20 SM_mr10 SM_mb0']")))
+                                editButtons =self.driver.find_elements_by_xpath("//a[@class='btn btn--g pos-r fxg1 h50 bdr5 mb20 SM_mr10 SM_mb0']")
+                            except Exception as e:
+                                logging.error(e)
+                                logging.warning("Error while retrieving edit link")
+                                editButtons = []
                             # print len(editButtons)
                             editLinkExtracted = True
                             if len(editButtons) > 0:
