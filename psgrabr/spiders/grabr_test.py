@@ -80,8 +80,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "18/03/2019"
-        raw_final_date = "22/03/2019"
+        raw_travel_date = "12/12/2019"
+        raw_final_date = "16/12/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
