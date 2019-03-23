@@ -36,7 +36,7 @@ Unless flags say otherwise, this spider will need input from a user.
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "gf"
+    name = "gn"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -44,9 +44,8 @@ class GrabrSpider(CrawlSpider):
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
-    TEST_OFFER_FLAG = True
+    TEST_OFFER_FLAG = False
     PREDEFINED_CITY_FLAG = True
-    already_date_forced = True
     CITY_MIAMI = "Miami"
     CITY_PER = "Lima"
     CITY_ARG = "Buenos Aires"
@@ -60,17 +59,17 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = True
-        TEST_RUN_FLAG = True   # 1 scroll
-        MAX_ITEMS_FLAG = True
-        MAX_ITEMS = 10
+        TEST_RUN_FLAG = False   # 1 scroll
+        MAX_ITEMS_FLAG = False
+        MAX_ITEMS = 4
         HEADLESS_FLAG = False
-        NO_INPUT_FLAG = True
+        NO_INPUT_FLAG = False
         SERVER_FLAG = False
 
-        username='harleen_vl@hotmail.com'
-        password='w0mirnms4kla3r' #set a working password when NO_INPUT_FLAG is False
         # username='italo.arias2019@gmail.com'
         # password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
+        username='harleen_vl@hotmail.com'
+        password='s' #set a working password when NO_INPUT_FLAG is False
         # annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
         # Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
         # ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
@@ -81,12 +80,12 @@ class GrabrSpider(CrawlSpider):
 # </li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta.</li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Verifica que tu producto tenga el precio en dolares americanos. No compro de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.
 # </li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186.</li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
         # annotation = annotation.decode(sys.stdin.encoding)
-        annotation = "Hola me gustaria llevar tu producto"
+        annotation = "Hola quisiera llevar tu producto"
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "02/04/2019"
-        raw_final_date = "03/04/2019"
+        raw_travel_date = "12/12/2019"
+        raw_final_date = "15/12/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
@@ -953,6 +952,7 @@ class GrabrSpider(CrawlSpider):
                     logging.info("Encontro el boton siguiente")
                     #......................................
                     sleep(1.5)
+                    # print siguienteElement
                     # sleep(2)
                     k=0
                     while True:
@@ -1087,7 +1087,6 @@ class GrabrSpider(CrawlSpider):
                         if travelDateCurr == travelDateFormat:
                             logging.info("Ya se habia configurado el viaje...")
                             alreadyDate=True
-                            self.already_date_forced = False
                             break
 
                     if fail:
@@ -1097,7 +1096,7 @@ class GrabrSpider(CrawlSpider):
                         yield my_item
                         logging.info("==============END STATS==============")
                         continue #Fin de flujo
-                    if alreadyDate and self.already_date_forced:
+                    if alreadyDate:
                         travelCurr =beforeTravels[j]
                         travelCurr.click()
                         sleep(1.8)
@@ -1170,13 +1169,19 @@ class GrabrSpider(CrawlSpider):
                             self.driver.switch_to_window(self.driver.window_handles[0])
                             # print "Nos olvidamos de esta oferta y seguimos adelante"
                             logging.info("Skip this item and continue with the next")
+                            # tag1 = my_item['nombreUsuarioComprador']
+                            # tag2 = my_item['nombreItem']
+                            # tag1 = tag1.encode('utf-8')
+                            # tag2 = tag2.encode('utf-8')
+                            # row2 = tag1+ "," +  tag2 + "," +  link+"\n"
+                            # csvFailed.write(row2)
                             failedOffers = failedOffers +1
                             my_item['message'] = "Envio de oferta fallida"
                             yield my_item
                             logging.info("==============END STATS==============")
                             continue #Fin de flujoe flujo
 
-                        logging.info("Salio para abrir el input de la fecha")
+                        # logging.info("Salio para abrir el input de la fecha")
                         sleep(1.8)
 
                         firstTimeFlag= False
@@ -1203,17 +1208,22 @@ class GrabrSpider(CrawlSpider):
                             monthTitleNumber = self.monthStringToInt(monthTitle)
 
                             if(monthTitleNumber == monthNumber and yearTitleNumber == yearNumber):
-                                logging.info("Nos quedamos en la pantalla para buscar la fecha")
+                                # logging.info("Nos quedamos en la pantalla para buscar la fecha")
                                 logging.warning("No estamos en el metodo makeOffer")
                                 calendarDays = self.driver.find_elements_by_xpath('//div[@class="d-tbcl h35 w35 bds-s bdw1 bdc-g12"]')
                                 index=0
 
                                 for calendarDay in calendarDays:
+                                    #print "Index: "+str(index)
+                                    #print "Entro en el for para buscar la fecha"
                                     currentDay = None
                                     try:
                                         currentDay = calendarDay.text
                                     except Exception as e:
                                         logging.error(e)
+                                    #print "Valor:" + currentDay
+                                    #print "vamos a escribir el numero obtenido, puede ser una lista"
+                                    #print "paso la parte complicada"
                                     try:
                                         currentDay = int(currentDay)
                                     except Exception as e:
@@ -1248,107 +1258,6 @@ class GrabrSpider(CrawlSpider):
                             logging.info("Se hara click en el boton siguiente")
                             siguienteElement.click()
                             logging.info("Se hizo click en el boton siguiente")
-                            logging.info("INTENTANDO BUSCAR EL MENSAJE DE ESTE VIAJE YA EXISTE")
-                            mensaje_ya_existe = None
-                            try:
-                                mensaje_ya_existe = self.driver.find_element_by_xpath("//span[contains(text(),'Este viaje ya existe')]")
-                            except Exception as e:
-                                logging.error(e)
-                                logging.info("No se pudo encontrar")
-                            if mensaje_ya_existe:
-                                logging.info("Mensaje encontrado")
-                                logging.info("Ahora se debe seleccionar el viaje existente")
-                            
-                            ##### INICIO PARCHE
-                            sleep(1.2)
-                            k=0
-                            while True:
-                                try:
-                                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
-                                    logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
-                                    if len(beforeTravels)==0:
-                                        k=k+1
-                                        continue
-
-                                    break
-                                except Exception as e:
-                                    k=k+1
-                                    if k==5: break
-                                    sleep(1)
-                                    logging.info("Se intento y fallo buscar los viajes creados 5 veces")
-                            if k==5:
-                                logging.info("Skip this item and continue with the next")
-                                continue
-
-                            today = datetime.now()#fecha actual
-                            deltaDays = timedelta(days=1)
-                            tomorrow = today + deltaDays
-                            tomorrowYear= tomorrow.year
-                            # print tomorrowYear
-                            j=0
-                            alreadyDate=False
-                            for j,travel in enumerate(beforeTravels):
-                                travelText = travel.text
-                                logging.info("El texto de viaje dice: " + travelText.encode('utf-8'))
-                                posList= [pos for pos, char in enumerate(travelText) if char == ',']
-                                if len(posList)<=0:
-                                    continue
-                                logging.info("posList: " + str(posList))
-                                posKey = posList[-1]
-                                travelText = travelText[posKey+1:len(travelText)]
-                                # logging.info("travelText luego de recortarlo: " + str(travelText))
-
-                                try:
-                                    listDayMonth = travelText.split(" ")
-                                    dayText = int(listDayMonth[1])
-                                    monthText = (listDayMonth[2]).lower()
-                                except Exception as e:
-                                    logging.error(e)
-                                    logging.warning("Se leyeron mal alguno de los viajes anteriores")
-                                    logging.info("Skip this item and continue with the next")
-                                    continue
-
-                                monthText = self.monthStringAbrPoninToInt(monthText)
-
-                                travelDateCurr = datetime(tomorrowYear,monthText,dayText)
-                                deltaDays = timedelta(days=1)
-                                travelDateCurr = travelDateCurr+deltaDays
-                                travelDateFormat = datetime.strptime(travelDate, '%d/%m/%Y')
-                                logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
-                                logging.warning("travelDateCurr: " + str(travelDateCurr))
-                                logging.warning("travelDateFormat: " + str(travelDateFormat))
-                                if SERVER_FLAG:
-                                    #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
-                                    #### por eso se va por otro flujo
-                                    #### hardcodearemos la solucion por ahora
-                                    delta_dif = timedelta(days=1)
-                                    if (travelDateCurr - travelDateFormat) == delta_dif:
-                                        logging.info("There was a 1 day difference between the dates")
-                                        travelDateCurr = travelDateFormat
-
-                                if travelDateCurr == travelDateFormat:
-                                    logging.info("Ya se habia configurado el viaje...")
-                                    alreadyDate=True
-                                    break
-
-                            # siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
-                            logging.info("Esperando a que aparezca el boton siguiente...")
-                            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")))
-                            logging.info("Obteniendo el boton siguiente...")
-                            siguienteElement = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")
-
-                            if alreadyDate:
-                                logging.info("Se encontro que ya habia un viaje creado para esa fecha")
-                                travelCurr = beforeTravels[j]
-                                logging.info("Seleccionando el viaje existente...")
-                                travelCurr.click()
-                                logging.info("Se eligio el viaje existente")
-                                sleep(1.1)
-
-                            #####   FIN PARCHE
-                            logging.info("Intentando clickear el boton siguiente otra vez...")
-                            siguienteElement.click()
-                            logging.info("Se pudo clickear el boton siguiente") 
                             break
                         except Exception as e:
                             m = m+1
@@ -1357,7 +1266,7 @@ class GrabrSpider(CrawlSpider):
                             logging.warning("No se pudo dar click en el boton siguiente asi que lo tratamos de reparar")
                             logging.info("Buscando el boton siguiente...")
                             siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
-                            logging.info("Encontro el boton siguiente")
+                            # logging.info("Encontro el boton siguiente")
 
 
                     sleep(1.8)
@@ -1552,385 +1461,285 @@ class GrabrSpider(CrawlSpider):
         logging.info("=================================================================")
         fail=False
         ######test
-        if not hayFechaViaje:
-        # if True:
-            #Hemos entrado de frente al segundo paso, para asegurarnos nuestra correcta fecha de viaje
-            #regresamos al paso 1 para seleccionarla si es que no existe, o si existe, igual la seleccionamos porciacaso
+        # if not hayFechaViaje:
+        # # if True:
+        #     #Hemos entrado de frente al segundo paso, para asegurarnos nuestra correcta fecha de viaje
+        #     #regresamos al paso 1 para seleccionarla si es que no existe, o si existe, igual la seleccionamos porciacaso
 
-            # logging.info("Vamos a retroceder al primer paso porque NO HAY FECHA DE VIAJE")
-            logging.info("Entrando para retroceder al primer paso")
+        #     # logging.info("Vamos a retroceder al primer paso porque NO HAY FECHA DE VIAJE")
+        #     logging.info("Entrando para retroceder al primer paso")
 
-            #sleep critico
-            # sleep(3)
-            sleep(5)
-            try:
-                # logging.info("Empezamos con el riesgo...")
-                logging.info("Esperando a que aparezca el boton para ir al primer paso...")
-                WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")))
-                logging.info("Por aca siempre hay riesgo de que falle la oferta porque no se encuentra el boton del primer paso")
-                firstStep =self.driver.find_element_by_xpath("//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")
-                logging.info("Se encontro el boton para ir al primer paso...")
-                # if self.GO_BACK_FLAG:
-                firstStep.click()
-                #     logging.info("Se regreso al primer paso")
-                sleep(2)
-                logging.info("Estamos en el primer paso")
-                # else:
-                #     logging.warning("NO SE REGRESO AL PRIMER PASO ")
+        #     #sleep critico
+        #     # sleep(3)
+        #     sleep(5)
+        #     try:
+        #         # logging.info("Empezamos con el riesgo...")
+        #         logging.info("Esperando a que aparezca el boton para ir al primer paso...")
+        #         WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")))
+        #         logging.info("Por aca siempre hay riesgo de que falle la oferta porque no se encuentra el boton del primer paso")
+        #         firstStep =self.driver.find_element_by_xpath("//div[@class='fz14 ta-c mx-a trd1000ms trp-c pt10 px10 c-bb']")
+        #         logging.info("Se encontro el boton para ir al primer paso...")
+        #         if self.GO_BACK_FLAG:
+        #             firstStep.click()
+        #             logging.info("Se regreso al primer paso")
+        #             sleep(2)
+        #             logging.info("Estamos en el primer paso")
+        #         else:
+        #             logging.warning("NO SE REGRESO AL PRIMER PASO ")
                 
 
-            except Exception as e:
-                logging.error(e)
-                logging.warning("No se encontro el boton para ir al primer paso")
-                return -1
+        #     except Exception as e:
+        #         logging.error(e)
+        #         logging.warning("No se encontro el boton para ir al primer paso")
+        #         return -1
             
-            try:
-                logging.warning("POR AQUI GENERALMENTE OCURRE UNA EXCEPCION QUE HACE FALLAR EL FLUJO DE LA OFERTA")
-                # if not self.GO_BACK_FLAG:
+        #     try:
+        #         logging.warning("POR AQUI GENERALMENTE OCURRE UNA EXCEPCION QUE HACE FALLAR EL FLUJO DE LA OFERTA")
+        #         # if not self.GO_BACK_FLAG:
 
-                WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fx-r jc-sb ai-c']")))
-                # logging.info("Passed test buscar radio button anadir nuevo viaje")
-                addTravelButton  = self.driver.find_element_by_xpath("//div[@class='fx-r jc-sb ai-c']")
-                # logging.info("Passed test get radio button anadir nuevo viaje")
-                addTravelButton.click()
-                logging.info("Passed test click anadir nuevo viaje")
+        #         WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='fx-r jc-sb ai-c']")))
+        #         # logging.info("Passed test buscar radio button anadir nuevo viaje")
+        #         addTravelButton  = self.driver.find_element_by_xpath("//div[@class='fx-r jc-sb ai-c']")
+        #         # logging.info("Passed test get radio button anadir nuevo viaje")
+        #         addTravelButton.click()
+        #         logging.info("Passed test click anadir nuevo viaje")
 
-            except Exception as e:
-                logging.error(e)
-                logging.warning("No encontramos el boton para agregar viajes")
-                return -1
+        #     except Exception as e:
+        #         logging.error(e)
+        #         logging.warning("No encontramos el boton para agregar viajes")
+        #         return -1
 
-            sleep(1.2)
-            k=0
-            while True:
-                try:
-                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
-                    logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
-                    if len(beforeTravels)==0:
-                        k=k+1
-                        continue
+        #     sleep(1.2)
+        #     k=0
+        #     while True:
+        #         try:
+        #             beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
+        #             logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
+        #             if len(beforeTravels)==0:
+        #                 k=k+1
+        #                 continue
 
-                    break
-                except Exception as e:
-                    k=k+1
-                    if k==5: break
-                    sleep(1)
-                    logging.info("pasa por la excepcion 3")
-            if k==5:
-                # self.driver.close()
-                # while not self.internet_on():
-                #   continue
-                # sleep(0.5)
-                # print "close 12"
-                # self.driver.switch_to_window(self.driver.window_handles[0])
-                # print "nos olvidamos de esta oferta y seguimos adelante"
-                logging.info("Skip this item and continue with the next")
-                return -1
+        #             break
+        #         except Exception as e:
+        #             k=k+1
+        #             if k==5: break
+        #             sleep(1)
+        #             logging.info("pasa por la excepcion 3")
+        #     if k==5:
+        #         # self.driver.close()
+        #         # while not self.internet_on():
+        #         #   continue
+        #         # sleep(0.5)
+        #         # print "close 12"
+        #         # self.driver.switch_to_window(self.driver.window_handles[0])
+        #         # print "nos olvidamos de esta oferta y seguimos adelante"
+        #         logging.info("Skip this item and continue with the next")
+        #         return -1
 
-            # print beforeTravels
-            # print len(beforeTravels)
-            today = datetime.now()#fecha actual
-            deltaDays = timedelta(days=1)
-            tomorrow = today + deltaDays
-            tomorrowYear= tomorrow.year
-            # print tomorrowYear
-            j=0
-            alreadyDate=False
-            for j,travel in enumerate(beforeTravels):
-                travelText = travel.text
-                logging.info("El texto de viaje dice: " + travelText.encode('utf-8'))
-                posList= [pos for pos, char in enumerate(travelText) if char == ',']
-                if len(posList)<=0:
-                    return -1
-                logging.info("posList: " + str(posList))
-                posKey = posList[-1]
-                travelText = travelText[posKey+1:len(travelText)]
-                # logging.info("travelText luego de recortarlo: " + str(travelText))
+        #     # print beforeTravels
+        #     # print len(beforeTravels)
+        #     today = datetime.now()#fecha actual
+        #     deltaDays = timedelta(days=1)
+        #     tomorrow = today + deltaDays
+        #     tomorrowYear= tomorrow.year
+        #     # print tomorrowYear
+        #     j=0
+        #     alreadyDate=False
+        #     for j,travel in enumerate(beforeTravels):
+        #         travelText = travel.text
+        #         logging.info("El texto de viaje dice: " + travelText.encode('utf-8'))
+        #         posList= [pos for pos, char in enumerate(travelText) if char == ',']
+        #         if len(posList)<=0:
+        #             return -1
+        #         logging.info("posList: " + str(posList))
+        #         posKey = posList[-1]
+        #         travelText = travelText[posKey+1:len(travelText)]
+        #         # logging.info("travelText luego de recortarlo: " + str(travelText))
 
-                try:
-                    # print"Travel text"+ travelText
-                    #listDayMonth = travelText.split(" de ")
-                    listDayMonth = travelText.split(" ")
-                    # print listDayMonth
-                    dayText = int(listDayMonth[1])
-                    monthText = (listDayMonth[2]).lower()
-                except Exception as e:
-                    logging.error(e)
-                    logging.warning("Se leyeron mal alguno de los viajes anteriores")
-                    # self.driver.close()
-                    # while not self.internet_on():
-                    #   continue
-                    # sleep(0.5)
-                    # print "close 13"
-                    # self.driver.switch_to_window(self.driver.window_handles[0])
-                    # print "Nos olvidamos de esta oferta y seguimos adelante"
-                    logging.info("Skip this item and continue with the next")
-                    return -1
+        #         try:
+        #             # print"Travel text"+ travelText
+        #             #listDayMonth = travelText.split(" de ")
+        #             listDayMonth = travelText.split(" ")
+        #             # print listDayMonth
+        #             dayText = int(listDayMonth[1])
+        #             monthText = (listDayMonth[2]).lower()
+        #         except Exception as e:
+        #             logging.error(e)
+        #             logging.warning("Se leyeron mal alguno de los viajes anteriores")
+        #             # self.driver.close()
+        #             # while not self.internet_on():
+        #             #   continue
+        #             # sleep(0.5)
+        #             # print "close 13"
+        #             # self.driver.switch_to_window(self.driver.window_handles[0])
+        #             # print "Nos olvidamos de esta oferta y seguimos adelante"
+        #             logging.info("Skip this item and continue with the next")
+        #             return -1
 
-                monthText = self.monthStringAbrPoninToInt(monthText)
+        #         monthText = self.monthStringAbrPoninToInt(monthText)
 
-                # print "============================"
-                # print tomorrowYear
-                # print monthText
-                # print dayText
-                # print "============================"
-                travelDateCurr = datetime(tomorrowYear,monthText,dayText)
-                deltaDays = timedelta(days=1)
-                travelDateCurr = travelDateCurr+deltaDays
-                travelDateFormat = datetime.strptime(travelDate, '%d/%m/%Y')
-                logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
-                logging.warning("travelDateCurr: " + str(travelDateCurr))
-                logging.warning("travelDateFormat: " + str(travelDateFormat))
-                if SERVER_FLAG:
-                    #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
-                    #### por eso se va por otro flujo
-                    #### hardcodearemos la solucion por ahora
-                    delta_dif = timedelta(days=1)
-                    if (travelDateCurr - travelDateFormat) == delta_dif:
-                        logging.info("There was a 1 day difference between the dates")
-                        travelDateCurr = travelDateFormat
-                    # if(travelDateCurr.day - travelDateFormat.day) == 1:
-                    #     travelDateCurr = travelDateFormat
+        #         # print "============================"
+        #         # print tomorrowYear
+        #         # print monthText
+        #         # print dayText
+        #         # print "============================"
+        #         travelDateCurr = datetime(tomorrowYear,monthText,dayText)
+        #         deltaDays = timedelta(days=1)
+        #         travelDateCurr = travelDateCurr+deltaDays
+        #         travelDateFormat = datetime.strptime(travelDate, '%d/%m/%Y')
+        #         logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
+        #         logging.warning("travelDateCurr: " + str(travelDateCurr))
+        #         logging.warning("travelDateFormat: " + str(travelDateFormat))
+        #         if SERVER_FLAG:
+        #             #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
+        #             #### por eso se va por otro flujo
+        #             #### hardcodearemos la solucion por ahora
+        #             delta_dif = timedelta(days=1)
+        #             if (travelDateCurr - travelDateFormat) == delta_dif:
+        #                 logging.info("There was a 1 day difference between the dates")
+        #                 travelDateCurr = travelDateFormat
+        #             # if(travelDateCurr.day - travelDateFormat.day) == 1:
+        #             #     travelDateCurr = travelDateFormat
 
-                if travelDateCurr == travelDateFormat:
-                    logging.info("Ya se habia configurado el viaje...")
-                    alreadyDate=True
-                    self.already_date_forced= False
-                    break
+        #         if travelDateCurr == travelDateFormat:
+        #             logging.info("Ya se habia configurado el viaje...")
+        #             alreadyDate=True
+        #             break
 
-            # siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
-            logging.info("Esperando a que aparezca el boton siguiente...")
-            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")))
-            logging.info("Obteniendo el boton siguiente...")
-            siguienteElement = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")
+        #     # siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
+        #     logging.info("Esperando a que aparezca el boton siguiente...")
+        #     WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")))
+        #     logging.info("Obteniendo el boton siguiente...")
+        #     siguienteElement = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")
 
-            if alreadyDate and self.already_date_forced:
-                logging.info("Se encontro que ya habia un viaje creado para esa fecha")
-                travelCurr = beforeTravels[j]
-                logging.info("Seleccionando el viaje existente...")
-                travelCurr.click()
-                logging.info("Se eligio el viaje existente")
-                sleep(1.1)
-            else:
-                if not self.already_date_forced:
-                    logging.warning("Ya habia un viaje creado para esta fecha, pero se forzara un intento de creacion para que se pueda presionar el boton siguiente")
-                else:
-                    logging.info("No habia un viaje creado para esa fecha")
-                listDate = travelDate.split("/")
-                dayNumber=int(listDate[0])
-                monthNumber=int(listDate[1])
-                yearNumber =int(listDate[2])
+        #     if alreadyDate:
+        #         # logging.info("Se encontro que ya habia un viaje creado para esa fecha")
+        #         travelCurr = beforeTravels[j]
+        #         logging.info("Seleccionando el viaje existente...")
+        #         travelCurr.click()
+        #         # logging.info("Se eligio el viaje existente")
+        #         sleep(1.1)
+        #     else:
+        #         logging.info("No habia un viaje creado para esa fecha")
+        #         listDate = travelDate.split("/")
+        #         dayNumber=int(listDate[0])
+        #         monthNumber=int(listDate[1])
+        #         yearNumber =int(listDate[2])
 
-                ### HACER CLICK EN AÑADIR NUEVO VIaje
+        #         ### HACER CLICK EN AÑADIR NUEVO VIaje
 
-                # inputFromElement = self.driver.find_element_by_xpath("//label[@class='fx-r ai-c cur-d pl15 input input--g mb20 bdr5']//input[@class='fxg1 miw0']")
-                inputFromElement = self.driver.find_element_by_xpath("//div[@class='pt20']//div[1]//label[1]//div[2]//div[1]//div[1]//div[1]//input[1]")
-                while not self.internet_on():
-                    continue
-                logging.info("Enviando ciudad " + fromCityName + " para crear el viaje...")
-                inputFromElement.send_keys(fromCityName)
-                logging.info("Ciudad escrita")
-                try:
-                    WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")))
-                    fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
-                    logging.info("Longitud de la lista: "+ str(len(fromCitiesList)))
-                except Exception as e:
-                    logging.error(e)
-                    logging.warning("No se pudo cargar la lista de ciudades")
-                    return -1
+        #         inputFromElement = self.driver.find_element_by_xpath("//label[@class='fx-r ai-c cur-d pl15 input input--g mb20 bdr5']//input[@class='fxg1 miw0']")
+        #         while not self.internet_on():
+        #             continue
+        #         logging.info("Enviando ciudad " + fromCityName + " para crear el viaje...")
+        #         inputFromElement.send_keys(fromCityName)
+        #         logging.info("Ciudad escrita")
+        #         try:
+        #             WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")))
+        #             fromCitiesList = self.driver.find_elements_by_xpath("//div[@class='link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis']")
+        #             logging.info("Longitud de la lista: "+ str(len(fromCitiesList)))
+        #         except Exception as e:
+        #             logging.error(e)
+        #             logging.warning("No se pudo cargar la lista de ciudades")
+        #             return -1
 
-                firstCityFrom =  fromCitiesList[fromCityOption-1] #ward solved
-                firstCityFrom.click()
-                logging.info("Se eligio la primera ciudad")
-                sleep(1.1)
+        #         firstCityFrom =  fromCitiesList[fromCityOption-1] #ward solved
+        #         firstCityFrom.click()
+        #         # logging.info("Se eligio la primera ciudad")
+        #         sleep(1.1)
 
-                k=0
-                while True:
-                    try:
-                        dateInput = self.driver.find_element_by_xpath("//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")
-                        break
-                    except Exception as e:
-                        k=k+1
-                        if k==5: break
-                        sleep(0.5)
-                        logging.info("Pasa por la excepcion 4")
-                if k==5:
-                    logging.info("Skip this item and continue with the next")
-                    return -1
+        #         k=0
+        #         while True:
+        #             try:
+        #                 dateInput = self.driver.find_element_by_xpath("//div[@class='input-substitute fx-r ai-c jc-sb cur-p']")
+        #                 break
+        #             except Exception as e:
+        #                 k=k+1
+        #                 if k==5: break
+        #                 sleep(0.5)
+        #                 logging.info("Pasa por la excepcion 4")
+        #         if k==5:
+        #             # self.driver.close()
+        #             # while not self.internet_on():
+        #             #   continue
+        #             # sleep(0.5)
+        #             # print "close 14"
+        #             # self.driver.switch_to_window(self.driver.window_handles[0])
+        #             # print "nos olvidamos de esta oferta y seguimos adelante"
+        #             logging.info("Skip this item and continue with the next")
+        #             return -1
 
-                logging.info("Buscando el input para la fecha...")
-                dateInput.click()
-                logging.info("Se hizo click en el input de la fecha")
-                sleep(1)
+        #         logging.info("Buscando el input para la fecha...")
+        #         dateInput.click()
+        #         # logging.info("Se hizo click en el input de la fecha")
+        #         sleep(1)
 
-                firstTimeFlag= False
-                while True:
-                    sleep(0.5)
-                    while not self.internet_on():
-                        continue
-                    html = self.driver.page_source
-                    html= html.encode('utf-8')
-                    titleMonthYear = Selector(text=html).xpath("//span[@class='tt-c']/text()").extract()
-                    titleMonthYear = titleMonthYear[0]
-                    #titleMonthYear = self.driver.find_element_by_xpath("//span[@class='tt-c']").text()
-                    # print titleMonthYear
-                    #titleMonthYear = titleMonthYear[0]
-                    listTitleMonthYear = titleMonthYear.split(" De ")
-                    if len(listTitleMonthYear)!=2:
-                        listTitleMonthYear = titleMonthYear.split(" de ")
+        #         firstTimeFlag= False
+        #         while True:
+        #             sleep(0.5)
+        #             while not self.internet_on():
+        #                 continue
+        #             html = self.driver.page_source
+        #             html= html.encode('utf-8')
+        #             titleMonthYear = Selector(text=html).xpath("//span[@class='tt-c']/text()").extract()
+        #             titleMonthYear = titleMonthYear[0]
+        #             #titleMonthYear = self.driver.find_element_by_xpath("//span[@class='tt-c']").text()
+        #             # print titleMonthYear
+        #             #titleMonthYear = titleMonthYear[0]
+        #             listTitleMonthYear = titleMonthYear.split(" De ")
+        #             if len(listTitleMonthYear)!=2:
+        #                 listTitleMonthYear = titleMonthYear.split(" de ")
 
-                    # print listTitleMonthYear
-                    #obtener un "febrero de 2019" y convertirlo a 2
-                    monthTitle = (listTitleMonthYear[0]).lower()
-                    yearTitleNumber = int(listTitleMonthYear[1])
-                    monthTitleNumber = self.monthStringToInt(monthTitle)
+        #             # print listTitleMonthYear
+        #             #obtener un "febrero de 2019" y convertirlo a 2
+        #             monthTitle = (listTitleMonthYear[0]).lower()
+        #             yearTitleNumber = int(listTitleMonthYear[1])
+        #             monthTitleNumber = self.monthStringToInt(monthTitle)
 
-                    if(monthTitleNumber == monthNumber and yearTitleNumber == yearNumber):
-                        # logging.info("Nos quedamos en la pantalla para buscar la fecha")
-                        logging.warning("Estamos en el metodo makeOffer")
-                        calendarDays = self.driver.find_elements_by_xpath('//div[@class="d-tbcl h35 w35 bds-s bdw1 bdc-g12"]')
-                        index=0
+        #             if(monthTitleNumber == monthNumber and yearTitleNumber == yearNumber):
+        #                 # logging.info("Nos quedamos en la pantalla para buscar la fecha")
+        #                 logging.warning("Estamos en el metodo makeOffer")
+        #                 calendarDays = self.driver.find_elements_by_xpath('//div[@class="d-tbcl h35 w35 bds-s bdw1 bdc-g12"]')
+        #                 index=0
 
-                        for calendarDay in calendarDays:
-                            # print "Index: "+str(index)
+        #                 for calendarDay in calendarDays:
+        #                     # print "Index: "+str(index)
 
-                            #pararint "Entro en el for para buscar la fecha"
-                            currentDay = None
-                            try:
-                                currentDay = calendarDay.text
-                            except Exception as e:
-                                logging.error(e)
-                                logging.warning("Error de currentDay")
-                            currentDay = int(currentDay)
-                            if currentDay == dayNumber:
-                                logging.info("Encontro la fecha")
-                                break
-                            index = index+1
-                        cday = calendarDays[index]
-                        cday.click()
-                        break
-                    else:
-                        #print "vamos a mover las flechas para buscar la fecha"
-                        arrows = self.driver.find_elements_by_xpath("//button[@class='button pos-r d-ib va-t fxs0 fx-r ai-c jc-c p10 bds-s bdw1 bdr-c lh1 c-g44 bdc-g12 cur-p trd300ms MD_c-bb-hf MD_bdc-bb-hf']/div[@class='button__content']")
-                        arrowNext = arrows[1]
-                        #sleep(3)
-                        try:
-                            arrowNext.click()
-                        except:
-                            arrowNext = arrows[0]
-                            arrowNext.click()
+        #                     #pararint "Entro en el for para buscar la fecha"
+        #                     currentDay = None
+        #                     try:
+        #                         currentDay = calendarDay.text
+        #                     except Exception as e:
+        #                         logging.error(e)
+        #                         logging.warning("Error de currentDay")
+        #                     currentDay = int(currentDay)
+        #                     if currentDay == dayNumber:
+        #                         logging.info("Encontro la fecha")
+        #                         break
+        #                     index = index+1
+        #                 cday = calendarDays[index]
+        #                 cday.click()
+        #                 break
+        #             else:
+        #                 #print "vamos a mover las flechas para buscar la fecha"
+        #                 arrows = self.driver.find_elements_by_xpath("//button[@class='button pos-r d-ib va-t fxs0 fx-r ai-c jc-c p10 bds-s bdw1 bdr-c lh1 c-g44 bdc-g12 cur-p trd300ms MD_c-bb-hf MD_bdc-bb-hf']/div[@class='button__content']")
+        #                 arrowNext = arrows[1]
+        #                 #sleep(3)
+        #                 try:
+        #                     arrowNext.click()
+        #                 except:
+        #                     arrowNext = arrows[0]
+        #                     arrowNext.click()
 
-                        firstTimeFlag=True
-            logging.info("Intentando clickear el boton siguiente...")
-            siguienteElement.click()
-            logging.info("Se pudo clickear el boton siguiente")
-            logging.info("INTENTANDO BUSCAR EL MENSAJE DE ESTE VIAJE YA EXISTE")
-            mensaje_ya_existe = None
-            try:
-                mensaje_ya_existe = self.driver.find_element_by_xpath("//span[contains(text(),'Este viaje ya existe')]")
-            except Exception as e:
-                logging.error(e)
-                logging.info("No se pudo encontrar")
-            if mensaje_ya_existe:
-                logging.info("Mensaje encontrado")
-                logging.info("Ahora se debe seleccionar el viaje existente")
+        #                 firstTimeFlag=True
+        #     logging.info("Intentando clickear el boton siguiente...")
+        #     siguienteElement.click()
+        #     logging.info("Se pudo clickear el boton siguiente")
+        #     sleep(1.5)
 
-            ##### INICIO PARCHE
-            sleep(1.2)
-            k=0
-            while True:
-                try:
-                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
-                    logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
-                    if len(beforeTravels)==0:
-                        k=k+1
-                        continue
-
-                    break
-                except Exception as e:
-                    k=k+1
-                    if k==5: break
-                    sleep(1)
-                    logging.info("Se intento y fallo buscar los viajes creados 5 veces")
-            if k==5:
-                logging.info("Skip this item and continue with the next")
-                return -1
-
-            today = datetime.now()#fecha actual
-            deltaDays = timedelta(days=1)
-            tomorrow = today + deltaDays
-            tomorrowYear= tomorrow.year
-            # print tomorrowYear
-            j=0
-            alreadyDate=False
-            for j,travel in enumerate(beforeTravels):
-                travelText = travel.text
-                logging.info("El texto de viaje dice: " + travelText.encode('utf-8'))
-                posList= [pos for pos, char in enumerate(travelText) if char == ',']
-                if len(posList)<=0:
-                    return -1
-                logging.info("posList: " + str(posList))
-                posKey = posList[-1]
-                travelText = travelText[posKey+1:len(travelText)]
-                # logging.info("travelText luego de recortarlo: " + str(travelText))
-
-                try:
-                    listDayMonth = travelText.split(" ")
-                    dayText = int(listDayMonth[1])
-                    monthText = (listDayMonth[2]).lower()
-                except Exception as e:
-                    logging.error(e)
-                    logging.warning("Se leyeron mal alguno de los viajes anteriores")
-                    logging.info("Skip this item and continue with the next")
-                    return -1
-
-                monthText = self.monthStringAbrPoninToInt(monthText)
-
-                travelDateCurr = datetime(tomorrowYear,monthText,dayText)
-                deltaDays = timedelta(days=1)
-                travelDateCurr = travelDateCurr+deltaDays
-                travelDateFormat = datetime.strptime(travelDate, '%d/%m/%Y')
-                logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
-                logging.warning("travelDateCurr: " + str(travelDateCurr))
-                logging.warning("travelDateFormat: " + str(travelDateFormat))
-                if SERVER_FLAG:
-                    #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
-                    #### por eso se va por otro flujo
-                    #### hardcodearemos la solucion por ahora
-                    delta_dif = timedelta(days=1)
-                    if (travelDateCurr - travelDateFormat) == delta_dif:
-                        logging.info("There was a 1 day difference between the dates")
-                        travelDateCurr = travelDateFormat
-
-                if travelDateCurr == travelDateFormat:
-                    logging.info("Ya se habia configurado el viaje...")
-                    alreadyDate=True
-                    break
-
-            # siguienteElement = self.driver.find_element_by_xpath("//div[@class='button__content']/span/span[text()='Siguiente']")
-            logging.info("Esperando a que aparezca el boton siguiente...")
-            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, "//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")))
-            logging.info("Obteniendo el boton siguiente...")
-            siguienteElement = self.driver.find_element_by_xpath("//button[@class='button pos-r d-ib va-t btn btn--bb w100p h50 bdr5']//div[@class='button__content']")
-
-            if alreadyDate:
-                logging.info("Se encontro que ya habia un viaje creado para esa fecha")
-                travelCurr = beforeTravels[j]
-                logging.info("Seleccionando el viaje existente...")
-                travelCurr.click()
-                logging.info("Se eligio el viaje existente")
-                sleep(1.1)
-
-            #####   FIN PARCHE
-            
-            logging.info("Intentando clickear el boton siguiente otra vez...")
-            siguienteElement.click()
-            logging.info("Se pudo clickear el boton siguiente")   
-            sleep(1.5)
-
-        else:
-            logging.info("No tuvimos que ir al primer paso porque habia fecha de viaje")
-        # logging.warning("NOS SALTAMOS TODA LA PARTE DE REGRESAR AL PRIMER PASO")
+        # else:
+        #     logging.info("No tuvimos que ir al primer paso porque habia fecha de viaje")
+        logging.warning("NOS SALTAMOS TODA LA PARTE DE REGRESAR AL PRIMER PASO")
         listDate = finaldate.split("/")
         dayNumber=int(listDate[0])
         monthNumber=int(listDate[1])
@@ -1941,16 +1750,29 @@ class GrabrSpider(CrawlSpider):
         try:
             logging.info("Esperando a que el input para el precio este presente...")
             WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, "//input[@type='number']")))
-            logging.info("El input esta presente o salio de la espera luego de 15 segundos")
-            logging.info("Empezando test para obtener el textbox para el precio...")
+            # logging.info("El input esta presente o salio de la espera luego de 15 segundos")
+            # logging.info("Empezando test para obtener el textbox para el precio...")
             inputOfferElement =self.driver.find_element_by_xpath("//input[@type='number']")
-            logging.info("Se pudo obtener el textbox para el precio")
+            # logging.info("Se pudo obtener el textbox para el precio")
             sleep(2.0)
-            logging.info("Limpiando el textbox del precio")
+            # logging.info("Limpiando el textbox del precio")
             inputOfferElement.clear()
-            logging.info("Textbox cleared")
+            # logging.info("Textbox cleared")
         except Exception as e:
+            ### este e sale vacio por alguna razon
+            # if hasattr(e, 'message'):
+            #     logging.error(e.message)
+            # else:
+            #     logging.error(e)
             logging.error("No se pudo ubicar el input para el precio")
+            # self.driver.close()
+            # while not self.internet_on():
+            #   continue
+            # sleep(0.5)
+            # print "close 15"
+            # self.driver.switch_to_window(self.driver.window_handles[0])
+            # print "Nos olvidamos de esta oferta y seguimos adelante"
+            # logging.info("Skip this item and continue with the next")
             return -1
 
         inputOfferElement.clear()

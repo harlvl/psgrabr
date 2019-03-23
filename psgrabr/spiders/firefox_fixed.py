@@ -36,7 +36,7 @@ Unless flags say otherwise, this spider will need input from a user.
 '''
 
 class GrabrSpider(CrawlSpider):
-    name = "gf"
+    name = "f_fixed"
     item_count = 0
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
@@ -44,7 +44,7 @@ class GrabrSpider(CrawlSpider):
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
-    TEST_OFFER_FLAG = True
+    TEST_OFFER_FLAG = False
     PREDEFINED_CITY_FLAG = True
     already_date_forced = True
     CITY_MIAMI = "Miami"
@@ -60,11 +60,11 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = True
-        TEST_RUN_FLAG = True   # 1 scroll
-        MAX_ITEMS_FLAG = True
+        TEST_RUN_FLAG = False   # 1 scroll
+        MAX_ITEMS_FLAG = False
         MAX_ITEMS = 10
         HEADLESS_FLAG = False
-        NO_INPUT_FLAG = True
+        NO_INPUT_FLAG = False
         SERVER_FLAG = False
 
         username='harleen_vl@hotmail.com'
@@ -85,8 +85,8 @@ class GrabrSpider(CrawlSpider):
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "02/04/2019"
-        raw_final_date = "03/04/2019"
+        raw_travel_date = "12/12/2019"
+        raw_final_date = "15/12/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
