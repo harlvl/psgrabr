@@ -75,7 +75,7 @@ class GrabrSpider(CrawlSpider):
         SERVER_FLAG = False
 
         username='harleen_vl@hotmail.com'
-        password='w0mirnms4kla3r' #set a working password when NO_INPUT_FLAG is False
+        password='aaa' #set a working password when NO_INPUT_FLAG is False
         # username='italo.arias2019@gmail.com'
         # password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
         
