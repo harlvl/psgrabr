@@ -38,18 +38,25 @@ Unless flags say otherwise, this spider will need input from a user.
 class GrabrSpider(CrawlSpider):
     name = "f_fixed"
     item_count = 0
+    BROWSER_FIREFOX = True
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
     #start_urls = ['https://grabr.io/es/login']
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
-    TEST_OFFER_FLAG = False
-    PREDEFINED_CITY_FLAG = True
-    already_date_forced = True
+
+    TEST_OFFER_FLAG = False  ##define si se debe agregar el monto de TEST_OFFER_EXTRA a la oferta a enviar (solo se usa para hacer pruebas)
+    TEST_OFFER_EXTRA = 40
+    PREDEFINED_CITY_FLAG = True  ## define si se debe mostrar ciudades destino predefinidas
+    already_date_forced = True  ## DEJALO EN TRUE
     CITY_MIAMI = "Miami"
     CITY_PER = "Lima"
     CITY_ARG = "Buenos Aires"
+    ANNOTATION_PART_1 = """(Lee detenidamente toda la informacion que se te presenta a continuacion. Realizar todas tus preguntas antes de realizar el pago de tu producto en la plataforma)<br><br><b>OFERTA</b> - RESUMEN -<br>-------------------------------<br><b>Recompensa:</b> """
+    ANNOTATION_PART_2 = """ dolares<br><b>Peso(1) maximo aceptado:</b> """
+    ANNOTATION_PART_3 = """ Kg<br><b>Medidas:</b> Debe de caber facilmente en una mochila o maleta<br><br>(1)Peso maximo que deberia tener tu producto para la recompensa colocada<br><br><br>Hola, soy Diana Pinedo. Vivo en Miami(La Florida) y por mi trabajo viajo con una frecuencia de 3 a 4 veces por mes a Buenos Aires. Me encargo del transporte de tu producto desde que llega a mi casa en Miami hasta la entrega en Buenos Aires. Si tu articulo es pesado (mas de 2 pounds) debes hacermelo saber antes de aceptar mi oferta, para mi es muy importante ya que facilita la fluidez en el transporte y evita futuras cancelaciones.<br><br><b>RESPECTO AL PRODUCTO:</b> Si tu producto tiene capacidad, talla, color, etc debes dejar todos esos detalles por escrito. Tu pedido es manejado con total cuidado, llevo <b>tu producto con caja y empaque original</b> (Excepto: Auriculares on ear, auriculares over ear, laptops de mas de 6 libras, tablets de mas de 10", consolas ps4 y xbox one, calzado y cascos de realidad virtual)<br><b>RESPECTO A LA ENTREGA:</b> En Buenos Aires cuento con una <b>oficina</b> de entrega, ubicada en <b>Microcentro</b> a una cuadra del Obelisco; la direccion exacta te la envio en visperas del viaje. Si eres de provincia puedo enviar tu pedido por OCA. No realizo entregas el mismo dia de mi llegada a Buenos Aires, esta se coordina y te brindo la facilidad para que se realice de Lunes a Viernes en el horario que mejor se te acomode.<br><br><b>Recuerda!</b><ul><li>Tu producto es comprado con mi dinero, <b>Grabr me paga cuando tu confirmas que recibes tu articulo</b>. Esto asegura que recibiras tu producto, <b> tu dinero esta 100% protegido.</b></li><li>Si el producto tiene gastos de envio extras que no esten incluidos en la publicacion, tienes 2 opciones: editar el pedido para incluirlos (el envio es a Miami zip code 33186) o pagar en Buenos Aires al recoger.</li></ul><br>Gracias, Diana P.<br><br><br><b>IMPORTANTE! </b> Con el fin de evitar cancelaciones de ordenes debes de tomar los siguiente puntos en consideracion:<br><ul><li>No transporto monitores, televisores, quimicos, liquidos, aerosoles, armas de fuego, armas de fogueo, productos perecederos, semillas, productos de origen animal asi esten empacados al vacio y libros.</li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta. </li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Verifica que tu producto tenga el precio en dolares americanos. No compro de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.</li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186. </li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
+
 
     def parse(self, response):
         LOGGER.setLevel(logging.WARNING)
@@ -62,7 +69,7 @@ class GrabrSpider(CrawlSpider):
         USE_CLIPBOARD_FLAG = True
         TEST_RUN_FLAG = False   # 1 scroll
         MAX_ITEMS_FLAG = False
-        MAX_ITEMS = 10
+        MAX_ITEMS = 5
         HEADLESS_FLAG = False
         NO_INPUT_FLAG = False
         SERVER_FLAG = False
@@ -71,22 +78,14 @@ class GrabrSpider(CrawlSpider):
         password='w0mirnms4kla3r' #set a working password when NO_INPUT_FLAG is False
         # username='italo.arias2019@gmail.com'
         # password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
-        # annotation = """Hola. Mi nombre es Luis y viajare a Buenos Aires, podria llevarte tu producto.
-        # Considera que tan pronto como aceptes mi oferta de entrega puedo comprar tu articulo, esperar a que llegue a mi casa en Miami, prepararlo para el viaje y llevarlo sin ningun problema. Tengo flexibilidad de horario para que puedas pasar a recoger tu producto. En Buenos Aires la entrega se realiza en Palermo o Recoleta, la direccion exacta de mi hospedaje te la doy en la fecha de mi viaje.
-        # ¡Recuerda! Tu dinero se encuentra 100(%) seguro, Grabr no me paga sino hasta que le confirmes que ya recibiste tu producto. Yo trato que todos mis envios sean con su empaque original tal cual llega a mi casa de Miami pero esto no depende de mí si no del control de aduana en el aeropuerto.
-        # Si necesitas algo mas de Estados Unidos dimelo, viajo todas las semanas y tengo una buena tarifa. Me gustaria mucho contar contigo.
-        # Saludos :)"""
-
-#         annotation = """Hola, mi nombre es Italo. Me dedico al transporte de encargos desde Usa a Buenos Aires con envios semanales y podria llevarte este pedido.<br/><ul><li>Si eliges mi servicio debes dejar escrito todos los detalles (color, talla, capacidad, etc) para la compra de tu producto.</li><li>En Buenos Aires cuento con una <b>oficina</b> de entrega, ubicada en <b>Microcentro</b> a una cuadra del Obelisco; la direccion exacta te la envio en visperas del viaje. Si eres de provincia puedo enviar tu pedido por OCA.</li><li>Tu pedido es manejado con total cuidado, llevo <b>tu producto con caja y empaque original</b> (Excepto: Auriculares on ear, auriculares over ear, laptops de mas de 6 libras, tablets de mas de 10", consolas ps4 y xbox one, calzado y cascos de realidad virtual). </li></ul><br/>Si te dedicas a la venta y requieres envios constantemente, contactate conmigo, manejamos <b>tarifas especiales por cantidad</b>.<br/><br/><b>Recuerda! Ten en consideracion lo siguiente</b><ul><li>Tu producto es comprado con mi dinero,  <b>Grabr me paga cuando tu confirmas que recibes tu articulo</b>. Esto asegura que recibiras tu producto, <b> tu dinero esta 100% protegido.</b></li><li>Si el producto tiene gastos de envio extras que no esten incluidos en la publicacion, tienes 2 opciones: editar el pedido para incluirlos (el envio es a Miami zip code 33186) o pagar en Buenos Aires al recoger.</li><li>Tambien te pido que confirmes conmigo si tu articulo es pesado (mas de 2 pounds) antes de aceptar mi oferta, para mi es muy importante ya que facilita la fluidez en el transporte y evita futuras cancelaciones.</li></ul><br/><br/><br/>Gracias,<br/><br/>Italo A.<br/><br/><b>IMPORTANTE!  </b> Con el fin de evitar cancelaciones de ordenes debes de tomar los siguiente puntos en consideracion:<br/><ul><li>No transporto monitores, televisores, quimicos, liquidos, aerosoles, armas de fuego, armas de fogueo, productos perecederos, semillas, productos de origen animal asi esten empacados al vacio y libros.
-# </li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta.</li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Verifica que tu producto tenga el precio en dolares americanos. No compro de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.
-# </li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186.</li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
+        
         # annotation = annotation.decode(sys.stdin.encoding)
         annotation = "Hola me gustaria llevar tu producto"
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
         raw_travel_date = "12/12/2019"
-        raw_final_date = "15/12/2019"
+        raw_final_date = "16/12/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
@@ -285,8 +284,11 @@ class GrabrSpider(CrawlSpider):
                 else:
                     try:
                         logging.info("Creating web driver...")
-                        self.driver = webdriver.Firefox()
-                        # logging.info("Created.")
+                        if self.BROWSER_FIREFOX:
+                            self.driver = webdriver.Firefox()
+                        else:
+                            self.driver = webdriver.Chrome()
+                        logging.info("Created.")
                     except Exception as e:
                         logging.error(e)
                         logging.warning("Could not create web driver")
@@ -305,6 +307,7 @@ class GrabrSpider(CrawlSpider):
                 sleep(1.5)
                 try:
                     WebDriverWait(self.driver, 20).until(EC.text_to_be_present_in_element((By.XPATH, "//div[@id='app-root']"), "2"))
+                    logging.info("Logged in")
                 except Exception as e:
                     # logging.error(e) no imprime nada
                     logging.error("No se pudo iniciar sesion")
@@ -1957,8 +1960,8 @@ class GrabrSpider(CrawlSpider):
         logging.info("Enviando el precio de la oferta...")
         if self.TEST_OFFER_FLAG:
             logging.info("Valor de la oferta: " + str(item['offerPrice']))
-            logging.info("Valor de la oferta de prueba: " + str(item['offerPrice'] + 30))
-            inputOfferElement.send_keys(str(int(round(item['offerPrice'])) + 30))
+            logging.info("Valor de la oferta de prueba: " + str(item['offerPrice'] + self.TEST_OFFER_EXTRA))
+            inputOfferElement.send_keys(str(int(round(item['offerPrice'])) + self.TEST_OFFER_EXTRA))
         else:
             inputOfferElement.send_keys(str(int(round(item['offerPrice']))))
         logging.info("Precio de la oferta enviada")
@@ -2108,7 +2111,13 @@ class GrabrSpider(CrawlSpider):
                 break
             try:
                 logging.info("Intentamos copiar al portapeles la anotacion...")
-                copied=pyperclip.copy(annotation)
+                annotation_log = self.buildAnnotation(int(round(item['offerPrice'])))
+                # logging.info("ANNOTATION BIG VERSION")
+                # logging.info(annotation_log)
+                if TEST_RUN_FLAG:
+                    copied=pyperclip.copy(annotation)
+                else:
+                    copied=pyperclip.copy(annotation_log)
                 break
             except Exception as e:
                 count= count +1
@@ -2300,3 +2309,8 @@ class GrabrSpider(CrawlSpider):
         print "Ofertas sin ofertantes: " + str(zeroOffers) #-->va
         print "Ofertas potencialmente actualizables pero sin actualizar por no contar con autorizacion (ofertas descartadas): " + str(noEditByNoAuthorization) #-->nueva
         print "Ofertas no existentes: " + str(failedNotExistAnymoreOffers) #-->va
+
+    def buildAnnotation(self, offerPrice):
+        offer_str = str(float(offerPrice)/22)
+        offer_str = offer_str[: offer_str.find('.') + 2]
+        return self.ANNOTATION_PART_1 + str(offerPrice) + self.ANNOTATION_PART_2 + offer_str + self.ANNOTATION_PART_3

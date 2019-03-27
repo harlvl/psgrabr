@@ -1,6 +1,6 @@
-project: 371744
+projects:
+  default: 371744
 
 requirements:
   file: requirements.txt
-images:
-  default: harlvl/psgrabr
+image: true
