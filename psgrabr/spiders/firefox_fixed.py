@@ -36,18 +36,20 @@ Unless flags say otherwise, this spider will need input from a user.
 '''
 
 class GrabrSpider(CrawlSpider):
+    ### conda activate psscrap && cd C:\projects\psgrabr && cls
     name = "f_fixed"
     item_count = 0
     BROWSER_FIREFOX = True
     allowed_domains = ['grabr.io']
-    start_urls = ['https://grabr.io/es/login']   #'https://grabr.io/es/travel/from/20044/to/15482' 'https://grabr.io/es/login'
-    #start_urls = ['https://grabr.io/es/login']
+    start_urls = ['https://grabr.io/es/login']
+    miami_to_buenos_aires_url = "https://grabr.io/es/travel/from/20043/to/189"
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
-
+    SKIP_CITES_SELECTION = True
+    TEST_RUN_FLAG = False   # 1 scroll
     TEST_OFFER_FLAG = False  ##define si se debe agregar el monto de TEST_OFFER_EXTRA a la oferta a enviar (solo se usa para hacer pruebas)
-    TEST_OFFER_EXTRA = 40
+    TEST_OFFER_EXTRA = 50
     PREDEFINED_CITY_FLAG = True  ## define si se debe mostrar ciudades destino predefinidas
     already_date_forced = True  ## DEJALO EN TRUE
     CITY_MIAMI = "Miami"
@@ -67,25 +69,24 @@ class GrabrSpider(CrawlSpider):
         CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
         """
         USE_CLIPBOARD_FLAG = True
-        TEST_RUN_FLAG = False   # 1 scroll
         MAX_ITEMS_FLAG = False
         MAX_ITEMS = 5
         HEADLESS_FLAG = False
         NO_INPUT_FLAG = False
         SERVER_FLAG = False
 
-        username='harleen_vl@hotmail.com'
-        password='aaa' #set a working password when NO_INPUT_FLAG is False
-        # username='italo.arias2019@gmail.com'
+        # username='diana.pinedo2019@gmail.com'
         # password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
+        username='harleen_vl@hotmail.com'
+        password='d' #set a working password when NO_INPUT_FLAG is False
         
         # annotation = annotation.decode(sys.stdin.encoding)
         annotation = "Hola me gustaria llevar tu producto"
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "12/12/2019"
-        raw_final_date = "16/12/2019"
+        raw_travel_date = "06/04/2019"
+        raw_final_date = "08/04/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
@@ -312,116 +313,127 @@ class GrabrSpider(CrawlSpider):
                     # logging.error(e) no imprime nada
                     logging.error("No se pudo iniciar sesion")
                     break
-                sleep(1.5)
-                travelLink = self.driver.find_element_by_xpath("//a[@href='/travel']")
-                sleep(1.5)
-                travelLink.click()
-                sleep(1.5)
-                webdriver.ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
-                #linea a revisar
-                k=0
-                while True:
+                
+                if self.SKIP_CITES_SELECTION:
                     try:
-                        inputCityFrom = self.driver.find_element_by_xpath('//label[@class="fx-r ai-c cur-d pl15 input input--w w100p bdr5 bdw1 bdc-g12 bds-s MD_bdrr0 MD_bdbr0"]//input[@class="fxg1 miw0"]')
-                        break
+                        logging.info("Trying to get item list url...")
+                        self.driver.get(self.miami_to_buenos_aires_url)
+                        logging.info("Done")
                     except Exception as e:
                         logging.error(e)
-                        logging.warning("Couldn't get input city from")
-                        if k == 5:
-                            sys.exit()
-                        k=k+1
-                        sleep(1)
+                        logging.warning("No se pudo obtener la url de publicaciones miami-buenos aires")
+                        return
+                else:
+                    sleep(1.5)
+                    travelLink = self.driver.find_element_by_xpath("//a[@href='/travel']")
+                    sleep(1.5)
+                    travelLink.click()
+                    sleep(1.5)
+                    webdriver.ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
+                    #linea a revisar
+                    k=0
+                    while True:
+                        try:
+                            inputCityFrom = self.driver.find_element_by_xpath('//label[@class="fx-r ai-c cur-d pl15 input input--w w100p bdr5 bdw1 bdc-g12 bds-s MD_bdrr0 MD_bdbr0"]//input[@class="fxg1 miw0"]')
+                            break
+                        except Exception as e:
+                            logging.error(e)
+                            logging.warning("Couldn't get input city from")
+                            if k == 5:
+                                sys.exit()
+                            k=k+1
+                            sleep(1)
 
-                ###########
-                inputCityFrom.send_keys(fromCityName)
-                sleep(2)
-                tam=0
-                while True :
-                    sleep(1)
-                    fromCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]/span')
-                    tam = (len(fromCitiesList))/2
-                    if tam > 0:
-                        if not NO_INPUT_FLAG:
-                            print "Lista de ciudades origen"
-                            print "------------------------------"
-                        break
-
-                    inputCityFrom.clear()
+                    ###########
                     inputCityFrom.send_keys(fromCityName)
-
-                for i,city in enumerate(fromCitiesList):
-                    if i == tam:
-                        if not NO_INPUT_FLAG:
-                            print "------------------------------"
-                        break
-                    if not NO_INPUT_FLAG:
-                        print str(i+1)+ ") " + city.text
-
-                while True:
-                    if NO_INPUT_FLAG:
-                        break
-                    break
-                    try:
-                        fromCityOption = raw_input('Selecciona una opcion: ')
-                        fromCityOption = int(fromCityOption)
-                        if fromCityOption >0 and fromCityOption <= tam:
+                    sleep(2)
+                    tam=0
+                    while True :
+                        sleep(1)
+                        fromCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]/span')
+                        tam = (len(fromCitiesList))/2
+                        if tam > 0:
+                            if not NO_INPUT_FLAG:
+                                print "Lista de ciudades origen"
+                                print "------------------------------"
                             break
-                        if fromCityOption==-1:
-                            sys.exit()
-                        print "Ingrese una opcion correcta"
-                    except Exception as e:
-                        print "Ingrese una opcion correcta"
 
-                sleep(1.5)
-                firstCityFrom =  fromCitiesList[fromCityOption-1]
-                firstCityFrom.click()
-                logging.info("Se ha seleccionado la primera opcion")
+                        inputCityFrom.clear()
+                        inputCityFrom.send_keys(fromCityName)
 
-                inputCityTo = self.driver.find_element_by_xpath('//label[@class="fx-r ai-c cur-d pl15 input input--w w100p mt10 bdr5 bdw1 bdc-g12 bds-s MD_bdls-n MD_bdlr0 MD_bdbr0 MD_mt0"]//input[@class="fxg1 miw0"]')
-                inputCityTo.send_keys(toCityName)
-                sleep(1.5)
-
-                while True :
-                    sleep(1)
-                    toCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]')
-                    tam = (len(toCitiesList))/2
-                    if tam>0:
+                    for i,city in enumerate(fromCitiesList):
+                        if i == tam:
+                            if not NO_INPUT_FLAG:
+                                print "------------------------------"
+                            break
                         if not NO_INPUT_FLAG:
-                            print "Lista de ciudades destino"
-                            print "------------------------------"
+                            print str(i+1)+ ") " + city.text
+
+                    while True:
+                        if NO_INPUT_FLAG:
+                            break
                         break
-                    inputCityTo.clear()
+                        try:
+                            fromCityOption = raw_input('Selecciona una opcion: ')
+                            fromCityOption = int(fromCityOption)
+                            if fromCityOption >0 and fromCityOption <= tam:
+                                break
+                            if fromCityOption==-1:
+                                sys.exit()
+                            print "Ingrese una opcion correcta"
+                        except Exception as e:
+                            print "Ingrese una opcion correcta"
+
+                    sleep(1.5)
+                    firstCityFrom =  fromCitiesList[fromCityOption-1]
+                    firstCityFrom.click()
+                    logging.info("Se ha seleccionado la primera opcion")
+
+                    inputCityTo = self.driver.find_element_by_xpath('//label[@class="fx-r ai-c cur-d pl15 input input--w w100p mt10 bdr5 bdw1 bdc-g12 bds-s MD_bdls-n MD_bdlr0 MD_bdbr0 MD_mt0"]//input[@class="fxg1 miw0"]')
                     inputCityTo.send_keys(toCityName)
+                    sleep(1.5)
 
-                for i,city in enumerate(toCitiesList):
-                    if i == tam:
-                        if not NO_INPUT_FLAG:
-                            print "------------------------------"
-                        break
-                    if not NO_INPUT_FLAG:
-                        print str(i+1)+") "+city.text
-
-                while True:
-                    if NO_INPUT_FLAG:
-                        break
-                    break
-                    try:
-                        toCityOption = raw_input('Selecciona una opcion: ')
-                        toCityOption = int(toCityOption)
-                        if toCityOption >0 and toCityOption <= tam:
+                    while True :
+                        sleep(1)
+                        toCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]')
+                        tam = (len(toCitiesList))/2
+                        if tam>0:
+                            if not NO_INPUT_FLAG:
+                                print "Lista de ciudades destino"
+                                print "------------------------------"
                             break
-                        if fromCityOption==-1:
-                            sys.exit()
-                        print "Ingrese una opcion correcta"
-                    except Exception as e:
-                        print "Ingrese una opcion correcta"
+                        inputCityTo.clear()
+                        inputCityTo.send_keys(toCityName)
 
-                firstCityTo =  toCitiesList[toCityOption-1]
-                firstCityTo.click()
-                logging.info("Se ha seleccionado la primera opcion")
-                sleep(1)
-                searchButton = self.driver.find_element_by_xpath('//button[@class="button pos-r d-ib va-t btn fxs0 h50 w100p px30 mt10 bdr5 MD_mt0 MD_bdtr0 btn--bb"]/div')
-                searchButton.click()
+                    for i,city in enumerate(toCitiesList):
+                        if i == tam:
+                            if not NO_INPUT_FLAG:
+                                print "------------------------------"
+                            break
+                        if not NO_INPUT_FLAG:
+                            print str(i+1)+") "+city.text
+
+                    while True:
+                        if NO_INPUT_FLAG:
+                            break
+                        break
+                        try:
+                            toCityOption = raw_input('Selecciona una opcion: ')
+                            toCityOption = int(toCityOption)
+                            if toCityOption >0 and toCityOption <= tam:
+                                break
+                            if fromCityOption==-1:
+                                sys.exit()
+                            print "Ingrese una opcion correcta"
+                        except Exception as e:
+                            print "Ingrese una opcion correcta"
+
+                    firstCityTo =  toCitiesList[toCityOption-1]
+                    firstCityTo.click()
+                    logging.info("Se ha seleccionado la primera opcion")
+                    sleep(1)
+                    searchButton = self.driver.find_element_by_xpath('//button[@class="button pos-r d-ib va-t btn fxs0 h50 w100p px30 mt10 bdr5 MD_mt0 MD_bdtr0 btn--bb"]/div')
+                    searchButton.click()
             # print "Empezamos la iteracion..."
             logging.info("Starting...")
             itera= itera+1
@@ -1447,7 +1459,7 @@ class GrabrSpider(CrawlSpider):
             logging.info("==============END STATS==============")
 
             ################# parte para testing only
-            if TEST_RUN_FLAG:
+            if self.TEST_RUN_FLAG:
                 logging.info("Se ha ejecutado solo un scroll por ser modo de prueba")
                 logging.info("Cerrando el navegador...")
                 self.driver.close()
@@ -2114,7 +2126,7 @@ class GrabrSpider(CrawlSpider):
                 annotation_log = self.buildAnnotation(int(round(item['offerPrice'])))
                 # logging.info("ANNOTATION BIG VERSION")
                 # logging.info(annotation_log)
-                if TEST_RUN_FLAG:
+                if self.TEST_RUN_FLAG:
                     copied=pyperclip.copy(annotation)
                 else:
                     copied=pyperclip.copy(annotation_log)
