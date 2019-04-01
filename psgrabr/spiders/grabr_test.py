@@ -54,6 +54,7 @@ class GrabrSpider(CrawlSpider):
     SKIP_CITES_SELECTION = True
     WEIGHT_DIV = 45
     MIN_OFFER_VALUE = 15
+    MIN_WEIGHT_ANNOTATION = 200
     FIRST_OFFER_PERC = 0.30
     USE_CLIPBOARD_FLAG = True
     MAX_ITEMS_FLAG = False
@@ -2355,9 +2356,10 @@ class GrabrSpider(CrawlSpider):
                 return self.ANNOTATION_PART_1 + str(offerPrice) + self.ANNOTATION_PART_2 + offer_str + " Kg" + self.ANNOTATION_PART_3
             else:
                 ##weight lesser than 1kg is sent as grams
-                offer = offer * 1000
+                offer = int(offer * 1000)
+                offer = self.MIN_WEIGHT_ANNOTATION if offer <= self.MIN_WEIGHT_ANNOTATION else offer
+                offer = offer - offer % 50 + 50
                 offer_str = str(offer)
-                offer_str = offer_str[: offer_str.find('.') + 2]
                 return self.ANNOTATION_PART_1 + str(offerPrice) + self.ANNOTATION_PART_2 + offer_str + " g" + self.ANNOTATION_PART_3
         else:
             return self.ANNOTATION_SPECIAL
