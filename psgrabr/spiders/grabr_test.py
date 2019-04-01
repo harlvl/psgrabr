@@ -42,16 +42,28 @@ class GrabrSpider(CrawlSpider):
     BROWSER_FIREFOX = True
     allowed_domains = ['grabr.io']
     start_urls = ['https://grabr.io/es/login']
-    miami_to_buenos_aires_url = "https://grabr.io/es/travel/from/20043/to/189"
     # rules = {
     #   Rule(LinkExtractor(allow = (), restrict_xpaths= ))
     # }
+
+    """
+        CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
+    """
+    miami_to_buenos_aires_url = "https://grabr.io/es/travel/from/20043/to/189"
+    miami_to_lima_url = "https://grabr.io/es/travel/from/20043/to/15482"
     SKIP_CITES_SELECTION = True
-    WEIGHT_DIV = 22
+    WEIGHT_DIV = 45
     MIN_OFFER_VALUE = 15
     FIRST_OFFER_PERC = 0.30
-    TEST_RUN_FLAG = True   # 1 scroll
-    TEST_OFFER_FLAG = True  ##define si se debe agregar el monto de TEST_OFFER_EXTRA a la oferta a enviar (solo se usa para hacer pruebas)
+    USE_CLIPBOARD_FLAG = True
+    MAX_ITEMS_FLAG = False
+    MAX_ITEMS = 5
+    HEADLESS_FLAG = False
+    NO_INPUT_FLAG = False
+    SERVER_FLAG = False
+
+    TEST_RUN_FLAG = False   # 1 scroll
+    TEST_OFFER_FLAG = False  ##define si se debe agregar el monto de TEST_OFFER_EXTRA a la oferta a enviar (solo se usa para hacer pruebas)
     TEST_OFFER_EXTRA = 50
     PREDEFINED_CITY_FLAG = True  ## define si se debe mostrar ciudades destino predefinidas
     already_date_forced = True  ## DEJALO EN TRUE
@@ -63,42 +75,31 @@ class GrabrSpider(CrawlSpider):
     ANNOTATION_PART_2 = """ dolares<br><b>Peso(1) maximo aceptado:</b> """
     ANNOTATION_PART_3 = """ <br><b>Medidas:</b> Debe de caber facilmente en una mochila o maleta<br><br>(1)Peso maximo que deberia tener tu producto para la recompensa colocada<br><br><br>Hola, soy Diana Pinedo. Vivo en Miami(La Florida) y por mi trabajo viajo con una frecuencia de 3 a 4 veces por mes a Buenos Aires. Me encargo del transporte de tu producto desde que llega a mi casa en Miami hasta la entrega en Buenos Aires. Si tu articulo es pesado (mas de 2 pounds) debes hacermelo saber antes de aceptar mi oferta, para mi es muy importante ya que facilita la fluidez en el transporte y evita futuras cancelaciones.<br><br><b>RESPECTO AL PRODUCTO:</b> Si tu producto tiene capacidad, talla, color, etc debes dejar todos esos detalles por escrito. Tu pedido es manejado con total cuidado, llevo <b>tu producto con caja y empaque original</b> (Excepto: Auriculares on ear, auriculares over ear, laptops de mas de 6 libras, tablets de mas de 10", consolas ps4 y xbox one, calzado y cascos de realidad virtual)<br><b>RESPECTO A LA ENTREGA:</b> En Buenos Aires cuento con una <b>oficina</b> de entrega, ubicada en <b>Microcentro</b> a una cuadra del Obelisco; la direccion exacta te la envio en visperas del viaje. Si eres de provincia puedo enviar tu pedido por OCA. No realizo entregas el mismo dia de mi llegada a Buenos Aires, esta se coordina y te brindo la facilidad para que se realice de Lunes a Viernes en el horario que mejor se te acomode.<br><br><b>Recuerda!</b><ul><li>Tu producto es comprado con mi dinero, <b>Grabr me paga cuando tu confirmas que recibes tu articulo</b>. Esto asegura que recibiras tu producto, <b> tu dinero esta 100% protegido.</b></li><li>Si el producto tiene gastos de envio extras que no esten incluidos en la publicacion, tienes 2 opciones: editar el pedido para incluirlos (el envio es a Miami zip code 33186) o pagar en Buenos Aires al recoger.</li></ul><br>Gracias, Diana P.<br><br><br><b>IMPORTANTE! </b> Con el fin de evitar cancelaciones de ordenes debes de tomar los siguiente puntos en consideracion:<br><ul><li>No transporto monitores, televisores, quimicos, liquidos, aerosoles, armas de fuego, armas de fogueo, productos perecederos, semillas, productos de origen animal asi esten empacados al vacio y libros.</li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta. </li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Verifica que tu producto tenga el precio en dolares americanos. No compro de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.</li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186. </li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
 
+    """
+        End constants and flags
+    """
 
     def parse(self, response):
         LOGGER.setLevel(logging.WARNING)
         urllib3_log = logging.getLogger("urllib3")
         urllib3_log.setLevel(logging.CRITICAL)
 
-        """
-        CONSTANTS VALUES AND FLAGS FOR TEST FLOWS
-        """
-        USE_CLIPBOARD_FLAG = True
-        MAX_ITEMS_FLAG = True
-        MAX_ITEMS = 5
-        HEADLESS_FLAG = False
-        NO_INPUT_FLAG = True
-        SERVER_FLAG = False
-
-        # username='diana.pinedo2019@gmail.com'
-        # password='NZ7101749627' #set a working password when NO_INPUT_FLAG is False
         username='harleen_vl@hotmail.com'
-        password='w0mirnms4kla3r' #set a working password when NO_INPUT_FLAG is False
+        password='mm' #set a working password when self.NO_INPUT_FLAG is False
         
         # annotation = annotation.decode(sys.stdin.encoding)
         annotation = "Hola me gustaria llevar tu producto"
         annotation = annotation.decode('utf-8')
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
-        raw_travel_date = "04/04/2019"
-        raw_final_date = "06/04/2019"
+        raw_travel_date = "12/12/2019"
+        raw_final_date = "18/12/2019"
         travelDate = self.makeDate(raw_travel_date)
         finalDate = self.makeDate(raw_final_date, travelDate)
         iterations = 1  ## entre 10 y 20 items por scroll
         updatingAccepted = 0   ## actualizar ofertas ya enviadas
 
-        """
-        End constants and flags
-        """
+        
         # try:
         #     logging.info("Trying to check firefox version...")
         #     output = subprocess.check_output(['firefox', '--version'])
@@ -115,7 +116,7 @@ class GrabrSpider(CrawlSpider):
         #     logging.error(e)
         #     logging.info("Could not check geckodriver version")
 
-        if HEADLESS_FLAG:
+        if self.HEADLESS_FLAG:
             logging.info("Creating firefox options...")
             options = webdriver.FirefoxOptions()
             # logging.info("Firefox options created.")
@@ -128,14 +129,14 @@ class GrabrSpider(CrawlSpider):
         newAccountFlag = 0
         newAnnotationFlag = 0
 
-        if NO_INPUT_FLAG:
+        if self.NO_INPUT_FLAG:
             fromCityOption = 1
             toCityOption = 1
             newAccountFlag = 0
             newAnnotationFlag = 0
 
         while True:
-            if NO_INPUT_FLAG:
+            if self.NO_INPUT_FLAG:
                 break
             try:
                 newAccountFlag = raw_input('>Desea ingresar una nueva cuenta? (Yes: 1 / No: 0) : ')
@@ -155,7 +156,7 @@ class GrabrSpider(CrawlSpider):
             password = raw_input('>Ingrese su contraseña: ')
 
         while True:
-            if NO_INPUT_FLAG:
+            if self.NO_INPUT_FLAG:
                 break
             try:
                 newAnnotationFlag = raw_input('>Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
@@ -173,14 +174,14 @@ class GrabrSpider(CrawlSpider):
                     break
 
         while True:
-            if NO_INPUT_FLAG:
+            if self.NO_INPUT_FLAG:
                 break
             travelDate= self.enterDate('>Ingresa la fecha de salida con el siguiente formato (dd/mm/yyyy): ')
             if travelDate!=0 and travelDate!=-1:
                 break
 
         while True:
-            if NO_INPUT_FLAG:
+            if self.NO_INPUT_FLAG:
                 break
             finalDate = self.enterDate('>Ingresa la fecha de entrega con el siguiente formato (dd/mm/yyyy): ',travelDate)
             if finalDate!=0 and finalDate != -1:
@@ -188,7 +189,8 @@ class GrabrSpider(CrawlSpider):
             if (finalDate == -1):
                 print "Ingresa una fecha de entrega por lo menos 1 dia despues de la fecha de salida"
 
-        if not NO_INPUT_FLAG:
+        begin_url_cities = None
+        if not self.NO_INPUT_FLAG:
             # fromCityName = raw_input('Ingresa la ciudad origen del envio: ')
             # toCityName = raw_input('Ingresa la ciudad destino del envio: ')
 
@@ -197,7 +199,7 @@ class GrabrSpider(CrawlSpider):
             print "----------------------------------------------------"
             print "Ciudad de origen predefinida: " + fromCityName.upper()
             while True:
-                if NO_INPUT_FLAG:
+                if self.NO_INPUT_FLAG:
                     break
                 print "Lista de ciudades destino:"
                 print "1) " + self.CITY_ARG
@@ -207,14 +209,14 @@ class GrabrSpider(CrawlSpider):
                 try:
                     city_option = int(city_option)
                     if city_option == 1 or city_option == 2:
-                        toCityName = self.CITY_ARG if city_option == 1 else self.CITY_PER
+                        (toCityName, begin_url_cities) = (self.CITY_ARG, self.miami_to_buenos_aires_url) if city_option == 1 else (self.CITY_PER, self.miami_to_lima_url)
                         break
                     print "Ingrese una opcion valida"
                 except:
                     print "Ingrese una opcion valida"
 
         while True:
-            if NO_INPUT_FLAG:
+            if self.NO_INPUT_FLAG:
                 break
             try:
                 iterations = raw_input('Ingresa el numero de scrolls: ')
@@ -226,7 +228,7 @@ class GrabrSpider(CrawlSpider):
                 print "Ingrese una cantidad de scrolls validos"
 
         while True:
-            if NO_INPUT_FLAG:
+            if self.NO_INPUT_FLAG:
                 break
             try:
                 updatingAccepted = raw_input('Desea que intente actualizar las ofertas que ya han sido mandadas? (Yes: 1 / No: 0) : ')
@@ -277,7 +279,7 @@ class GrabrSpider(CrawlSpider):
             if itera==0:
                 fromCityName = fromCityName.lower()
                 toCityName = toCityName.lower()
-                if HEADLESS_FLAG:
+                if self.HEADLESS_FLAG:
                     try:
                         logging.info("Creating headless web driver...")
                         self.driver = webdriver.Firefox(firefox_options=options)
@@ -319,9 +321,12 @@ class GrabrSpider(CrawlSpider):
                     break
                 
                 if self.SKIP_CITES_SELECTION:
+                    if not begin_url_cities:
+                        logging.warning("begin_url_cities WAS NOT DEFINED, try again")
+                        return
                     try:
                         logging.info("Trying to get item list url...")
-                        self.driver.get(self.miami_to_buenos_aires_url)
+                        self.driver.get(begin_url_cities)
                         logging.info("Done")
                     except Exception as e:
                         logging.error(e)
@@ -357,7 +362,7 @@ class GrabrSpider(CrawlSpider):
                         fromCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]/span')
                         tam = (len(fromCitiesList))/2
                         if tam > 0:
-                            if not NO_INPUT_FLAG:
+                            if not self.NO_INPUT_FLAG:
                                 print "Lista de ciudades origen"
                                 print "------------------------------"
                             break
@@ -367,14 +372,14 @@ class GrabrSpider(CrawlSpider):
 
                     for i,city in enumerate(fromCitiesList):
                         if i == tam:
-                            if not NO_INPUT_FLAG:
+                            if not self.NO_INPUT_FLAG:
                                 print "------------------------------"
                             break
-                        if not NO_INPUT_FLAG:
+                        if not self.NO_INPUT_FLAG:
                             print str(i+1)+ ") " + city.text
 
                     while True:
-                        if NO_INPUT_FLAG:
+                        if self.NO_INPUT_FLAG:
                             break
                         break
                         try:
@@ -402,7 +407,7 @@ class GrabrSpider(CrawlSpider):
                         toCitiesList = self.driver.find_elements_by_xpath('//div[@class="link link--b lh1 px20 py15 cur-p ellipsis c-b trd300ms MD_bgc-g3-hf px20 py10 ws-nw ellipsis"]')
                         tam = (len(toCitiesList))/2
                         if tam>0:
-                            if not NO_INPUT_FLAG:
+                            if not self.NO_INPUT_FLAG:
                                 print "Lista de ciudades destino"
                                 print "------------------------------"
                             break
@@ -411,14 +416,14 @@ class GrabrSpider(CrawlSpider):
 
                     for i,city in enumerate(toCitiesList):
                         if i == tam:
-                            if not NO_INPUT_FLAG:
+                            if not self.NO_INPUT_FLAG:
                                 print "------------------------------"
                             break
-                        if not NO_INPUT_FLAG:
+                        if not self.NO_INPUT_FLAG:
                             print str(i+1)+") "+city.text
 
                     while True:
-                        if NO_INPUT_FLAG:
+                        if self.NO_INPUT_FLAG:
                             break
                         break
                         try:
@@ -513,9 +518,9 @@ class GrabrSpider(CrawlSpider):
 
             #here it begins to check each element(item)
             for i in range(len(elements)):
-                if MAX_ITEMS_FLAG:
-                    if i >= MAX_ITEMS:
-                        logging.info("Only " + str(MAX_ITEMS) +  " elements were parsed as per constraint")
+                if self.MAX_ITEMS_FLAG:
+                    if i >= self.MAX_ITEMS:
+                        logging.info("Only " + str(self.MAX_ITEMS) +  " elements were parsed as per constraint")
                         break
                 offerLink = ""
                 precioOferta=None
@@ -1347,7 +1352,7 @@ class GrabrSpider(CrawlSpider):
                                 logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
                                 logging.warning("travelDateCurr: " + str(travelDateCurr))
                                 logging.warning("travelDateFormat: " + str(travelDateFormat))
-                                if SERVER_FLAG:
+                                if self.SERVER_FLAG:
                                     #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
                                     #### por eso se va por otro flujo
                                     #### hardcodearemos la solucion por ahora
@@ -1392,7 +1397,7 @@ class GrabrSpider(CrawlSpider):
 
                     sleep(1.8)
                     logging.info("ENTRANDO AL METODO makeOffer")
-                    result = self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, USE_CLIPBOARD_FLAG, SERVER_FLAG, isNormal)
+                    result = self.makeOffer( my_item , annotation , finalDate , fromCityName , fromCityOption , travelDate ,True, self.USE_CLIPBOARD_FLAG, self.SERVER_FLAG, isNormal)
                     logging.info("SALIO DEL METODO makeOffer con result = " + str(result))
                     if result== -1:
                         self.driver.close()
@@ -1426,7 +1431,7 @@ class GrabrSpider(CrawlSpider):
                     ##### entra a este flujo cuando no encuentra el boton siguiente
                     logging.warning("Excepcion de NoSuchElementException")
                     logging.info("ENTRANDO AL METODO makeOffer")
-                    result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False, USE_CLIPBOARD_FLAG, SERVER_FLAG, isNormal)
+                    result = self.makeOffer(my_item,annotation,finalDate, fromCityName,fromCityOption,travelDate,False, self.USE_CLIPBOARD_FLAG, self.SERVER_FLAG, isNormal)
                     logging.info("SALIO DEL METODO makeOffer con result = " + str(result))
                     if result == -1:
                         logging.warning(">>>>>>NO SALIO BIEN<<<<<<")
@@ -1572,7 +1577,7 @@ class GrabrSpider(CrawlSpider):
     def getDateNumber(self,day,month,year):
         return year*10000 + month*100 + day
 
-    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, USE_CLIPBOARD_FLAG=True, SERVER_FLAG=False, isNormal):
+    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, self.USE_CLIPBOARD_FLAG=True, self.SERVER_FLAG=False, isNormal):
         #finaldate  ya es una fecha verificada
         logging.info("=================================================================")
         logging.info("VARIABLES DE makeOffer")
@@ -1581,7 +1586,7 @@ class GrabrSpider(CrawlSpider):
         logging.info("fromCityOption: " + str(fromCityOption))
         logging.info("travelDate: " + str(travelDate))
         logging.info("hayFechaViaje: " + str(hayFechaViaje))
-        logging.info("USE_CLIPBOARD_FLAG: " + str(USE_CLIPBOARD_FLAG))
+        logging.info("self.USE_CLIPBOARD_FLAG: " + str(self.USE_CLIPBOARD_FLAG))
         logging.info("=================================================================")
         fail=False
         ######test
@@ -1714,7 +1719,7 @@ class GrabrSpider(CrawlSpider):
                 logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
                 logging.warning("travelDateCurr: " + str(travelDateCurr))
                 logging.warning("travelDateFormat: " + str(travelDateFormat))
-                if SERVER_FLAG:
+                if self.SERVER_FLAG:
                     #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
                     #### por eso se va por otro flujo
                     #### hardcodearemos la solucion por ahora
@@ -1926,7 +1931,7 @@ class GrabrSpider(CrawlSpider):
                 logging.warning("<<<<< DENTRO del metodo makeoffer >>>>>")
                 logging.warning("travelDateCurr: " + str(travelDateCurr))
                 logging.warning("travelDateFormat: " + str(travelDateFormat))
-                if SERVER_FLAG:
+                if self.SERVER_FLAG:
                     #### cuando se ejecuta en el servidor, travelDateCurr es un dia mayor que travelDateFormat
                     #### por eso se va por otro flujo
                     #### hardcodearemos la solucion por ahora
@@ -2137,7 +2142,7 @@ class GrabrSpider(CrawlSpider):
         inputText.click()
         count=0
         while True:
-            if not USE_CLIPBOARD_FLAG:
+            if not self.USE_CLIPBOARD_FLAG:
                 break
             try:
                 logging.info("Intentamos copiar al portapeles la anotacion...")
@@ -2157,7 +2162,7 @@ class GrabrSpider(CrawlSpider):
                     return -1
 
         inputText.click()
-        if USE_CLIPBOARD_FLAG:
+        if self.USE_CLIPBOARD_FLAG:
             inputText.send_keys(Keys.CONTROL + "v")
         else:
             try:
