@@ -1577,7 +1577,7 @@ class GrabrSpider(CrawlSpider):
     def getDateNumber(self,day,month,year):
         return year*10000 + month*100 + day
 
-    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, self.USE_CLIPBOARD_FLAG=True, self.SERVER_FLAG=False, isNormal):
+    def makeOffer(self, item,annotation,finaldate, fromCityName,fromCityOption,travelDate, hayFechaViaje=True, USE_CLIPBOARD_FLAG=True, SERVER_FLAG=False, isNormal=True):
         #finaldate  ya es una fecha verificada
         logging.info("=================================================================")
         logging.info("VARIABLES DE makeOffer")
