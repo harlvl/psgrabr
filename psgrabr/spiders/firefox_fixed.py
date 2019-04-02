@@ -1840,6 +1840,9 @@ class GrabrSpider(CrawlSpider):
                             except Exception as e:
                                 logging.error(e)
                                 logging.warning("Error de currentDay")
+                                logging.info("Error al obtener el dia actual en el calendario")
+                                logging.info("Skip this item and continue with the next")
+                                return -1
                             currentDay = int(currentDay)
                             if currentDay == dayNumber:
                                 logging.info("Encontro la fecha")

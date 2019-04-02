@@ -1656,13 +1656,6 @@ class GrabrSpider(CrawlSpider):
                     sleep(1)
                     logging.info("pasa por la excepcion 3")
             if k==5:
-                # self.driver.close()
-                # while not self.internet_on():
-                #   continue
-                # sleep(0.5)
-                # print "close 12"
-                # self.driver.switch_to_window(self.driver.window_handles[0])
-                # print "nos olvidamos de esta oferta y seguimos adelante"
                 logging.info("Skip this item and continue with the next")
                 return -1
 
@@ -1840,6 +1833,9 @@ class GrabrSpider(CrawlSpider):
                             except Exception as e:
                                 logging.error(e)
                                 logging.warning("Error de currentDay")
+                                logging.info("Error al obtener el dia actual en el calendario")
+                                logging.info("Skip this item and continue with the next")
+                                return -1
                             currentDay = int(currentDay)
                             if currentDay == dayNumber:
                                 logging.info("Encontro la fecha")
