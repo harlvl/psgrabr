@@ -306,8 +306,12 @@ class GrabrSpider(CrawlSpider):
                 sleep(1.5)
                 logging.info("Logging in...")
                 inputEmailElement = self.driver.find_element_by_xpath("//input[@type='email']")
+                sleep(1)
+                logging.info("Sending username...")
                 inputEmailElement.send_keys(username)
                 inputPasswordElement = self.driver.find_element_by_xpath("//input[@type='password']")
+                sleep(1)
+                logging.info("Sending password...")
                 inputPasswordElement.send_keys(password)
                 submitButton = self.driver.find_element_by_xpath("//button[@type='submit']")
                 sleep(1.5)
@@ -322,11 +326,14 @@ class GrabrSpider(CrawlSpider):
                     break
                 
                 if self.SKIP_CITES_SELECTION:
+                    if city_option == 1 or city_option == 2:
+                        (toCityName, begin_url_cities) = (self.CITY_ARG, self.miami_to_buenos_aires_url) if city_option == 1 else (self.CITY_PER, self.miami_to_lima_url)
                     if not begin_url_cities:
                         logging.warning("begin_url_cities WAS NOT DEFINED, try again")
                         return
                     try:
                         logging.info("Trying to get item list url...")
+                        begin_url_cities = self.miami_to_buenos_aires_url
                         self.driver.get(begin_url_cities)
                         logging.info("Done")
                     except Exception as e:
