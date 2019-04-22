@@ -334,6 +334,7 @@ class GrabrSpider(CrawlSpider):
                     try:
                         logging.info("Trying to get item list url...")
                         begin_url_cities = self.miami_to_buenos_aires_url
+                        logging.info(begin_url_cities)
                         self.driver.get(begin_url_cities)
                         logging.info("Done")
                     except Exception as e:
@@ -1037,11 +1038,11 @@ class GrabrSpider(CrawlSpider):
                     k=0
                     while True:
                         try:
-                            beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
+                            beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
                             logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
-                            #if len(beforeTravels)==0:
-                            #   k=k+1
-                            #   continue
+                            if len(beforeTravels)==0:
+                              k=k+1
+                              continue
                             break
                         except Exception as e:
                             k=k+1
@@ -1307,7 +1308,7 @@ class GrabrSpider(CrawlSpider):
                             k=0
                             while True:
                                 try:
-                                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
+                                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
                                     logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                                     if len(beforeTravels)==0:
                                         k=k+1
@@ -1650,7 +1651,7 @@ class GrabrSpider(CrawlSpider):
             k=0
             while True:
                 try:
-                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
+                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
                     logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                     if len(beforeTravels)==0:
                         k=k+1
@@ -1889,7 +1890,7 @@ class GrabrSpider(CrawlSpider):
             k=0
             while True:
                 try:
-                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
+                    beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
                     logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                     if len(beforeTravels)==0:
                         k=k+1
