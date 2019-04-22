@@ -75,7 +75,7 @@ class GrabrSpider(CrawlSpider):
     ANNOTATION_PART_1 = """(Lee detenidamente toda la informacion que se te presenta a continuacion. Realizar todas tus preguntas antes de realizar el pago de tu producto en la plataforma)<br><br><b>OFERTA</b> - RESUMEN -<br>-------------------------------<br><b>Recompensa:</b> """
     ANNOTATION_PART_2 = """ dolares<br><b>Peso(1) maximo aceptado:</b> """
     ANNOTATION_PART_3 = """ <br><b>Medidas:</b> Debe de caber facilmente en una mochila o maleta<br><br>(1)Peso maximo que deberia tener tu producto para la recompensa colocada<br><br><br>Hola, soy Diana Pinedo. Vivo en Miami(La Florida) y por mi trabajo viajo con una frecuencia de 3 a 4 veces por mes a Buenos Aires. Me encargo del transporte de tu producto desde que llega a mi casa en Miami hasta la entrega en Buenos Aires. Si tu articulo es pesado (mas de 2 pounds) debes hacermelo saber antes de aceptar mi oferta, para mi es muy importante ya que facilita la fluidez en el transporte y evita futuras cancelaciones.<br><br><b>RESPECTO AL PRODUCTO:</b> Si tu producto tiene capacidad, talla, color, etc debes dejar todos esos detalles por escrito. Tu pedido es manejado con total cuidado, llevo <b>tu producto con caja y empaque original</b> (Excepto: Auriculares on ear, auriculares over ear, laptops de mas de 6 libras, tablets de mas de 10", consolas ps4 y xbox one, calzado y cascos de realidad virtual)<br><b>RESPECTO A LA ENTREGA:</b> En Buenos Aires cuento con una <b>oficina</b> de entrega, ubicada en <b>Microcentro</b> a una cuadra del Obelisco; la direccion exacta te la envio en visperas del viaje. Si eres de provincia puedo enviar tu pedido por OCA. No realizo entregas el mismo dia de mi llegada a Buenos Aires, esta se coordina y te brindo la facilidad para que se realice de Lunes a Viernes en el horario que mejor se te acomode.<br><br><b>Recuerda!</b><ul><li>Tu producto es comprado con mi dinero, <b>Grabr me paga cuando tu confirmas que recibes tu articulo</b>. Esto asegura que recibiras tu producto, <b> tu dinero esta 100% protegido.</b></li><li>Si el producto tiene gastos de envio extras que no esten incluidos en la publicacion, tienes 2 opciones: editar el pedido para incluirlos (el envio es a Miami zip code 33186) o pagar en Buenos Aires al recoger.</li></ul><br>Gracias, Diana P.<br><br><br><b>IMPORTANTE! </b> Con el fin de evitar cancelaciones de ordenes debes de tomar los siguiente puntos en consideracion:<br><ul><li>No transporto monitores, televisores, quimicos, liquidos, aerosoles, armas de fuego, armas de fogueo, productos perecederos, semillas, productos de origen animal asi esten empacados al vacio y libros.</li><li>Ten en cuenta que este es un servicio de viajeros, y por lo tanto los productos que solicitas deben de caber facilmente en una mochila o maleta. </li><li>De preferencia debes de solicitar tus productos en webs con un facil proceso de compra, de preferencia utiliza amazon.com o ebay.com de USA. Verifica que tu producto tenga el precio en dolares americanos. No compro de la tienda aliexpress.</li><li>Recuerda que yo, asi como tu, soy un usuario mas de la plataforma, en mi rol de viajero trato de hacer las cosas de la mejor manera, respondiendo con la mayor fluidez posible. En la plataforma de Grabr estoy online de Lunes a Viernes de 11 a 20 horas (GMT-3) Hora en Buenos Aires, Argentina.</li><li>Revisa cuidadosamente los costos de envio de la tienda asi como la fecha de entrega en mi direccion, esta no debe ser posterior a la fecha de mi viaje. Recuerda, el envio es a Miami zip code 33186. </li><li>Acepta mi oferta como minimo 7 dias antes de la fecha de embarque, asi tendre tiempo suficiente para procesar tu compra y poder resolver cualquier inconveniente que se pudiera suscitar.</li></ul>"""
-
+    newAnnotationFlag = 0
     """
         End constants and flags
     """
@@ -91,6 +91,7 @@ class GrabrSpider(CrawlSpider):
         # annotation = annotation.decode(sys.stdin.encoding)
         annotation = "Hola me gustaria llevar tu producto"
         annotation = annotation.decode('utf-8')
+        city_option = 1
         fromCityName = "Miami"
         toCityName = "Buenos Aires"
         raw_travel_date = "12/12/2019"
@@ -128,13 +129,13 @@ class GrabrSpider(CrawlSpider):
         fromCityOption = 1
         toCityOption = 1
         newAccountFlag = 0
-        newAnnotationFlag = 0
+        self.newAnnotationFlag = 0
 
         if self.NO_INPUT_FLAG:
             fromCityOption = 1
             toCityOption = 1
             newAccountFlag = 0
-            newAnnotationFlag = 0
+            self.newAnnotationFlag = 0
 
         while True:
             if self.NO_INPUT_FLAG:
@@ -160,15 +161,15 @@ class GrabrSpider(CrawlSpider):
             if self.NO_INPUT_FLAG:
                 break
             try:
-                newAnnotationFlag = raw_input('>Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
-                newAnnotationFlag = int(newAnnotationFlag)
-                if newAnnotationFlag >=0 and newAnnotationFlag <= 1:
+                self.newAnnotationFlag = raw_input('>Desea ingresar una nueva anotacion? (Yes: 1 / No: 0) : ')
+                self.newAnnotationFlag = int(self.newAnnotationFlag)
+                if self.newAnnotationFlag >=0 and self.newAnnotationFlag <= 1:
                     break
                 print "Ingrese 0 o 1"
             except Exception as e:
                 print "Ingrese 0 o 1"
 
-        if newAnnotationFlag ==1:
+        if self.newAnnotationFlag ==1:
             while True:
                 annotation = raw_input('Ingrese su nueva anotacion: ').decode(sys.stdin.encoding)
                 if len(annotation)>0:
@@ -333,7 +334,7 @@ class GrabrSpider(CrawlSpider):
                         return
                     try:
                         logging.info("Trying to get item list url...")
-                        begin_url_cities = self.miami_to_buenos_aires_url
+                        # begin_url_cities = self.miami_to_buenos_aires_url
                         logging.info(begin_url_cities)
                         self.driver.get(begin_url_cities)
                         logging.info("Done")
@@ -1039,10 +1040,15 @@ class GrabrSpider(CrawlSpider):
                     while True:
                         try:
                             beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
+                            if not beforeTravels:
+                                beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
                             logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                             if len(beforeTravels)==0:
-                              k=k+1
-                              continue
+                                k=k+1
+                                if k==5:
+                                    logging.info("Could not find before travels")
+                                    break
+                                continue
                             break
                         except Exception as e:
                             k=k+1
@@ -1309,11 +1315,15 @@ class GrabrSpider(CrawlSpider):
                             while True:
                                 try:
                                     beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
+                                    if not beforeTravels:
+                                        beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
                                     logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                                     if len(beforeTravels)==0:
                                         k=k+1
+                                        if k==5:
+                                            logging.info("Could not find before travels")
+                                            break
                                         continue
-
                                     break
                                 except Exception as e:
                                     k=k+1
@@ -1652,11 +1662,15 @@ class GrabrSpider(CrawlSpider):
             while True:
                 try:
                     beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
+                    if not beforeTravels:
+                        beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
                     logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                     if len(beforeTravels)==0:
                         k=k+1
+                        if k==5:
+                            logging.info("Could not find before travels")
+                            break
                         continue
-
                     break
                 except Exception as e:
                     k=k+1
@@ -1872,8 +1886,14 @@ class GrabrSpider(CrawlSpider):
 
                         firstTimeFlag=True
             logging.info("Intentando clickear el boton siguiente...")
-            siguienteElement.click()
-            logging.info("Se pudo clickear el boton siguiente")
+            try:
+                siguienteElement.click()
+                logging.info("Se pudo clickear el boton siguiente")
+            except Exception as e:
+                logging.error(e)
+                logging.warning("No se pudo clickear porque otro elemento lo cubre")
+                logging.info("Skip this item and continue with the next")
+                return -1
             logging.info("INTENTANDO BUSCAR EL MENSAJE DE ESTE VIAJE YA EXISTE")
             mensaje_ya_existe = None
             try:
@@ -1891,11 +1911,15 @@ class GrabrSpider(CrawlSpider):
             while True:
                 try:
                     beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1 bgc-g3']/span")
+                    if not beforeTravels:
+                        beforeTravels=self.driver.find_elements_by_xpath("//label[@class='fx-r px20 py15 z2 trp-bgc cur-p SM_py20 bdts-s bdtc-g12 bdtw1']/span")
                     logging.info("Cantidad de elementos de beforeTravels: " + str(len(beforeTravels)))
                     if len(beforeTravels)==0:
                         k=k+1
+                        if k==5:
+                            logging.info("Could not find before travels")
+                            break
                         continue
-
                     break
                 except Exception as e:
                     k=k+1
@@ -2158,13 +2182,17 @@ class GrabrSpider(CrawlSpider):
                 break
             try:
                 logging.info("Intentamos copiar al portapeles la anotacion...")
-                annotation_log = self.buildAnnotation(int(round(item['offerPrice'])), isNormal)
+                if self.newAnnotationFlag == 1:
+                    copied = pyperclip.copy(annotation)
+                else:
+                    annotation_log = self.buildAnnotation(int(round(item['offerPrice'])), isNormal)
+                    copied=pyperclip.copy(annotation_log)
                 # logging.info("ANNOTATION BIG VERSION")
                 # logging.info(annotation_log)
-                if self.TEST_RUN_FLAG:
-                    copied=pyperclip.copy(annotation)
-                else:
-                    copied=pyperclip.copy(annotation_log)
+                # if self.TEST_RUN_FLAG:
+                #     copied=pyperclip.copy(annotation)
+                # else:
+                #     copied=pyperclip.copy(annotation_log)
                 break
             except Exception as e:
                 count= count +1
