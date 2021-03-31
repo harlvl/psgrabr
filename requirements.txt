@@ -21,7 +21,7 @@ hyperlink==17.3.1
 idna==2.7
 incremental==17.5.0
 ipaddress==1.0.22
-lxml==4.2.2
+lxml==4.6.3
 more-itertools==4.3.0
 parsel==1.5.1
 pathlib2==2.3.3
