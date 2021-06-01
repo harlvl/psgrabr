@@ -48,7 +48,7 @@ shub==2.8.1
 six==1.12.0
 tqdm==4.29.1
 Twisted==17.5.0
-urllib3==1.23
+urllib3==1.26.5
 w3lib==1.19.0
 websocket-client==0.54.0
 win-inet-pton==1.0.1
